@@ -9,10 +9,15 @@ function [] = fouriertransformanalysis()
 
 %% 1. Load epoch and Initialize data
 disp('Loading the EEG data....')
-[myfullname, EEG, channel_labels] = initialize_EEG_variables();
+eegpatient= 'TWH024';
+eegcond = 'HYP';
+fprintf('Loading EEG for patient:%s and condition%s',eegpatient,eegcond);
+[myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
+%patientcond, patientid, patdate, patsession
 % get condition, sesssion, patient and date
 [eegpathname eegfilename eegextname]= fileparts(myfullname);
-[eegcond, eegpatient,eegdate,eegsession] = getsessionpatient(eegfilename)
+
+%[eegcond, eegpatient,eegdate,eegsession] = getsessionpatient(eegfilename)
 %EEG = EEG_study;
 times2plot =  dsearchn(EEG.times',[ EEG.times(1) EEG.times(end)]');
 trial2plot = EEG.trials;
@@ -81,7 +86,7 @@ for irow =chani:chanend
     figcounter = 1;
     chan2use = channel_labels(irow);
     % avoid broken channels
-    [toskip] = cancelbrokenchannels(eegpatient, irow);
+    [toskip] = cancelbrokenchannels(eegpatient, irow-1);
     if toskip == 1
         %if channel broken 
         signal = EEG.data(1,:,trial2plot);
@@ -245,8 +250,6 @@ for irow =chani:chanend
     subplot(2,1,2)
     bar(requested_frequences_power)
     xlabel('Frequencies (Hz)'), ylabel('Power')
-    xlabel('Frequencies (Hz)'), ylabel('Amplitude')
-
     %set(gca,'xtick',1:length(frex_idx),'xticklabel',cellstr(num2str(round(hz(frex_idx))')))
     % %hold on
     x1 = 4.5;
@@ -333,10 +336,14 @@ end
 
 
 function [leg,quantitytomeasure] = calculatelegfootnote(channel_labels,fft_coefs,label_quantitytomeasure,nbofmaxchtodisp,tot_channels)
-%% in channel_labels,fft_coefs,label_quantitytomeasure,nbofmaxchtodisp,tot_channels
-%out: leg+ footnote text, quantitytomeasure
+%% [leg,quantitytomeasure] = calculatelegfootnote(channel_labels,fft_coefs,label_quantitytomeasure,nbofmaxchtodisp,tot_channels)
+%makes the footnote with the "nbofmaxchtodisp" channels with largest power
+%for the fft_[Power_MT|Powe|Amplitude]_AllCh_patient files 
+%when 
+%Input: channel_labels,fft_coefs,label_quantitytomeasure,nbofmaxchtodisp,tot_channels
+%Output: leg: footnote text, quantitytomeasure: quantity to display ,
+%label_quantitytomeasure, for example the mean of the power, or the median
 quantitytomeasure = zeros(tot_channels,1);
-
 for irow =2:tot_channels+1
     if strcmp(label_quantitytomeasure, 'max') 
         quantitytomeasure(irow-1,1) = max(fft_coefs(irow-1,:));
@@ -361,14 +368,14 @@ end
 
 
 function [toskip] = cancelbrokenchannels(patient, irow)
-%% return 1 is the channel irow+1 of patient need to be removed from the analysis
+%% return 1 is the channel irow of patient need to be removed from the analysis
 toskip = 0;
-if (strcmp(patient, 'mj34') ==1 && (irow == 69)) ||  (strcmp(patient, 'was30') == 1 && (irow == 9))
-    %LHD4$ , irow = 68 +1 (twh34)
-    % LAT4, irpw = 8 +1 (twh30)
-    fprintf('Broken channel number %d, patient: %s\n', irow-1, patient);
-    toskip = 1;
-    
+if (strcmp(patient, 'mj34') ==1 && (irow == 68)) ||  (strcmp(patient, 'was30') == 1 && (irow == 8)) || (strcmp(patient, 'sm31') ==1 && (irow == 17))
+    %LHD4$ , irow = 68 (twh34)
+    %LAT4, irow = 8  (twh30)
+    %LMF5, irow = 17 (twh031)
+    fprintf('Broken channel number %d, patient: %s\n', irow, patient);
+    toskip = 1;   
 end
 end
 
@@ -376,348 +383,4 @@ function [scaledsignal] = scalebylogarithm(signal)
 %% scalebylogarithm scaledsignal = 10*log10(signal)
     scaledsignal = 10*log(signal);
     a = 0;
-end
-
-%% Do not use these 2 functions can be deleted 
-function [] = shortfouriertransform()
-%% Time - frequency analysis with  short-time Fourier transform method
-% Doesnot work....check it out
-
-    title([' Channel:' num2str(irow-1) ' Condition:' eegcond ', Patient:' eegpatient ', Date:' eegdate ', Session:' eegsession ] );
-    [theta, delta, alpha, beta, gamma] = calculatemeanandstdoerfreq(requested_frequences, x1, x2, x3, x4, chani);
-    %text(1, 1,['d.mean = ',num2str(delta(chani-1).mean) ])
-    
-    %% Time - frequency analysis, The short-time Fourier transform
-    % does not work , fix it!!
-
-    sft = 0;
-    if sft == 1
-        % define 'chunks' of time for different frequency components
-        timechunks = round(linspace(1,length(t),length(f)+1));
-        %figure
-        %subplot(211)
-        %subplot(tot_rows,4,3*irow)
-        %plot(t,signal)
-        %xlabel('Time (s)'), ylabel('Amplitude')
-        
-        % short-time FFT parameters
-        fftWidth_ms = 1000;
-        fftWidth    = round(fftWidth_ms/(1000/srate)/2);
-        Ntimesteps  = tot_seconds; % number of time widths
-        centertimes = round(linspace(fftWidth+1,length(t)-fftWidth,Ntimesteps));
-        
-        % frequencies in Hz
-        hz = linspace(0,srate/2,fftWidth-1);
-        
-        % initialize matrix to store time-frequency results
-        tf = zeros(length(hz),length(centertimes));
-        
-        % Hann window to taper the data in each window for the FFT
-        hanwin = .5*(1-cos(2*pi*(1:fftWidth*2)/(fftWidth*2-1)));
-        
-        % loop through center time points and compute Fourier transform
-        for ti=1:length(centertimes)
-            % get data from this time window
-            %temp = data(centertimes(ti)-fftWidth:centertimes(ti)+fftWidth-1);
-            temp = EEG.data(irow,centertimes(ti)-fftWidth:centertimes(ti)+fftWidth-1,trial2plot);
-            % Fourier transform
-            x = fft(hanwin.*temp)/fftWidth*2;
-            
-            % enter amplitude into tf matrix
-            tf(:,ti) = 2*abs(x(1:length(hz)));
-        end
-        % plot the time-frequency result
-        %subplot(212)
-        %subplot(tot_rows,4,3*irow)
-        hfigures(figcounter) = figure;
-        figcounter = figcounter + 1;
-        contourf(t(centertimes),hz,tf,1)
-        set(gca,'ylim',[0 max(t(centertimes))],'clim',[0 1],'xlim',[0 tot_seconds])
-        xlabel('Time (s)'), ylabel('Frequency (Hz)')
-        legend('sFT')
-        
-        % The figures in the book use a reverse colorscaling,
-        % which can be obtained using the following code.
-        c = gray; % 'gray' is the colormap
-        colormap(c(end:-1:1,:)) % reversed colormap
-    end
-    %end short fourier
-
-    %% Morlet Wavelet
-    %Chapter 6.2, Figure 6.5
-    % create a linear chirp
-    %srate   = 1000;
-    %t       = 0:1/srate:6;
-    %f   = [2 8]; % frequencies in Hz
-    %chirpTS = sin(2*pi.*linspace(f(1),mean(f),length(t)).*t);
-    
-    % The wavelet has its own time vector, but
-    % the sampling rate MUST be the same as for the signal.
-    % for a wave between -2 and 2s
-    timewvi = -2;
-    timewve = 2;
-    wavetime = timewvi:1/srate:timewve;
-    
-    % width of the Gaussian that tapers the sine wave
-    wvcycles = 4;
-    wvfreq = 8;
-    w = 2*( wvcycles/(2*pi*wvfreq) )^2;
-    
-    % create the complex Morlet wavelet
-    cmw = exp(1i*2*pi*wvfreq.*wavetime) .* exp( (-wavetime.^2)/w );
-    
-    % half of the length of the wavelet
-    halfwavsize = floor(length(wavetime)/2);
-    
-    % Perform time-domain convolution...
-    % the signal must be zero-padded
-    signalpad = [zeros(1,halfwavsize) signal zeros(1,halfwavsize)];
-    %chirpTSpad = [zeros(1,halfwavsize) chirpTS zeros(1,halfwavsize)];
-    % initialize results matrix
-    %convres = zeros(size(chirpTSpad));
-    convres = zeros(size(signalpad));
-    
-    % and now the actual convolution
-    for i=halfwavsize+1:length(signal)+halfwavsize-1
-        convres(i) = sum( signalpad(i-halfwavsize:i+halfwavsize) .* cmw );
-    end
-    % the final step of convolution is to trim the edges
-    convres = convres(halfwavsize:end-halfwavsize-1);
-    
-    % and plot the results
-    % %clf
-    % subplot(211)
-    % plot(t,signal)
-    % % the amplitude of the result of the convolution of the signal and a
-    % % wvfreq=5 wavelet
-    % subplot(212)
-    % plot(t,abs(convres))
-    % xlabel('Time (s)'), ylabel('Amplitude (unscaled)')
-    % for th vonvolution theorem we can multiply the frequency domain and is
-    % equibalent to the dot product in the time domain
-    %% To normalize the amplitude
-    
-    Lconv = length(t)+length(wavetime)-1;
-    
-    % Fourier spectra of the two signals
-    cmwX = fft(cmw,Lconv);
-    cmwX = cmwX./max(cmwX);
-    
-    % and their multiplied inverse
-    convres4 = ifft( fft(signal,Lconv).*cmwX );
-    convres4 = convres4(halfwavsize:end-halfwavsize-1);
-    
-    %clf
-    %subplot(tot_rows,4,1 + (4*(irow-1))), hold on
-    %figure
-    
-    %plot(t,signal), hold on
-    if vectorofchannelsprint(chani) == 1
-        figure(hchann(chani));
-        subplot(2,1,1), hold on
-        plot(t,2*abs(convres4),'r')
-    end
-    %% time frequency analysis with Morlet wavelet
-    disp('Time frequency analysis with Morlet wavelet...')
-    % number and range of frequencies for analysis
-    nfrex = 50;
-    frex  = logspace(log10(2),log10(nfrex),nfrex);
-    
-    % initialize...
-    tf = zeros(nfrex,length(signal));
-    
-    % Fourier spectrum of the signal. Note that because this does not change as
-    % a function of wavelet frequency, it needs to be computed only once.
-    signalx = fft(signal,Lconv);
-    
-    % loop through frequencies
-    for fi=1:nfrex
-        % compute normalized Fourier spectra of wavelet
-        disp(['compute normalized Fourier spectra of wavelet fi=' num2str(fi) ' / ' num2str(nfrex)])
-        w = 2*( 5/(2*pi*frex(fi)) )^2;
-        cmwX = fft(exp(1i*2*pi*frex(fi).*wavetime) .* exp( (-wavetime.^2)/w ), Lconv);
-        cmwX = cmwX./max(cmwX);
-        % convolution and extract amplitude
-        convres = ifft( signalx .* cmwX );
-        tf(fi,:) = 2*abs(convres(halfwavsize:end-halfwavsize-1));
-    end
-    disp('end loop to calculate tf')
-    % w=600; h=400;
-    % set(figure(4),'Position',[400 60 w h])
-    %subplot(tot_rows,4,4  + (4*(irow-1)))
-    htimefre(chani)= figure;
-    disp('calculating contour...')
-    contourf(t,frex,tf,40,'linecolor','none')
-    set(gca,'clim',[0 1]), colorbar
-    xlabel('Time (s)'), ylabel('Frequency (Hz)')
-    title([' Channel:' num2str(irow-1) ' Condition:' eegcond ', Patient:' eegpatient ', Date:' eegdate ', Session:' eegsession ] );
-%     figure(allchbands);
-%     hold on
-%     plot(hz,2*abs(signalXF(1:length(hz))),'r')
-%     xlabel('Frequencies (Hz)'), ylabel('Amplitude')
-%     set(gca,'xlim',[0 50])
-%     legend({'fast Fourier transform'})
-%     disp(['DONE with channel=' num2str(irow)])
-%     totalsignalXF = sum(2*abs(signalXF(1:length(hz))));
-end
-
-
-
-function [] = morsetwaveletspectra()
-%% Time - frequency analysis with  Morlet Wavelet method
-% do not use for wavelet time-frequency spectra use powerspectrumalgorithm.m instead.
-
-
-    waveletm = 0;
-    if waveletm == 1
-        %Chapter 6.2, Figure 6.5
-        % create a linear chirp
-        %srate   = 1000;
-        %t       = 0:1/srate:6;
-        %f   = [2 8]; % frequencies in Hz
-        %chirpTS = sin(2*pi.*linspace(f(1),mean(f),length(t)).*t);
-        
-        % The wavelet has its own time vector, but
-        % the sampling rate MUST be the same as for the signal.
-        % for a wave between -2 and 2s
-        timewvi = -2;
-        timewve = 2;
-        wavetime = timewvi:1/srate:timewve;
-        
-        % width of the Gaussian that tapers the sine wave
-        wvcycles = 4;
-        wvfreq = 8;
-        w = 2*( wvcycles/(2*pi*wvfreq) )^2;
-        
-        % create the complex Morlet wavelet
-        cmw = exp(1i*2*pi*wvfreq.*wavetime) .* exp( (-wavetime.^2)/w );
-        
-        % half of the length of the wavelet
-        halfwavsize = floor(length(wavetime)/2);
-        
-        % Perform time-domain convolution...
-        % the signal must be zero-padded
-        signalpad = [zeros(1,halfwavsize) signal zeros(1,halfwavsize)];
-        %chirpTSpad = [zeros(1,halfwavsize) chirpTS zeros(1,halfwavsize)];
-        % initialize results matrix
-        %convres = zeros(size(chirpTSpad));
-        convres = zeros(size(signalpad));
-        
-        % and now the actual convolution
-        for i=halfwavsize+1:length(signal)+halfwavsize-1
-            convres(i) = sum( signalpad(i-halfwavsize:i+halfwavsize) .* cmw );
-        end
-        % the final step of convolution is to trim the edges
-        convres = convres(halfwavsize:end-halfwavsize-1);
-        
-        % and plot the results
-        % %clf
-        % subplot(211)
-        % plot(t,signal)
-        % % the amplitude of the result of the convolution of the signal and a
-        % % wvfreq=5 wavelet
-        % subplot(212)
-        % plot(t,abs(convres))
-        % xlabel('Time (s)'), ylabel('Amplitude (unscaled)')
-        % for th vonvolution theorem we can multiply the frequency domain and is
-        % equibalent to the dot product in the time domain
-        %% To normalize the amplitude
-        
-        Lconv = length(t)+length(wavetime)-1;
-        
-        % Fourier spectra of the two signals
-        cmwX = fft(cmw,Lconv);
-        cmwX = cmwX./max(cmwX);
-        
-        % and their multiplied inverse
-        convres4 = ifft( fft(signal,Lconv).*cmwX );
-        convres4 = convres4(halfwavsize:end-halfwavsize-1);
-        
-        %clf
-        %subplot(tot_rows,4,1 + (4*(irow-1))), hold on
-        %figure
-        
-        %plot(t,signal), hold on
-        if vectorofchannelsprint(irow) == 1
-            figure;
-            subplot(2,1,1), hold on
-            plot(t,2*abs(convres4),'r')
-        end
-        %% time frequency analysis with Morlet wavelet
-        disp('Time frequency analysis with Morlet wavelet...')
-        % number and range of frequencies for analysis
-        nfrex = 50;
-        frex  = logspace(log10(2),log10(nfrex),nfrex);
-        
-        % initialize...
-        tf = zeros(nfrex,length(signal));
-        
-        % Fourier spectrum of the signal. Note that because this does not change as
-        % a function of wavelet frequency, it needs to be computed only once.
-        signalx = fft(signal,Lconv);
-        
-        % loop through frequencies
-        for fi=1:nfrex
-            % compute normalized Fourier spectra of wavelet
-            disp(['compute normalized Fourier spectra of wavelet fi=' num2str(fi) ' / ' num2str(nfrex)])
-            w = 2*( 5/(2*pi*frex(fi)) )^2;
-            cmwX = fft(exp(1i*2*pi*frex(fi).*wavetime) .* exp( (-wavetime.^2)/w ), Lconv);
-            cmwX = cmwX./max(cmwX);
-            % convolution and extract amplitude
-            convres = ifft( signalx .* cmwX );
-            tf(fi,:) = 2*abs(convres(halfwavsize:end-halfwavsize-1));
-        end
-        disp('end loop to calculate tf')
-        % w=600; h=400;
-        % set(figure(4),'Position',[400 60 w h])
-        %subplot(tot_rows,4,4  + (4*(irow-1)))
-        figure;
-        disp('calculating contour...')
-        contourf(t,frex,tf,40,'linecolor','none')
-        set(gca,'clim',[0 1]), colorbar
-        xlabel('Time (s)'), ylabel('Frequency (Hz)')
-        figure;
-        hold on
-        plot(hz,2*abs(signalXF(1:length(hz))),'r')
-        xlabel('Frequencies (Hz)'), ylabel('Amplitude')
-        set(gca,'xlim',[0 50])
-        legend({'fast Fourier transform'})
-        disp(['DONE with channel=' num2str(irow)])
-        totalsignalXF = sum(2*abs(signalXF(1:length(hz))));
-    end
-end
-
-function [eegcond, eegpatient,eegdate,eegsession ] = getsessionpatient(eegfilename)
-%%     [eegcond, eegpatient,eegdate,eegsession ] = getsessionpatient(eegfilename)  get patient name etc from file name
-
-[eegbl remain] = strtok(eegfilename, 'EEG_cut_');
-[eegblcond remain]= strtok(remain, '_');
-[eegblcond2 remain]= strtok(remain, '_');
-if (strcmpi(eegblcond2,'PRE') == 1) || (strcmpi(eegblcond2,'POST') == 1)
-    eegcond = strcat(eegbl, eegblcond);
-    eegcond = strcat(eegcond, eegblcond2);
-    [eegpatient remain]= strtok(remain, '_');
-    [eegdate remain]= strtok(remain, '_');
-    eegsession = strtok(remain, '_');
-else
-    eegcond = strcat(eegbl, eegblcond);
-    eegpatient = eegblcond2;
-    [eegdate eegsession]= strtok(remain, '_');
-    eegsession = strtok(eegsession, '_');
-end
-end
-
-function [theta, delta, alpha, beta, gamma]  = calculatemeanandstdoerfreq(requested_frequences, x1, x2, x3, x4, chani);
-disp(['calculating statistics oer channel' num2str(chani-1)])
-theta(chani-1).mean = mean(requested_frequences(1:x1))
-theta(chani-1).std = std(requested_frequences(1:x1))
-delta(chani-1).mean = mean(requested_frequences(x1+1:x2))
-delta(chani-1).std = std(requested_frequences(x1+1:x2))
-alpha(chani-1).mean = mean(requested_frequences(x2+1:x3))
-alpha(chani-1).std = std(requested_frequences(x2+1:x3))
-beta(chani-1).mean = mean(requested_frequences(x3+1:x4))
-beta(chani-1).std = std(requested_frequences(x3+1:x4))
-gamma(chani-1).mean = mean(requested_frequences(x4+1:end))
-gamma(chani-1).std = std(requested_frequences(x4+1:end))
-
 end
