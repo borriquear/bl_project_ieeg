@@ -1,12 +1,13 @@
 function [myfullname, EEG, channel_labels, patdate, patsession] =  initialize_EEG_variables(patientid,patientcond)
 %% initialize_EEG_variables  load mat file and initialize EEG lab variables .
 %   [myfullname, EEG_study, channel_labels] = initialize_EEG_variables()
+%IN: patientid,patientcond
 %Output: myfullname:full path of the mat file with the signal
 %EEG: the struct created by EEGLAB, channel_labels:label of the channels,
 %patientcond, patientid, patdate, patsession
 % patientid= 'TWH024';
 % patientcond = 'HYP';
-[mydir, myfile,patdate,patsession,patname] = getfullpathfrompatient(patientid,patientcond);
+[mydir, myfile,patdate,patsession] = getfullpathfrompatient(patientid,patientcond);
 myfullname = fullfile(mydir, myfile);
 disp('Loading mat file...')
 EEG = load(myfullname);

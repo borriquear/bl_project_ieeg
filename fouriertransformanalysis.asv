@@ -14,7 +14,7 @@ function [] = fouriertransformanalysis()
 
 %% 1. Load epoch and Initialize data
 disp('Loading the EEG data....\n')
-eegpatient= 'TWH024';
+eegpatient= 'TWH028';
 eegcond = 'HYP';
 fprintf('Loading EEG for patient:%s and condition%s\n',eegpatient,eegcond);
 [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);

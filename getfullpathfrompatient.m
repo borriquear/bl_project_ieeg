@@ -1,4 +1,4 @@
-function [patdir, patfile,patdate,patsession,patname] = getfullpathfrompatient(patientid, patientcond, entireorcut)
+function [patdir, patfile,patdate,patsession] = getfullpathfrompatient(patientid, patientcond, entireorcut)
 %% [patdir, patfile] = getfullpathfrompatient(patientid, patientcond)
 % returns the path and the file name of the mat file for that patient and
 % condition
@@ -13,44 +13,44 @@ patsession = 's1'; %by default session is s1
 switch patientid
     case 'TWH024'
         if strcmp(patientcond,'HYP') == 1
-            patname = 'fo24';
+            %patname = 'fo24';
             patdate = '09192015';
         else
         end
     case 'TWH027'
         if strcmp(patientcond,'HYP') == 1
-            patname = 'bs27';
+            %patname = 'bs27';
             patdate = '10222015';
             patsession = 's2';
         else
         end
     case 'TWH028'
         if strcmp(patientcond,'HYP') == 1
-            patname = 'cj28';
+            %patname = 'cj28';
             patdate = '10202015';
         else
         end
     case 'TWH030'
         if strcmp(patientcond,'HYP') == 1
-            patname = 'was30';
+            %patname = 'was30';
             patdate = '11172015';
         else
         end
     case 'TWH031'
         if strcmp(patientcond,'HYP') == 1
-            patname = 'sm31';
+            %patname = 'sm31';
             patdate = '12012015';
         else
         end
     case 'TWH033'
         if strcmp(patientcond,'HYP') == 1
-            patname = 'nk33';
+            %patname = 'nk33';
             patdate = '02032016';
         else
         end
     case 'TWH034'
         if strcmp(patientcond,'HYP') == 1
-            patname = 'mj34';
+            %patname = 'mj34';
             patdate = '02092016';
             patsession ='s2';
         else
@@ -65,7 +65,7 @@ else
     patfile1 = 'EEG_cut_BL_';
 end
 patfile2 = patientcond;
-patfile3 = strcat('_', patname, '_', patdate,'_',patsession, '.mat');
+patfile3 = strcat('_', patientid, '_', patdate,'_',patsession, '.mat');
 patfile = strcat(patfile1,patfile2,patfile3);
 
 fullFileName =  fullfile(patdir, patfile);

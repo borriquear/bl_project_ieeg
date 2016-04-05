@@ -3,57 +3,19 @@ function [quantitytomeasure,frqperband ] = loadconditionpowerdata(myfullname,pat
 % a patient
 fprintf('Calling loadconditionpowerdata function, patient%s, %condition..\n',patientid,condition)
 fprintf('Cleaning workspace..\n')
-patientdir = 'D:\BIAL PROJECT\patients\'
-fpatientpower = fullfile(patientdir,patientid)
-fpatientpowerdata = fullfile(fpatientpower,'data')
-fpatientpowerdatafig = fullfile(fpatientpowerdata,'figures')
-if strcmp(patientid, 'TWH030') ==1
-    if strcmp('HYP',condition) == 1
-        %must change for different sessions
-        matfileh = 'fft_BLHYP_was30_11172015_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    elseif strcmp('ECPRE',condition) == 1
-        matfileh = 'fft_BLECPRE_was30_11172015_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    elseif strcmp('EOPRE',condition) == 1
-        matfileh = 'fft_BLEOPRE_was30_11172015_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    elseif strcmp('ECPOST',condition) == 1
-        matfileh = 'fft_BLECPOST_was30_11172015_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    end
-elseif strcmp(patientid, 'TWH033') ==1
-    if strcmp('HYP',condition) == 1
-        %must change for different sessions
-        matfileh = 'fft_BLHYP_nk33_02032016_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    elseif strcmp('ECPRE',condition) == 1
-        matfileh = 'fft_BLECPRE_nk33_02032016_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    elseif strcmp('EOPRE',condition) == 1
-        matfileh = 'fft_BLEOPRE_nk33_02032016_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    elseif strcmp('ECPOST',condition) == 1
-        matfileh = 'fft_BLECPOST_nk33_02032016_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    elseif strcmp('EOPOST',condition) == 1
-        matfileh = 'fft_BLEOPOST_nk33_02032016_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    end
-elseif strcmp(patientid, 'TWH027') ==1
-    matfileh = 'fft_BLHYP_bs27_10222015_s2.mat';
-    fileh = fullfile(fpatientpowerdatafig,matfileh);
-elseif strcmp(patientid, 'TWH028') ==1
-    if strcmp('HYP',condition) == 1
-        matfileh = 'fft_BLHYP_cj28_10202015_s1.mat';
-        fileh = fullfile(fpatientpowerdatafig,matfileh);
-    end
-elseif strcmp(patientid, 'TWH034') ==1
-    matfileh = 'fft_BLHYP_mj34_02092016_s2.mat';
-    fileh = fullfile(fpatientpowerdatafig,matfileh);
-else
-    error('Error in loadconditionpowerdata, couldnt find patient:%s', patientid);
+% make sure that globalFsDir is assigned
+if ~exist('globalFsDir','var') 
+   fprintf('globalFsDir not found, loading it...')
+   eval('global globalFsDir');
+   myp = 'D:\BIAL PROJECT\patients\';
+   eval(['globalFsDir=' 'myp']); 
 end
+patpath = strcat(globalFsDir,patientid);
+patpath = fullfile(patpath, 'data','figures');
+[mydir, myfile,patdate,patsession] = getfullpathfrompatient(patientid,condition);
+matfileh = strcat('fft_',condition,'_', patientid,'_',patdate,'_',patsession, '.mat' );
+fileh = fullfile(patpath,matfileh);
+
 fprintf('Loading in memory file %s:\n',fileh);
 load(fileh,'quantitytomeasure','frqperband');
 fprintf('Done');

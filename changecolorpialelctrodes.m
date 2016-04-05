@@ -1,9 +1,6 @@
 %% Loadconditionpwerdata and display coloured electrodes
 clear all
 patientid = 'TWH028';
-patientid = 'TWH027';
-patientid = 'TWH030';
-patientid = 'TWH033';
 patientid = 'TWH034';
 patientid = 'TWH024';
 condition = 'ECPRE'
@@ -11,8 +8,9 @@ condition = 'EOPRE'
 condition = 'ECPOST'
 condition = 'HYP'
 
-[myfullname, EEG, channel_labels] =  initialize_EEG_variables()
+[myfullname, EEG, channel_labels] =  initialize_EEG_variables(patientid,condition)
 [quantitytomeasure, frqperband] = loadconditionpowerdata(myfullname,patientid,condition)
+[celloflabelswithq]   = getelectrodenamesfromfile(patientid, condition)
 % make sure that globalFsDir is assigned
 if ~exist('globalFsDir','var') 
    fprintf('globalFsDir not found, loading it...')
@@ -21,22 +19,27 @@ if ~exist('globalFsDir','var')
    eval(['globalFsDir=' 'myp']); 
 end
 % Processing Electrodes with value coloured
-tot_channels = size(quantitytomeasure,1);
+tot_channels = size(celloflabelswithq{1},1);
 elecNames=cell(tot_channels,1);
-initchan =2;
-for i=initchan:tot_channels+1,
-    chan2use = channel_labels(i)
-    elecNames{i-1}=sprintf('%s',chan2use{1});
+initchan =1;
+listofelecnames = celloflabelswithq{1}
+for i=initchan:tot_channels
+    %chan2use = channel_labels(i)
+    chan2use = listofelecnames(i)
+    %%elecNames{i-1}=sprintf('%s',chan2use{1});
+    elecNames{i}=sprintf('%s',chan2use{1});
+    
 end
 cfg=[];
 cfg.view='l';
 cfg.elecShape='sphere';
 %cfg.elecColors=rand(8,1);
-cfg.elecColors= quantitytomeasure;
+%cfg.elecColors= quantitytomeasure;
+cfg.elecColors = celloflabelswithq{2};
 cfg.elecColorScale='minmax';
 cfg.showLabels='y';
 cfg.elecUnits='r';
-%cfg.elecNames=elecNames;
+cfg.elecNames=elecNames;
 cfg.elecSize=3;
 %cfg.title='PT001: Stimulus Correlations';
 cfg.title=sprintf('Power across freqs: %s, %s',patientid,condition)

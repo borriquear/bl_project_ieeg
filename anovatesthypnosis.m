@@ -1,8 +1,8 @@
 function []  = anovatesthypnosis()
 %% anovatesthypnosis relative power per band for one patient and one condition
 % at a time
-%INPUT: patidx= 1...5, eegcond = 'HYP', 'ECPRE' ...
-%E.g. (TWH028) patidx = 2; eegcond = 'HYP' anovatesthypnosis(patidx, eegcond)
+%INPUT:  patientid, eegcond = 'HYP', 'ECPRE' ...
+%E.g. (TWH028) patientid= 'TWH030'; eegcond = 'HYP'
 % Labels concident with TMPBMP
 %       patient 24 = 36/ 36  pero si nos fijamos en la labesl (4/36) 
 %       patient 27 = 36/36
@@ -25,7 +25,7 @@ patientid= 'TWH024';
 patientcond = 'HYP';
 %patidx= 1;
 conditiotostring = strcat('BL',patientcond);
-[patdir, patfile,patdate,patsession,patname] = getfullpathfrompatient(patientid,patientcond);
+[patdir, patfile,patdate,patsession] = getfullpathfrompatient(patientid,patientcond);
 myfullname = fullfile(patdir, patfile);
 EEG = load(myfullname);
 if isfield(EEG, 'EEG_cut_BL_HYP')
@@ -33,7 +33,7 @@ if isfield(EEG, 'EEG_cut_BL_HYP')
 elseif isfield(EEG,'EEG')
     EEG = EEG.EEG;
 end
-mattoload = strcat('fft_',conditiotostring,'_', patname,'_',patdate,'_',patsession,'.mat');
+mattoload = strcat('fft_',patientcond,'_', patientid,'_',patdate,'_',patsession,'.mat');
 
 channel_labels = {EEG.chanlocs.labels}; %chan2use = channel_labels(irow);
 total_chan = size(channel_labels,2);
@@ -52,7 +52,7 @@ for bandidx=1:num_bands
             bitmpcounter = bitmpcounter + 1;
             listoflabelsfound =[listoflabelsfound channel_labels(chidx)];
         else
-            fprintf('Thats too bad, patient:%s has not typical bi temp config, we show what she has ch:%d\n',patientid, chidx);
+            fprintf('That is too bad, patient:%s has not typical bi temp config, we show what she has ch:%d\n',patientid, chidx);
             listoffrqperband(1,chidx-1,bandidx) = requested_frequences_power_bnds(chidx-1,bandidx);
         end
     end
@@ -84,7 +84,7 @@ h = figure;
 %suptitle(msgtitle);
 % - Build title axes and title.
 axes( 'Position', [0, 0.95, 1, 0.05] ) ;
-set( gca, 'Color', 'None', 'XColor', 'White', 'YColor', 'White' ) ;
+set( gca, 'Color', 'None', 'XColor', 'None', 'YColor', 'None' ) ;
 text( 0.5, 0.3, msgtitle, 'FontSize', 12', 'FontWeight', 'Bold', ...
     'HorizontalAlignment', 'Center', 'VerticalAlignment', 'Bottom' )
 xchannel_limit = EEG.nbchan;
@@ -115,8 +115,21 @@ grid on ;
 subplot(2,3,5)
 plot(percentlistoffrqperband(1,:,5))
 xlabel('Channels'), ylabel('Power/Hz')
-set(gca, 'xlim', [1 xchannel_limit],'ylim', [0 0.5],'XTick',[1:xlabeljump:EEG.nbchan] );
+set(gca, 'xlim', [1 xchannel_limit],'ylim', [0 0.25],'XTick',[1:xlabeljump:EEG.nbchan] );
 title(freq_bands{5});
 grid on ;
-savefigure(myfullname, h,1,'powerrelativeperband')
+savefigure(myfullname, h,1,'powerrelativeperband');
+%
+% make sure that globalFsDir is assigned
+if ~exist('globalFsDir','var') 
+   fprintf('globalFsDir not found, loading it...')
+   eval('global globalFsDir');
+   myp = 'D:\BIAL PROJECT\patients\'
+   eval(['globalFsDir=' 'myp']); 
+end
+patpath = strcat(globalFsDir,patientid);
+mattoload = strcat('fft_',patientcond,'_', patientid,'_',patdate,'_',patsession,'.mat');
+fftfile = fullfile(patpath,'data','figures', mattoload);
+fprintf('Appending percentlistoffrqperband at file %s\n',fftfile);
+save(fftfile,'percentlistoffrqperband', '-append')
 end
