@@ -7,6 +7,10 @@ function [myfullname, EEG, channel_labels, patdate, patsession] =  initialize_EE
 %patientcond, patientid, patdate, patsession
 % patientid= 'TWH024';
 % patientcond = 'HYP';
+if nargin < 2
+    %if this function is called ith no condition we just assume one
+    patientcond = 'HYP';
+end
 [mydir, myfile,patdate,patsession] = getfullpathfrompatient(patientid,patientcond);
 myfullname = fullfile(mydir, myfile);
 disp('Loading mat file...')

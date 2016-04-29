@@ -28,7 +28,7 @@
 }
 \begin{document}
 
-\title{Power Analysis}
+\title{Power based analysis in the hypnotic condition versus resting state eyes closed}
 %Boredom begets creativity or why predictive coding is not enough to explain intelligent behavior
 %An overarching principle of intelligent behavior}
 
@@ -50,6 +50,50 @@
 \section{Introduction}
 \label{se:intro}
 
+\section{Methods}
+\label{se:methods}
+% show diff btw h and l
+% build variance covariance matrix and distance matrix, one for each band
+% are they statistically different groups- Multivariate analysis
+% meand differences,variability , pca and multidimensionality analysis. clustering?
+%connectivity, graph theory?
+% spectral analysis?
+
+\subsection{Tests of significance}
+For a set of p variables $\{X_1 ... X_p\}$ obtained by measurements over a set of n individuals, if the individuals (patients) belong to two different groups, in our case, high and low hypnotizability, a question of interest is whether the mean of some  variable is the same for either of the two groups. Thus, we have now two samples, $n_1$ and $n_2$ for the high and low hyponotizability patients respectively, the question is whether the two samples are significantly different in the sense that the observed mean difference is so large that is unlikely that to have occurred if the population means are equal (t-test). 
+A test to detect the to sample means (for groups H and L) involves calculating the t-statistic.This test is very robust if the variable is normally distributed and for sample sizes sufficiently big (e.g. 20) (note that the test is particularly robust if the samples have equal or very similar size \citep{carter_effect_1979s},\citep{coombs_univariate_1996} , this is not our case, so caveat t-test). The t-test can be done for each of the p variables  $\{X_1 ... X_n\}$ or measurements and decide which of these variables have different mean values for the 2 groups (samples).
+
+\subsubsection{Tests of significance}
+Here we address the question of whether there is any difference
+between the H and the L hypnotizability patients with respect to the mean values of variables (power correlation of each electrode with the other electrodes). Since the patients (samples) have a different number of variables or measurements (electrodes) we need to take a subset of samples that share those measurements. (bi temporal, monto temporal or hippocampal).
+Let us assume that patients 1 and 2 are H and patients 3 to 10 are L. The variables are 
+$\{X_1 ... X_p\}$ which are the electrodes that the 10 patients have in common.
+For each variable x (e.g. LHD1)
+, we calculate the mean for each group $\mean(x_H)$ and $\mean(x_L)$ and the sample variances $s^2_H$ and $s^2_L$. The pool variance is $s^2= ((n_H-1)s^2_H + (n_L-1)s^2_L)/(n_H+n_L -1)$ and the t-statistic is $t= (\mean(x_H) - \mean(x_L))/\sqrt(s^2(n_H^{-1} + n_L^{-1}))$, if the t statistics is not significantly different from 0 there is no justification to separate the population in those two groups for that variable. Below we show the results for the tasks taken individually for each variable.
+%for which elctrode if any there is evidence of a population mean difference
+%between survivors and nonsurvivors
+%Table 1 
+
+If we take all the variable taken together 
+%Table 2 
+
+
+
+
+
+More interesting is to study whether all the variables taken together justify splitting the population (the n patients) in two sample groups (high and low). To that end we needa multivariate test, e.g. Hotelling's $T^2$-test which is  the square of the t-test.
+In general there will be p variables $\{X_1 ... X_n\}$ two samples of $n_1$ and $n_2$ elements with two sample mean vectors $\mean(x) = \mean(x_1) ...\mean(x_p)$ and two sampe covariance matrixes $C_1$ and $C_2$.   A large Hotelling's $T^2$-test means that the two population mean vectors are different. 
+%pg 38Bryan Manly for the frmula of this statistic
+%note that The two samples being compared using the t^2 are assumed to
+%come from multivariate normal distributions with equal covariance matrices
+%If the two population covariance matrices are very different, and
+%if sample sizes are very different as well, then a modified test can be used
+%(Yao, 1965), but this still relies on the assumption of multivariate normality
+\section{Results}
+\label{se:results}
+
+
+
 \begin{figure}[H]
 	%/Users/jagomez/anaconda/lib/python2.7
     \subfigure[\label{subfig-1:dummy}]{%
@@ -64,7 +108,7 @@
 %\bibliographystyle{apacite}
 \bibliography{C:/workspace/github/bibliography-jgr/bibliojgr}
 
-
+\end{document}
 
 
 \newpage

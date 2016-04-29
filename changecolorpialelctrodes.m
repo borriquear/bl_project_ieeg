@@ -2,7 +2,7 @@
 clear all
 patientid = 'TWH028';
 patientid = 'TWH034';
-patientid = 'TWH024';
+patientid = 'TWH030';
 condition = 'ECPRE'
 condition = 'EOPRE'
 condition = 'ECPOST'

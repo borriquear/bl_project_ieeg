@@ -23,7 +23,6 @@ fprintf('Loading  %s.electrodeNames file\n', patientid);
 fid = fopen(elecnodesname,'rt');
 if fid == -1
     error('File :%s could not been found',elecnodesname);
-    return
 end
 tmp = textscan(fid, '%s %s %s', 'Headerlines', 2);
 electrodevector = tmp{1};

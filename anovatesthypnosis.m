@@ -21,7 +21,7 @@ num_bands = 5;
 listoffrqperband = zeros(1,[],num_bands);
 percentlistoffrqperband  = zeros(1,[],num_bands);
 
-patientid= 'TWH024';
+patientid= 'TWH030';
 patientcond = 'HYP';
 %patidx= 1;
 conditiotostring = strcat('BL',patientcond);

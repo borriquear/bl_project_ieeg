@@ -181,9 +181,3 @@ for i=1:tot_channels
     %channel_labels = {};
 end
 end
-
-
-
-
-
-
