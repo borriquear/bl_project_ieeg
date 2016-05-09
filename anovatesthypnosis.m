@@ -1,8 +1,11 @@
 function []  = anovatesthypnosis()
 %% anovatesthypnosis relative power per band for one patient and one condition
-% at a time
 %INPUT:  patientid, eegcond = 'HYP', 'ECPRE' ...
 %E.g. (TWH028) patientid= 'TWH030'; eegcond = 'HYP'
+%OUTPUT: Figure with power relative per band and quantities in mat file 
+%(appended at the end of the mat file calculated in fouriertransformanalysis)
+% NEEDS fouriertransformanalysis function has created the fft_ mat file
+
 % Labels concident with TMPBMP
 %       patient 24 = 36/ 36  pero si nos fijamos en la labesl (4/36) 
 %       patient 27 = 36/36

@@ -8,25 +8,19 @@ patientcond = 'HYP'
 % patientHigh = {'TWH030','TWH028'};
 % patientLow = {'TWH034', 'TWH027','TWH033','TWH024'};
 %common channels for a list of patients
-% intersection_of_union = 1 (intersection (union(highs), union(lows))
-% =0 inersection of intersection more stringent
-intersection_of_union = 1;
-if intersection_of_union ==1
-    fprintf('Intersection of the union of Highs and Lows. Patients may not have channels in common')
-    [commonchannelslistH] = unionchannels(patientsHigh,patientcond);
-    [commonchannelslistL] = unionchannels(patientsLow,patientcond);
-    %intersection of the union
-    listofChannels = intersect(commonchannelslistH,commonchannelslistL);
-else
-    %intersection of channels
-    fprintf('Intersection of all channels.Each patient must have at least one channel in common with everybody else')
-    patientsL = [patientsHigh,patientsLow];
-    [electrodesincommon] = calculateintersectionchannels(patientsL)
-    listofChannels = electrodesincommon;
-end
+[commonchannelslistH] = unionchannels(patientsHigh,patientcond);
+[commonchannelslistL] = unionchannels(patientsLow,patientcond);
+%intersection of the union
+listofChannels = intersect(commonchannelslistH,commonchannelslistL);
+
+%intersection of channels
+patientsL = [patientsHigh,patientsLow];
+[electrodesincommon] = calculateintersectionchannels(patientsL)
+listofChannels = electrodesincommon;
+
 tot_channels = size(listofChannels,2);
 if tot_channels == 0 
-    msgerror = 'Patients have not channels in common!!!. Exiting'
+    msgerror = 'Patients ha channels in common found!!'
     error(msgerror)
 end
 % the channels in common are

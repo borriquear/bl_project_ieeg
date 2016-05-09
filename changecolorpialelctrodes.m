@@ -1,23 +1,21 @@
-%% Loadconditionpwerdata and display coloured electrodes
+%% Load condition [power|other]data and display coloured electrodes
 clear all
 patientid = 'TWH028';
-patientid = 'TWH034';
 patientid = 'TWH030';
+patientid = 'TWH034';
+
 condition = 'ECPRE'
 condition = 'EOPRE'
 condition = 'ECPOST'
 condition = 'HYP'
 
-[myfullname, EEG, channel_labels] =  initialize_EEG_variables(patientid,condition)
-[quantitytomeasure, frqperband] = loadconditionpowerdata(myfullname,patientid,condition)
-[celloflabelswithq]   = getelectrodenamesfromfile(patientid, condition)
-% make sure that globalFsDir is assigned
-if ~exist('globalFsDir','var') 
-   fprintf('globalFsDir not found, loading it...')
-   eval('global globalFsDir');
-   myp = 'D:\BIAL PROJECT\patients\'
-   eval(['globalFsDir=' 'myp']); 
-end
+[myfullname, EEG, channel_labels] =  initialize_EEG_variables(patientid,condition);
+%load data of electrodes to display
+%%%%????? check how loads this!!!!
+[quantitytomeasure, frqperband] = loadconditionpowerdata(myfullname,patientid,condition);
+[celloflabelswithq] = getelectrodenamesfromfile(patientid, condition);
+% make sure that globalFsDir exists
+[globalFsDir] =loadglobalFsDir()
 % Processing Electrodes with value coloured
 tot_channels = size(celloflabelswithq{1},1);
 elecNames=cell(tot_channels,1);
@@ -27,15 +25,14 @@ for i=initchan:tot_channels
     %chan2use = channel_labels(i)
     chan2use = listofelecnames(i)
     %%elecNames{i-1}=sprintf('%s',chan2use{1});
-    elecNames{i}=sprintf('%s',chan2use{1});
-    
+    elecNames{i}=sprintf('%s',chan2use{1});  
 end
 cfg=[];
 cfg.view='l';
 cfg.elecShape='sphere';
 %cfg.elecColors=rand(8,1);
-%cfg.elecColors= quantitytomeasure;
-cfg.elecColors = celloflabelswithq{2};
+cfg.elecColors= quantitytomeasure;
+%cfg.elecColors = celloflabelswithq{2};
 cfg.elecColorScale='minmax';
 cfg.showLabels='y';
 cfg.elecUnits='r';
@@ -43,6 +40,7 @@ cfg.elecNames=elecNames;
 cfg.elecSize=3;
 %cfg.title='PT001: Stimulus Correlations';
 cfg.title=sprintf('Power across freqs: %s, %s',patientid,condition)
+cfg.title=sprintf('Power: %s, %s',patientid,condition)
 cfgOut=plotPialSurf(patientid,cfg);
 fprintf('Done');
 %call savefigure

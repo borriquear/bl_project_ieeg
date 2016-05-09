@@ -8,12 +8,7 @@ function [electrodesincommon] = calculateintersectionchannels(patientsL)
 %all patients empty set, no 28 LHD1-4
 electrodesincommon = {};
 disp('Loading globalFsDir...')
-if ~exist('globalFsDir','var')
-    fprintf('globalFsDir not found, loading it...')
-    eval('global globalFsDir');
-    myp = 'D:\BIAL PROJECT\patients\'
-    eval(['globalFsDir=' 'myp']);
-end
+[globalFsDir] = loadglobalFsDir();
 
 for indpat=1:length(patientsL)
         currentpat = patientsL{indpat};

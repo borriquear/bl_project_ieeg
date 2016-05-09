@@ -4,12 +4,7 @@ function [quantitytomeasure,frqperband ] = loadconditionpowerdata(myfullname,pat
 fprintf('Calling loadconditionpowerdata function, patient%s, %condition..\n',patientid,condition)
 fprintf('Cleaning workspace..\n')
 % make sure that globalFsDir is assigned
-if ~exist('globalFsDir','var') 
-   fprintf('globalFsDir not found, loading it...')
-   eval('global globalFsDir');
-   myp = 'D:\BIAL PROJECT\patients\';
-   eval(['globalFsDir=' 'myp']); 
-end
+[globalFsDir] = loadglobalFsDir();
 patpath = strcat(globalFsDir,patientid);
 patpath = fullfile(patpath, 'data','figures');
 [mydir, myfile,patdate,patsession] = getfullpathfrompatient(patientid,condition);

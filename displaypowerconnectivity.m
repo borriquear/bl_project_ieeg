@@ -1,12 +1,13 @@
-
 function displaypowerconnectivity()
 % Display power connectivity analysis from the correlation matrix
 % calculated in powerbasedconnectivityall.mat
 % The file "powerconnectivity_freq_[10]_HYP_TWH[034_02092016_s2].mat" must
-% exist
+% exist (Connectivity is always about correlation)
 eegcondition = 'HYP';
 centerfrequencies = {2, 6 , 10, 23.5, 40};
+centerfrequencies = {2};
 eegpatientl = { 'TWH027','TWH024','TWH028','TWH030', 'TWH031','TWH033','TWH034'};
+eegpatientl = { 'TWH027'};
 allmatrixpowcon = cell(length(eegpatientl),length(centerfrequencies));
 channels_pat = [];
 for indpat=1:length(eegpatientl)
@@ -37,13 +38,9 @@ function [corrmatpersubband] = opencorrelationmatrix( eegpatient, eegcondition,c
 %eegsession ) Open the correlation matrix
 %IN:patient
 %OUT:correlation matrix for the specified input
+%TIME INTENSIVE FUNCTION
 fprintf('Open mat file with the correlation matrix for patient %s at frequency %s in %s\n',eegpatient, num2str(centerfreq),eegcondition)
-if ~exist('globalFsDir','var')
-    fprintf('globalFsDir not found, loading it...')
-    eval('global globalFsDir');
-    myp = 'D:\BIAL PROJECT\patients\'
-    eval(['globalFsDir=' 'myp']);
-end
+[globalFsDir] = loadglobalFsDir();
 patpath = strcat(globalFsDir,eegpatient);
 mattoload = strcat('powerconnectivity_freq_',num2str(centerfreq),'_',eegcondition,'_', eegpatient,'_',eegdate,'_',eegsession,'.mat');
 fftfile = fullfile(patpath,'data','figures', mattoload);

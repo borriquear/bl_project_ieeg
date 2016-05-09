@@ -1,19 +1,20 @@
 %%1. fouriertransformanalysis()
 % 2. anovatesthypnosis()
-% 3. changecolorpialelectrodes 
+% 3.    changecolorpialelectrodes (depicts brain with some values)
 % 4. powerperspecificelectrodes(patientHigh, patientLow) patientHigh={'TWH030'}
+%no correlationbut power per channel as the time series mean
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% corr %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% correlation %%%%
 % 5. powerbasedconnectivityall (creates the mat file for each freq band which contains the corr. matrix)
 %   5.1. powerbasedconnectivity( input_args ) 
 % 7. displaypowerconnectivity (display corr.matrx per subj and band)
 % 8. comparecorrelationmatrix  (distance and mean of correlation matrix, display results) 
+% 9. testofsignificance  (PCA)
 %Updated 20/03/2016  
 function [] = fouriertransformanalysis()
 %% fouriertransformanalysis : function that extracts power from the time series
 %Fourier transform analysis to get power spectra and time frequency spectrum per
-%channel
-% using the Fourier Transform
+%channel using the Fourier Transform
 % IN: 
 % OUT: mat file with power vectors and figures in figures directory
 
@@ -63,7 +64,7 @@ hz = linspace(0,nyquistfreq,floor(n/2)+1);
 %initialize vectors that contain the pwer/amplitude values
 ampli_fft = zeros(tot_channels, length(hz));
 power_fft = zeros(tot_channels, length(hz)) ;
-ampli_mt =  zeros(tot_channels, length(hz));
+ampli_mt =  zeros(tot_channels, length(hz)); %MT is multitaper
 power_mt = zeros(tot_channels, length(hz));
 ampli_onetaper = zeros(tot_channels, length(hz));
 total_bands = 5;

@@ -1,11 +1,17 @@
 function powerbasedconnectivityall()
-% powerbasedconnectivityall Calls to powerbasedconnectivity(eegpatient, eegcondition, centerfreq)
+% powerbasedconnectivityall Calls to powerbasedconnectivity(eegpatient, 
+%eegcondition, centerfreq)
+%Connectivity based on power correlation analysis per patient
 eegcondition = 'HYP';
 centerfrequencies = {2, 6 , 10, 23.5, 40};
-%centerfrequencies = {23.5, 40};
+
 %eegpatientl = { 'TWH027','TWH024','TWH028','TWH030', 'TWH031','TWH033','TWH034'};
 %eegpatientl = {'TWH031','TWH033','TWH034'};
 eegpatientl = {'TWH027' ,'TWH024' , 'TWH033','TWH034'};
+%sigue por aqui
+centerfrequencies = {10, 23.5, 40};
+eegpatientl = {'TWH034'};
+
 
 for indpat=1:length(eegpatientl)
     for indexfreq = 1:length(centerfrequencies) % delta, theta, alpha, beta, gamma
@@ -16,11 +22,12 @@ end
 end
 function [ corr_matrix ] = powerbasedconnectivity( eegpatient, eegcondition, centerfreq)
 %powerbasedconnectivity Power based connectivity analysis
-%   Returns the correlation matrix for the time frequency power correlation
-%   between all pair of electrodes for patient and condition
+% Returns the correlation matrix for the time frequency power correlation
+% between all pair of electrodes for patient and condition
 % IN: patient, condition e.g. patient='TWH020', condition = 'HYP'
 % OUT: corr_matrix nxn correlation matrix, where n is the number of
-% electrodes of the patient
+% electrodes of the patient (powerconnectivity_freq_)This file is need in
+% displaypowerconnectivity
 %% 1. Load epoch and Initialize data
 disp('Loading the EEG data....\n')
 %eegpatient= 'TWH030';
@@ -113,12 +120,7 @@ end
 
 
 %entropym = sum(corr_matrix(corr_matrix~=0).*log(corr_matrix(corr_matrix~=0)));
-if ~exist('globalFsDir','var')
-    fprintf('globalFsDir not found, loading it...')
-    eval('global globalFsDir');
-    myp = 'D:\BIAL PROJECT\patients\'
-    eval(['globalFsDir=' 'myp']);
-end
+[globalFsDir] = loadglobalFsDir();
 patpath = strcat(globalFsDir,eegpatient);
 mattoload = strcat('powerconnectivity_freq_',num2str(centerfreq),'_',eegcondition,'_', eegpatient,'_',eegdate,'_',eegsession,'.mat');
 fftfile = fullfile(patpath,'data','figures', mattoload);

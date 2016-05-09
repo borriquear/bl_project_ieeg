@@ -6,21 +6,14 @@
 % November 2015; Last revision: 16-February-2015
 
 function [] = cutoneepoch()
-%% preprocessing generate one epoch segment from a mat file of the entire session 
+%% cutoneepoch generates one epoch segment from a mat file of the entire session 
 % DEPENDENCIES: It needs the .mat file of the entire session filtered in
 % localdir/localmat
-% the .mat file has to be already been generated from the corresponding EDF file and
-% and band and notch filtered 
+%The .mat file of the entire session has to be already been generated from the corresponding EDF file and
+% band and notch filtered. The mat file has been already generated using the GUI of EEGLAB. 
+%OUTPUT: it creates a mat file for the specified epoch times
 
 %% Load the .mat file with the entire session. This section can be skipped if we load the file form the GUI
-% 1     2     3     4     5     6     7     8     9    10    11    12    13    14    15    16    17    18    19    20
-%  21    22    23    24    25    26    27    28    29    30    31    32    33    34    35    36    37
-% 1     2     3     4     5     6     7     8     9    10    11    12    13    14    15    16    17    18    19    20    21    22    23    24
-% 25    26    27    28    29    30    31    32    33    34    35    36    37    38    39    40    41    42    43    44    45    46    47    48
-% 49    50    51    52    53    54    55    56    57    58    59    60    61    62    63    64    65    66    67    68    69    70    71    72
-% 73    74    75    76    77    78    79    80    81    82    83    84    85    86    87    88    89
-% localdir = 'D:\BIAL PROJECT\patients\On, Freeman'
-
 % localmat = 'dummy1chan-filternadnotch.mat'
 % %patient , date and session must correspond with the patient of the entire sessiondefined in localmat
 %patientlist = {'fo24' 'sb27' 'jc28'  'nk33' 'mj34' 'ms31' 'TWH32' 'TWH33' 'TWH34' 'TWH35'};
@@ -29,13 +22,9 @@ conditionlist = {'HYP' 'EC_POST' 'EO_POST' 'EC_PRE' 'EO_PRE' };
 conditionindex = 1;
 patientcond = conditionlist{conditionindex};
 
-% patidx= 1;
-% conditiotostring = strcat('BL',patientcond);
-%[myfullname, EEG, channel_labels, patdate, patsession] = initialize_EEG_variables(patientid,patientcond);
-
 [mydir, myfile,patdate,patsession,patname] = getfullpathfrompatient(patientid,patientcond,'entire_session');
 myfullname = fullfile(mydir, myfile);
-disp('Loading mat file...')
+disp('Loading mat file to get the EEG object...')
 EEG = load(myfullname);
 if isstruct(EEG) == 1
     if (strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH033\data') + strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH034\data') + strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH024\data')) == 1
@@ -47,11 +36,6 @@ if isstruct(EEG) == 1
         %EEG = EEG.EEG_cut_BL_EC_POST
     end
 end
-
-
-
-
-%EEG_entire_session_BL_HYP__fo24_09192015_s1
 %% Specify the times to cut inthe session file initially load
 % check excel file to see the initial and final time of the epoch
 switch patientid

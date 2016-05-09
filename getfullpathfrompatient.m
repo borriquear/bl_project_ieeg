@@ -1,12 +1,15 @@
 function [patdir, patfile,patdate,patsession] = getfullpathfrompatient(patientid, patientcond, entireorcut)
 %% [patdir, patfile] = getfullpathfrompatient(patientid, patientcond)
 % returns the path and the file name of the mat file for that patient and
-% condition
+% condition.
+%This function assigns the session and date for the patient and condition
+%The mat file needs to start with EEG_cut_BL_ or EEG_entire_session_BL_
 %Input: patientid 'TWH030' patientcond 'HYP', entireorcut optional if
 %exists file we look for is the entire session
-%Output: patdir, patfile
+%Output: patdir, patfile,patdate,patsession
 
-patdir1 = 'D:\BIAL PROJECT\patients\';
+%patdir1 = 'D:\BIAL PROJECT\patients\';
+patdir1 =  loadglobalFsDir();
 patdir = strcat(patientid, '\data');
 patdir = fullfile(patdir1, patdir);
 patsession = 's1'; %by default session is s1
