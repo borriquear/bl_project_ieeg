@@ -13,6 +13,7 @@
 \usepackage{textcomp}  %for degree symbol
 \usepackage{natbib}
 \usepackage{breakcites}
+\usepackage{amsmath,amssymb}
 %\usepackage{apacite}
 \usepackage[table]{xcolor}
 \definecolor{lightgray}{gray}{0.9}
@@ -27,7 +28,7 @@
 \raisebox{0pt}[\dimexpr\height+(#1)\relax]{#2}%
 }
 \begin{document}
-
+\def\mean#1{\left< #1 \right>}
 \title{Power based analysis in the hypnotic condition versus resting state eyes closed}
 %Boredom begets creativity or why predictive coding is not enough to explain intelligent behavior
 %An overarching principle of intelligent behavior}
@@ -69,7 +70,7 @@ between the H and the L hypnotizability patients with respect to the mean values
 Let us assume that patients 1 and 2 are H and patients 3 to 10 are L. The variables are 
 $\{X_1 ... X_p\}$ which are the electrodes that the 10 patients have in common.
 For each variable x (e.g. LHD1)
-, we calculate the mean for each group $\mean(x_H)$ and $\mean(x_L)$ and the sample variances $s^2_H$ and $s^2_L$. The pool variance is $s^2= ((n_H-1)s^2_H + (n_L-1)s^2_L)/(n_H+n_L -1)$ and the t-statistic is $t= (\mean(x_H) - \mean(x_L))/\sqrt(s^2(n_H^{-1} + n_L^{-1}))$, if the t statistics is not significantly different from 0 there is no justification to separate the population in those two groups for that variable. Below we show the results for the tasks taken individually for each variable.
+, we calculate the mean for each group $\mean{x_H}$ and $\mean{x_L}$ and the sample variances $s^2_H$ and $s^2_L$. The pool variance is $s^2= (n_H-1)s^2_H + (n_L-1)s^2_L)/(n_H+n_L -1)$ and the t-statistic is $t= (\mean{x_H} - \mean{x_L})/\sqrt(s^2(n_H^{-1} + n_L^{-1}))$, if the t statistics is not significantly different from 0 there is no justification to separate the population in those two groups for that variable. Below we show the results for the tasks taken individually for each variable.
 %for which elctrode if any there is evidence of a population mean difference
 %between survivors and nonsurvivors
 %Table 1 
@@ -91,28 +92,36 @@ In general there will be p variables $\{X_1 ... X_n\}$ two samples of $n_1$ and 
 %(Yao, 1965), but this still relies on the assumption of multivariate normality
 
 \subsection*{Multidimensional scaling}
+Multidimensional scaling (MDS) represents proximity data (measures of similarity, e.g. physical closeness, correlation,relatedness etc. ) as distances in a multidimensional space. The MDS algorithm moves the points iteratively so that the fit between distances and data is improved until no further improvement seems possible \citep{borg_modern_2005}.
+
+
 pg 166 "If road distances were proportional to geographic distances, it would be possible to recover the true map exactly by using a two-dimensional analysis". We take on this idea to study whether we can reconstruct the physical connection of electrodes (the actual implant) from the functional connectivity (per frequency band, power based or phase based). The fc = pc + delta (the functional connectivit is at least the physical connectivity, delta >0 when thee isnot a direct functional link between two electrodes).Therefore, "
 all that can be hoped for is a rather approximate recovery of the
-physical implant (by only knowing the functional one)"
+physical implant (by only knowing the functional one)" \citep{manly_multivariate_2004}
 
-For monotonic regression http://www.mathworks.com/matlabcentral/fileexchange/47196-graph-based-clustering-and-data-visualization-algorithms/content/improve_JP/toolbox_imp_JP/lsqisotonic.m
-For euclidean distance between matrices:  http://www.mathworks.com/matlabcentral/fileexchange/47196-graph-based-clustering-and-data-visualization-algorithms/content/improve_JP/toolbox_imp_JP/L2_distance.m
+%For monotonic regression http://www.mathworks.com/matlabcentral/fileexchange/47196-graph-based-clustering-and-data-visualization-algorithms/content/improve_JP/toolbox_imp_JP/lsqisotonic.m
+%For euclidean distance between matrices:  http://www.mathworks.com/matlabcentral/fileexchange/47196-graph-based-clustering-and-data-visualization-algorithms/content/improve_JP/toolbox_imp_JP/L2_distance.m
+
+Here we start from the physical distance matrix M, defined as the euclidean distance between any two intracraneal electrodes. Thus $M_{ij}(P) = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2 + (z_i - z_j)^2}$, where P denotes the physical configuration of n electrodes in a 3 dimensional space, i and j any two electrodes and $x_i,y_i,z_i$ is the
+value of electrode point i on the coordinate axis x, y and z respectively. (The previous formula can be generalized with the Minkowski distance equation).
+Now the same set of objects can defined a different relationship other than the physical euclidean distance, for example the power-based connectivity correlation, the phase based connectivity correlation etc. We then define $M_{ij}(F)$  where F denotes the functional correlation of the same n electrodes in a 1 dimensional space.
+We calculate the monotonic regression of $M_{ij}(F)$ in $M_{ij}(P)$. The best estimated  estimated matrix $\hat{M_{ij}}(F)$ is the one the distance to $M_{ij}(P)$
+%, note that $M_{ij}(P)$ is a fixed and uniqueonce the metric space is defined, and $M_{ij}(F)$ consists
+
+First, we calculate $M_{ij}(P)$, we use the euclidean distance, note that there is only one physical configuration matrix for each patient.
+
+Second for each patient, condition and frequency band we calculate $M_{ij}(F)$ whcih defines the functional connectivity matrix according to some correlation criterion, for example power correlation, phase lag index etc.
+
+Third, we calculate the monotonic regression of  $M_{ij}(F)$ to fit $M_{ij}(P)$ to obtain $\hat{M_{ij}}(F)$. Finally we calculate the distance between $M_{ij}(P)$ and $\hat{M_{ij}}(F)$, we do this for each correlation criterion, frequency band, condition and patient in order to asses which functional configuration is closer to the metric (Euclidean) space defined by the intra craneal implant $M_{ij}(P)$.
+
+
+
 
 \section{Results}
 \label{se:results}
 
 
 
-\begin{figure}[H]
-	%/Users/jagomez/anaconda/lib/python2.7
-    \subfigure[\label{subfig-1:dummy}]{%
-      \includegraphics[width=1\textwidth,height=0.30\textheight,keepaspectratio]{C:/workspace/github/figures/r0-u0v1-p1k1.png}
-    }
-    \hfill
-
-    \caption{.}
-    \label{fig:sims1}
-\end{figure}
 \bibliographystyle{apalike}
 %\bibliographystyle{apacite}
 \bibliography{C:/workspace/github/bibliography-jgr/bibliojgr}
