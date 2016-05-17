@@ -1,6 +1,8 @@
 function displaypowerconnectivity()
-% Display power connectivity analysis from the correlation matrix
-% calculated in powerbasedconnectivityall.mat
+% displaypowerconnectivity shows the correlation matix
+% correlation matix was calculated in powerbasedconnectivityall.mat
+% Shows both aggregated correlation per channel and correlation for each
+% pair
 % The file "powerconnectivity_freq_[10]_HYP_TWH[034_02092016_s2].mat" must
 % exist (Connectivity is always about correlation)
 eegcondition = 'HYP';
@@ -25,12 +27,22 @@ end
 %display charts from allmatrixpowcon
 for indpat=1:length(eegpatientl)
     [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatientl{indpat},eegcondition);
+    %h2 = figure; %for corrplot
+    h3 = figure; %for
+    for j=1:length(centerfrequencies)
+        %display correlation matrix
+        h2 = figure; %one figure for each freq band for corrplot
+        %same figure h3 for all band for imagesc
+        displaymeancorrelationmatrixall(allmatrixpowcon{indpat,j},eegpatientl{indpat},eegcondition, centerfrequencies{j},h2,h3,channels_pat{indpat} );
+    end
     h = figure;
     for j=1:length(centerfrequencies)
         %[matcorrtodisp]= allmatrixpowcon{indpat,j};
         displaymeancorrelationperlectrode(allmatrixpowcon{indpat,j},eegpatientl{indpat},eegcondition, centerfrequencies{j},h,channels_pat{indpat} );
     end
+
 end
+
 end
 
 function [corrmatpersubband] = opencorrelationmatrix( eegpatient, eegcondition,centerfreq,eegdate, eegsession )
@@ -54,11 +66,11 @@ function  displaymeancorrelationperlectrode(corrmat, patientid, cond, freq, h, c
 %find how many bands to display
 figure(h);
 fprintf('Displaying correlation matrix per patient %s at frequency %s in %s\n',patientid, num2str(freq),cond)
-msgtitle = sprintf('Power correlation per Frequency Band, Patient=%s, Cond=%s',patientid,cond);
+msgtitle = sprintf('Sum of power correlation 1 to N-1, Patient=%s, Cond=%s',patientid,cond);
 switch patientid
     case {'TWH027','TWH030' }
         xlabeljump=5; %36 channels
-    case {'TWH028','TWH033','TWH034', 'TWH031'}
+    case {'TWH028','TWH033','TWH034', 'TWH031', 'TWH037'}
         xlabeljump=15; %88 channels
     otherwise
         xlabeljump=5; %36 channels
@@ -103,4 +115,38 @@ xticklabel_rotate([],45,[],'Fontsize',6);
 %set(gca, 'XLim', [1 xchannel_limit],'ylim', [0 1],'XTick',[1:xlabeljump:length(channels_pat)-1]);
 xlabel('Channels'), ylabel('Power-based Spearman corr. ');
 grid on ;
+end
+function  displaymeancorrelationmatrixall(corrmat, patientid, cond, freq_band, h2,h3, channels_pat)
+fprintf('Displaying correlation matrix per patient %s at frequency %s in %s\n',patientid, num2str(freq_band),cond)
+msgtitle = sprintf('Power correlation matrix among pairs, Patient=%s, Cond=%s',patientid,cond);
+switch freq_band %2, 6 , 10, 23.5, 40};
+    case 2
+        freq_band = '\delta';
+        indexchart = 1;
+    case 6
+        freq_band = '\theta';
+        indexchart = 2;
+    case 10
+        freq_band = '\alpha';
+        indexchart = 3;
+    case 23.5
+        freq_band = '\beta';
+        indexchart = 4;
+    case 40
+        freq_band = '\gamma';
+        indexchart = 5;
+    otherwise
+        fprintf('ERROR frequency band missing!!');
+        return;
+end
+[fil,col] = size(corrmat);
+figure(h2);
+subplot(2,3,indexchart);
+corrplot(corrmat);
+figure(h3);
+imagesc(corrmat);
+colormap('jet');
+colorbar;
+
+
 end

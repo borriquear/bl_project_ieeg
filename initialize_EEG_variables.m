@@ -16,9 +16,11 @@ myfullname = fullfile(mydir, myfile);
 disp('Loading mat file...')
 EEG = load(myfullname);
 if isstruct(EEG) == 1
-    if (strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH033\data') + strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH034\data') + strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH024\data')) == 1
+    if (strcmp(patientid, 'TWH033') + strcmp(patientid, 'TWH034') + strcmp(patientid, 'TWH024')) == 1
         EEG = EEG.EEG;
-    elseif (strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH030\data') + strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH027\data') + strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH028\data')+ strcmp(mydir, 'D:\BIAL PROJECT\patients\TWH031\data')) == 1
+    elseif (strcmp(patientid,'TWH037')+ strcmp(patientid,'TWH038')+ strcmp(patientid,'TWH042')+ strcmp(patientid,'TWH043')) == 1
+        EEG = EEG.EEGepocht10t20;
+    elseif (strcmp(patientid, 'TWH030') + strcmp(patientid, 'TWH027') + strcmp(patientid, 'TWH028')+ strcmp(patientid, 'TWH031')) == 1
         EEG = EEG.EEG_cut_BL_HYP;
         %EEG = EEG.EEG_cut_BL_EC_PRE
         %EEG = EEG.EEG_cut_BL_EO_PRE

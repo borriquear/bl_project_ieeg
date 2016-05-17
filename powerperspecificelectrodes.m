@@ -5,8 +5,8 @@ function []   = powerperspecificelectrodes(patientsHigh, patientsLow)
 fprintf('Verify whether the electrodes are present in all subjects\n');
 freq_bands = {'\delta'; '\theta'; '\alpha'; '\beta'; '\gamma'};
 patientcond = 'HYP'
-% patientHigh = {'TWH030','TWH028'};
-% patientLow = {'TWH034', 'TWH027','TWH033','TWH024'};
+% patientsHigh = {'TWH030','TWH028'};
+% patientLow = {'TWH034', 'TWH027','TWH033','TWH024', 'TWH037'};
 %common channels for a list of patients
 % intersection_of_union = 1 (intersection (union(highs), union(lows))
 % =0 inersection of intersection more stringent

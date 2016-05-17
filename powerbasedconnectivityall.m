@@ -7,10 +7,12 @@ centerfrequencies = {2, 6 , 10, 23.5, 40};
 
 %eegpatientl = { 'TWH027','TWH024','TWH028','TWH030', 'TWH031','TWH033','TWH034'};
 %eegpatientl = {'TWH031','TWH033','TWH034'};
-eegpatientl = {'TWH027' ,'TWH024' , 'TWH033','TWH034'};
+eegpatientl = {'TWH027' ,'TWH024' , 'TWH033','TWH034', 'TWH037'};
 %sigue por aqui
-centerfrequencies = {10, 23.5, 40};
-eegpatientl = {'TWH034'};
+
+%centerfrequencies = {10, 23.5, 40};
+centerfrequencies = {2, 6 , 10, 23.5, 40};
+eegpatientl = {'TWH037'};
 
 
 for indpat=1:length(eegpatientl)

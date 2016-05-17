@@ -24,8 +24,8 @@ num_bands = 5;
 listoffrqperband = zeros(1,[],num_bands);
 percentlistoffrqperband  = zeros(1,[],num_bands);
 
-patientid= 'TWH030';
-patientcond = 'HYP';
+patientid= 'TWH037';
+patientcond = 'EO_PRE';
 %patidx= 1;
 conditiotostring = strcat('BL',patientcond);
 [patdir, patfile,patdate,patsession] = getfullpathfrompatient(patientid,patientcond);
@@ -35,6 +35,8 @@ if isfield(EEG, 'EEG_cut_BL_HYP')
     EEG = EEG.EEG_cut_BL_HYP;
 elseif isfield(EEG,'EEG')
     EEG = EEG.EEG;
+elseif isfield(EEG, 'EEGepocht10t20')
+    EEG = EEG.EEGepocht10t20;
 end
 mattoload = strcat('fft_',patientcond,'_', patientid,'_',patdate,'_',patsession,'.mat');
 

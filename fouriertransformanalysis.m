@@ -1,28 +1,27 @@
 %%1. fouriertransformanalysis()
 % 2. anovatesthypnosis()
-% 3.    changecolorpialelectrodes (depicts brain with some values)
+% 3. changecolorpialelectrodes (depicts brain with some values)
 % 4. powerperspecificelectrodes(patientHigh, patientLow) patientHigh={'TWH030'}
-%no correlationbut power per channel as the time series mean
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% correlation %%%%
+% no correlation but power per channel as the time series mean
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% correlation %%%%%%%%%%%%%%%%%%
 % 5. powerbasedconnectivityall (creates the mat file for each freq band which contains the corr. matrix)
 %   5.1. powerbasedconnectivity( input_args ) 
 % 7. displaypowerconnectivity (display corr.matrx per subj and band)
 % 8. comparecorrelationmatrix  (distance and mean of correlation matrix, display results) 
 % 9. testofsignificance  (PCA)
-%Updated 20/03/2016  
+%Updated 12/05/2016  
+
 function [] = fouriertransformanalysis()
-%% fouriertransformanalysis : function that extracts power from the time series
+%%fouriertransformanalysis, function that extracts power from the time series
 %Fourier transform analysis to get power spectra and time frequency spectrum per
 %channel using the Fourier Transform
 % IN: 
 % OUT: mat file with power vectors and figures in figures directory
-
 %% 1. Load epoch and Initialize data
-disp('Loading the EEG data....\n')
-eegpatient= 'TWH030';
-eegcond = 'HYP';
-fprintf('Loading EEG for patient:%s and condition%s\n',eegpatient,eegcond);
+disp('Loading the EEG data....')
+eegpatient= 'TWH037';
+eegcond = 'EO_PRE';
+fprintf('Loading EEG for patient: %s and condition: %s\n',eegpatient,eegcond);
 [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
 %patientcond, patientid, patdate, patsession
 % get condition, sesssion, patient and date
@@ -292,7 +291,7 @@ end
 bar(frqperband)
 xlabel('Frequency Bands'), ylabel('Power')
 set(gca, 'XTickLabel',freq_bands)
-msgtitle = sprintf('mean Power per Band, Conditions+%s, Patient=%s',eegcond, eegpatient);           
+msgtitle = sprintf('mean Power per Band, Condition=%s, Patient=%s',eegcond, eegpatient);           
 title(msgtitle);
 savefigure(myfullname, hfigures(figcounter),figcounter,'barfreqonecondition');
 figcounter = figcounter +1 ;
