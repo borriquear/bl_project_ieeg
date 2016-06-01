@@ -1,12 +1,20 @@
-%%1. fouriertransformanalysis()
-% 2. anovatesthypnosis()
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 1. fouriertransformanalysis() extracts power-freq per one patient-condition for each channel and band
+%  OUT:  mat file (fft_%s_%s_%s_%s.mat',eegcond, eegpatient,eegdate,eegsession) and fig files (1 per channel) in figures directory
+% 2. powerpercentchannelandband_all(list_of_patientid, list_of_patientcond) compares power-frequency across conditions per same patient or accross patients per one condition
+%  Req: Neds the variable 'percentlistoffrqperband' in the fft_%s_%s_%s_%s.mat file
+%  OUT: [] (display figure, save manually)
 % 3. changecolorpialelectrodes (depicts brain with some values)
-% 4. powerperspecificelectrodes(patientHigh, patientLow) patientHigh={'TWH030'}
-% no correlation but power per channel as the time series mean
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% correlation %%%%%%%%%%%%%%%%%%
-% 5. powerbasedconnectivityall (creates the mat file for each freq band which contains the corr. matrix)
-%   5.1. powerbasedconnectivity( input_args ) 
-% 7. displaypowerconnectivity (display corr.matrx per subj and band)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% connectivity and correlation %%%%%%%%%%%%%%%%%%
+% 4. powerbasedconnectivityall (creates the mat file powerconnectivity_freq_2_HYP_TWH027_10222015_s2 for each freq band which contains the corr. matrix)
+%   calls to: powerbasedconnectivity(input_args) create correlation matrix using wavelets
+% creaes the mat file with the corr_matrix powerconnectivity_freq_2_EC_POST_TWH030_11172015_s1.mat
+% 5. displaypowerconnectivity (display corr.matrx per subj and band)
+%  needs the mat with the corr_matrix  
+%6. graphtheoryanalysis(corrMatrix), generates
+%networkmetrics_freq_2_HYP.mat
+%calls to [allmetrics] = calculategraphmatrixmetrics(corrmatrix, legend)
 % 8. comparecorrelationmatrix  (distance and mean of correlation matrix, display results) 
 % 9. testofsignificance  (PCA)
 %Updated 12/05/2016  
@@ -19,9 +27,10 @@ function [] = fouriertransformanalysis()
 % OUT: mat file with power vectors and figures in figures directory
 %% 1. Load epoch and Initialize data
 disp('Loading the EEG data....')
-eegpatient= 'TWH037';
-eegcond = 'EO_PRE';
-fprintf('Loading EEG for patient: %s and condition: %s\n',eegpatient,eegcond);
+global eegpatient;eegpatient = 'TWH030'
+global eegcond; eegcond = 'EC_POST'; 
+global eegcondtxt; eegcondtxt ='EC\_POST'; % for title in chart
+fprintf('Loading EEG for patient: %s and condition: %s\n', eegpatient,eegcond);
 [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
 %patientcond, patientid, patdate, patsession
 % get condition, sesssion, patient and date
@@ -80,7 +89,7 @@ fftidx  = 1;
 %multitaper =1, to calculate power spectra with multitaper method
 multitaper = 1;
 %savefigurespc = 0; when no necesssary to generate figures per channel
-savefigurespc = 1;
+savefigurespc = 0;
 fprintf('Loop to calculate FFT, for number of channel,  = %d \n', chanend);
 
 % Choose the channel(s) we want to analyze
@@ -96,10 +105,11 @@ for irow =chani:chanend
     figcounter = 1;
     chan2use = channel_labels(irow);
     % avoid broken channels
-    [toskip] = cancelbrokenchannels(eegpatient, irow-1);
+    [toskip] = interictalspikeschannels(eegpatient, irow-1);
     if toskip == 1
         %if channel broken 
-        signal = EEG.data(1,:,trial2plot);
+        fprintf('Fund interictal channel!!')
+        %signal = EEG.data(1,:,trial2plot);
     else
         signal = EEG.data(irow,:,trial2plot);
     end   
@@ -113,7 +123,7 @@ for irow =chani:chanend
         %% FFT fft(X) computes the discrete Fourier transform (DFT) of X using a fast Fourier transform (FFT) algorithm.
         if vectorofchannelsprint(irow) == 1
             signalXF = fft(signal)/n;
-            msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcond,chan2use{1},eegpatient,eegdate,eegsession);
+            msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcondtxt,chan2use{1},eegpatient,eegdate,eegsession);
 
             ampli_fft(irow-1,:) = 2*abs(signalXF(1:length(hz)));
             if scaledlog == 1
@@ -192,10 +202,10 @@ for irow =chani:chanend
         % amplitude because of the amount of noise. Try plotting amplitude by
         % multiplying the FFT result by 2 instead of squaring.
         clf
-        msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcond,chan2use{1},eegpatient,eegdate,eegsession);
+        msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcondtxt,chan2use{1},eegpatient,eegdate,eegsession);
     end
     fprintf('Showing chart for patient:%s , condition:%s , channel:%s\n',eegpatient,eegcond,chan2use{1});
-    msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcond,chan2use{1},eegpatient,eegdate,eegsession);
+    msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcondtxt,chan2use{1},eegpatient,eegdate,eegsession);
     hfigures(figcounter) = figure;
     subplot(3,1,1)
     plot(t,signal, 'b')
@@ -251,7 +261,7 @@ for irow =chani:chanend
 %     bar(requested_frequences_amp_bnds)
 %     xlabel('Frequency Bands'), ylabel('Amplitude')
 %     set(gca, 'XTickLabel',freq_bands)
-    msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcond,chan2use{1},eegpatient,eegdate,eegsession);
+    msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcondtxt,chan2use{1},eegpatient,eegdate,eegsession);
     subplot(2,1,1);
     bar(requested_frequences_power_bnds(irow-1,:))
     xlabel('Frequency Bands'), ylabel('Power')
@@ -285,13 +295,17 @@ hfigures(figcounter) = figure;
 % trasp(bands, channels)
 traspreqf = requested_frequences_power_bnds'; 
 frqperband = [];
+totpower = 0;
 for k =1:5 
-    frqperband(k,:) = mean(traspreqf(k,:))
+    frqperband(k,:) = mean(traspreqf(k,:));
 end
-bar(frqperband)
+%normalize the frq band
+totpower = sum(frqperband);
+bar(frqperband);
+bar(frqperband/totpower);
 xlabel('Frequency Bands'), ylabel('Power')
-set(gca, 'XTickLabel',freq_bands)
-msgtitle = sprintf('mean Power per Band, Condition=%s, Patient=%s',eegcond, eegpatient);           
+set(gca, 'XTickLabel',freq_bands, 'YLim', [0 1])
+msgtitle = sprintf('Mean Power per Band, Condition=%s, Patient=%s',eegcondtxt, eegpatient);           
 title(msgtitle);
 savefigure(myfullname, hfigures(figcounter),figcounter,'barfreqonecondition');
 figcounter = figcounter +1 ;
@@ -307,7 +321,7 @@ fprintf('Calculating power across channels using the %s\n',label_quantitytomeasu
 bar([1:tot_channels], quantitytomeasure);
 xlabel({[leg{1} ',' leg{2}],[leg{3} ',' leg{4}], [leg{5} ',' leg{6}]}),ylabel('Amplitude')
 set(gca,'xlim',[1 tot_channels])
-msgtitle = sprintf('Cond=%s Patient=%s Date=%s Session=%s',eegcond,eegpatient,eegdate,eegsession);           
+msgtitle = sprintf('Cond=%s Patient=%s Date=%s Session=%s',eegcondtxt,eegpatient,eegdate,eegsession);           
 title(msgtitle);
 filefigname = sprintf('fft_Amplitude_AllCh_%s_%s_%s_%s.fig',eegcond, eegpatient,eegdate,eegsession);
 tic;fprintf('Saving %s ...',filefigname);
@@ -319,7 +333,7 @@ hfigures(figcounter) = figure;
 bar([1:tot_channels], quantitytomeasure)
 xlabel({[leg{1} ',' leg{2}],[leg{3} ',' leg{4}], [leg{5} ',' leg{6}]}),ylabel('Power')
 set(gca,'xlim',[1 tot_channels])
-msgtitle = sprintf('Cond=%s Patient=%s Date=%s Session=%s',eegcond,eegpatient,eegdate,eegsession);           
+msgtitle = sprintf('Cond=%s Patient=%s Date=%s Session=%s',eegcondtxt,eegpatient,eegdate,eegsession);           
 title(msgtitle);
 filefigname = sprintf('fft_Power_AllCh_%s_%s_%s_%s.fig',eegcond, eegpatient,eegdate,eegsession);
 tic;fprintf('Saving %s ...',filefigname);
@@ -331,7 +345,7 @@ hfigures(figcounter) = figure;
 bar([1:tot_channels], quantitytomeasure)
 xlabel({[leg{1} ',' leg{2}],[leg{3} ',' leg{4}], [leg{5} ',' leg{6}]}),ylabel('Power')
 set(gca,'xlim',[1 tot_channels])
-msgtitle = sprintf('Cond=%s Patient=%s Date=%s Session=%s',eegcond,eegpatient,eegdate,eegsession);           
+msgtitle = sprintf('Cond=%s Patient=%s Date=%s Session=%s',eegcondtxt,eegpatient,eegdate,eegsession);           
 title(msgtitle);
 filefigname = sprintf('fft_Power_MT_AllCh_%s_%s_%s_%s.fig',eegcond, eegpatient,eegdate,eegsession);
 tic;fprintf('Saving %s ...',filefigname);
@@ -342,8 +356,13 @@ currentFolder = pwd;
 tic; fprintf('Saving the mat file with power/amplitude vector in %s \n',currentFolder);
 filematname = sprintf('fft_%s_%s_%s_%s.mat',eegcond, eegpatient,eegdate,eegsession);
 save(filematname, 'frqperband', 'quantitytomeasure', 'ampli_fft','power_fft','power_mt','requested_frequences_power_bnds', 'channel_labels');toc;
-end
 
+%%%% Calculate power per channel and band
+fprintf('Calling to powerpercentchannelandband : %s %s', eegpatient,eegcond);
+powerpercentchannelandband(eegpatient,eegcond, EEG);
+fprintf('.mat file crreated at %s', filematname)
+
+end
 
 function [leg,quantitytomeasure] = calculatelegfootnote(channel_labels,fft_coefs,label_quantitytomeasure,nbofmaxchtodisp,tot_channels)
 %% [leg,quantitytomeasure] = calculatelegfootnote(channel_labels,fft_coefs,label_quantitytomeasure,nbofmaxchtodisp,tot_channels)
@@ -377,10 +396,10 @@ end
 end
 
 
-function [toskip] = cancelbrokenchannels(patient, irow)
-%% return 1 is the channel irow of patient need to be removed from the analysis
+function [toskip] = interictalspikeschannels(patient, irow)
+%% return 1 is the channel irow of patient is a channel with interictal spikes
 toskip = 0;
-if (strcmp(patient, 'TWH034') ==1 && (irow == 68)) ||  (strcmp(patient, 'TWH030') == 1 && (irow == 8)) || (strcmp(patient, 'TWH031') ==1 && (irow == 17))
+if (strcmp(patient, 'TWH034') ==1 && (irow == 68)) ||  (strcmp(patient, 'TWH030') == 1 && (irow == 8)) || (strcmp(patient, 'TWH031') ==1 && (irow == 17) )
     %LHD4$ , irow = 68 (twh34)
     %LAT4, irow = 8  (twh30)
     %LMF5, irow = 17 (twh031)

@@ -7,12 +7,7 @@ eegpatientl = { 'TWH027','TWH024','TWH028','TWH030', 'TWH031','TWH033','TWH034'}
 
 corrmetricsperb =zeros(length(eegpatientl),length(centerfrequencies))
 % make sure that globalFsDir is assigned
-if ~exist('globalFsDir','var')
-    fprintf('globalFsDir not found, loading it...')
-    eval('global globalFsDir');
-    myp = 'D:\BIAL PROJECT\patients\';
-    eval(['globalFsDir=' 'myp']);
-end
+[globalFsDir] = loadglobalFsDir();
 %file where to write the report
 metrtoload = 'corrmat_metrics.txt';
 corrmetricfile = fullfile(globalFsDir, metrtoload);

@@ -1,47 +1,51 @@
 %% Load condition [power|other]data and display coloured electrodes
 clear all
-patientid = 'TWH028';
-patientid = 'TWH030';
-patientid = 'TWH037';
-
-condition = 'ECPRE'
-condition = 'EOPRE'
-condition = 'ECPOST'
+patientid = 'TWH030';%ESTO ES FIJO PARA CAGAR SIEMPRE ESE CEREBRO Y QUE NO DE ERROR en los pacientes viejos
 condition = 'HYP'
+band = [2, 6 , 10, 23.5, 40]; %delta theta alpha beta gamma
+frqband_i = 1;
+freq = band(frqband_i);
+[freq_band] = getgreeksymbolfreq(freq)
 
-[myfullname, EEG, channel_labels] =  initialize_EEG_variables(patientid,condition);
-%load data of electrodes to display
-%%%%????? check how loads this!!!!
-[quantitytomeasure, frqperband] = loadconditionpowerdata(myfullname,patientid,condition);
-[celloflabelswithq] = getelectrodenamesfromfile(patientid, condition);
+%mat file to load containing the variable we need to display
+% percentlistoffrqperband(:,:,1-5) 1:delta, 5:gamma
+[globalFsDir] =loadglobalFsDir();
+filetoload = 'D:\BIAL PROJECT\patients\TWH030\data\figures\fft_HYP_TWH030_11172015_s1.mat'
+filetoload = 'D:\BIAL PROJECT\patients\TWH027\data\figures\fft_HYP_TWH027_10222015_s2.mat'
+[quantitytomeasure, channel_list] = loadvariablefroepisurg(filetoload);
+%[celloflabelswithq] = getelectrodenamesfromfile(patientid, condition);
 % make sure that globalFsDir exists
-[globalFsDir] =loadglobalFsDir()
 % Processing Electrodes with value coloured
-tot_channels = size(celloflabelswithq{1},1);
-elecNames=cell(tot_channels,1);
-initchan =1;
-listofelecnames = celloflabelswithq{1}
+tot_channels = size(channel_list); tot_channels = tot_channels(2);
+%tot_channels = size(celloflabelswithq{1},1);
+elecNames=cell(tot_channels-1,1);
+initchan = 2;
+%listofelecnames = celloflabelswithq{1}
 for i=initchan:tot_channels
     %chan2use = channel_labels(i)
-    chan2use = listofelecnames(i)
+    chan2use = channel_list(i);
     %%elecNames{i-1}=sprintf('%s',chan2use{1});
-    elecNames{i}=sprintf('%s',chan2use{1});  
+    elecNames{i-1}=sprintf('%s',chan2use{1});  
 end
 cfg=[];
+cfg.view='li';
 cfg.view='l';
+cfg.view='omni';
+cfg.opaqueness=0.5;
+cfg.ignoreDepthElec='n';
 cfg.elecShape='sphere';
 %cfg.elecColors=rand(8,1);
-cfg.elecColors= quantitytomeasure;
+cfg.elecColors= quantitytomeasure(:,:,frqband_i);
 %cfg.elecColors = celloflabelswithq{2};
 cfg.elecColorScale='minmax';
 cfg.showLabels='y';
 cfg.elecUnits='r';
 cfg.elecNames=elecNames;
-cfg.elecSize=3;
-%cfg.title='PT001: Stimulus Correlations';
-cfg.title=sprintf('Power across freqs: %s, %s',patientid,condition)
-cfg.title=sprintf('Power: %s, %s',patientid,condition)
-cfgOut=plotPialSurf(patientid,cfg);
+%cfg.elecSize=3;
+%cfg.title='PT001: Stimulus Correlations';2
+%cfg.title = sprintf('{\mu} V^{2} ({\delta} normalized): %s, %s',patientid,condition)
+cfg.title =  sprintf('%c V^2 for %c band normalized, Patient=L, cond=%s',char(956), char(948),condition)
+cfgOut = plotPialSurf(patientid,cfg);
 fprintf('Done');
 %call savefigure
 %% Processing Pair correlations coloured

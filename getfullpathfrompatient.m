@@ -15,60 +15,38 @@ patdir = fullfile(patdir1, patdir);
 patsession = 's1'; %by default session is s1
 switch patientid
     case 'TWH024'
-        if strcmp(patientcond,'HYP') == 1
-            %patname = 'fo24';
             patdate = '09192015';
-        else
-        end
     case 'TWH027'
-        if strcmp(patientcond,'HYP') == 1
-            %patname = 'bs27';
             patdate = '10222015';
             patsession = 's2';
-        else
-        end
     case 'TWH028'
-        if strcmp(patientcond,'HYP') == 1
             %patname = 'cj28';
             patdate = '10202015';
-        else
-        end
     case 'TWH030'
-        if strcmp(patientcond,'HYP') == 1
             %patname = 'was30';
             patdate = '11172015';
-        else
-        end
     case 'TWH031'
-        if strcmp(patientcond,'HYP') == 1
             %patname = 'sm31';
             patdate = '12012015';
-        else
-        end
     case 'TWH033'
-        if strcmp(patientcond,'HYP') == 1
-            %patname = 'nk33';
             patdate = '02032016';
-        else
-        end
     case 'TWH034'
-        if strcmp(patientcond,'HYP') == 1
-            %patname = 'mj34';
             patdate = '02092016';
             patsession ='s2';
-        else
-        end
-      case 'TWH037'
-            patdate = '03142016';
-            patsession ='s1';
-      case 'TWH038'
-            patdate = '03082016';
-            patsession ='s1';
-      case 'TWH042'
-            patdate = '05042016';
-            patsession ='s1';
+    case 'TWH037'
+        patdate = '03142016';
+        patsession ='s1';
+    case 'TWH038'
+        patdate = '03082016';
+        patsession ='s1';
+    case 'TWH042'
+        patdate = '05042016';
+        patsession ='s1';
+    case 'TWH043'
+        patdate = '05042016';
+        patsession ='s1';
     otherwise
-        warningMessage = sprintf('Error: patient%s does not exist:\n%s', patientid);
+        warningMessage = sprintf('Error: patient %s does not exist:\n%s', patientid);
         uiwait(msgbox(warningMessage));
 end
 if nargin > 2

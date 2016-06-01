@@ -101,4 +101,19 @@ BCvector_normalized = BCvector/((nnodes -1)*(nnodes-2));
 dampingf = 0.85;%falff = 0; %si pongo damp = 1 NaN!
 pagerank_vector = pagerank_centrality(corrmatrix, dampingf);
 allmetrics = {degree_v, gtommatrix,matchingmatrix,density_coeff,clusteringcoeff_v,transcoeff,components_v,componentsizes_v,communityLovaffi_v,assort_coeff,richclub_v,coreperip_v,Dmatrix,charpathlength_coeff,BCvector_normalized,pagerank_vector}
+disp('degree_v is'); disp(degree_v);
+disp('gtommatrix is'); disp(gtommatrix);
+disp('matchingmatrix is'); disp(matchingmatrix);
+disp('density_coeff is'); disp(density_coeff);
+disp('clusteringcoeff_v is'); disp(clusteringcoeff_v);
+disp('transcoeff is'); disp(transcoeff);
+disp('components_v is'); disp(components_v);
+disp('componentsizes_v is'); disp(componentsizes_v);
+disp('communityLovaffi_v is'); disp(communityLovaffi_v);
+disp('assort_coeff is'); disp(assort_coeff);
+disp('richclub_v is'); disp(richclub_v);
+disp('coreperip_v is'); disp(coreperip_v);
+disp('charpathlength_coeff is'); disp(charpathlength_coeff);
+disp('BCvector_normalized is'); disp(BCvector_normalized);
+disp('pagerank_vector is'); disp(pagerank_vector);
 end

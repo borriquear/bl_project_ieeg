@@ -1,12 +1,12 @@
-function [allmetrics] = graphtheoryanalysis(corrMatrix)
-%graphtheoaryanalysis  build a network from the corr matrix and calulates network metrix
-% IN: []  get the correlation matrix
-%    : corrMatrix correlation matrix from which to obtain the network
-%
+function [allmetrics] = graphtheoryanalysis(corrMatrix, channel_labels)
+%graphtheoaryanalysis  build a network from corr_matrix in powerconnectivity_freq_*.mat and calculates network 
+% IN: optional argument. corrMatrix == []  get the correlation matrix
+%    : corrMatrix != [] correlation matrix from which to obtain the
+%    network , from the mat file powerconnectivity
+% set currfreq
 global globalFsDir;
 global currfreq;
 global currcond;
-
 legendofmatrices = {};
 allmetricpercfp = [];
 patientsList = {'TWH024','TWH027','TWH028','TWH030','TWH031','TWH033','TWH034'};
@@ -14,17 +14,13 @@ currentpat = patientsList{4};
 typeofgraph =  {'undirectedu','undirectedw','directed'};
 indextype = 1; %1 undirected unweighted(0,1), undirected weighted, directed
 typeofgraph = typeofgraph{indextype};
+[globalFsDir] = loadglobalFsDir();
+centerfrequencies = {2, 6 , 10, 23.5, 40};
+currfreq = centerfrequencies{1};
+currcond = {'HYP', 'EO PRE', 'EC POST'};
+currcond = currcond{2};
 if nargin < 1
     disp('Finding the corrrelation matrix prior to Load it...')
-    if ~exist('globalFsDir','var')
-        fprintf('globalFsDir not found, loading it...')
-        eval('global globalFsDir');
-        eval(['globalFsDir=' 'myp']);
-    end
-    centerfrequencies = {2, 6 , 10, 23.5, 40};
-    currfreq = centerfrequencies{1};
-    currcond = {'HYP', 'PRE', 'POST'};
-    currcond = currcond{1};
     %correlation matrix for single patient
     fprintf('Calculating Network metrics for Patient %s:\n\n',currentpat);
     h = figure;
@@ -37,6 +33,9 @@ if nargin < 1
     matf= matfile(fftfile);
     corrmatpersubband = matf.corr_matrix;
     corrMatrix = corrmatpersubband; 
+    mattoload = strcat('networkmetrics_freq_',num2str(currfreq),'_',currcond,'_', currentpat,'_',patdate,'_',patsession,'.mat');
+else
+    mattoload = strcat('networkmetrics_freq_',num2str(currfreq),'_',currcond,'.mat');
 end
 strNames = channel_labels(2:end); %delete 'Event' channel
 %strNames= channel_labels;
@@ -51,7 +50,7 @@ end
 myColorMap = lines(length(corrMatrix));
 circularGraph(corrMatrix,'Colormap',myColorMap,'Label',strNames);
 %title(['Condition: ',currcond,', Frequency:', getgreeksymbolfreq(currfreq), ', Patient:',currentpat, ', Thres. = m+ n*std=', num2str(threshold)]);
-title(['Condition: ',currcond,', Frequency:', getgreeksymbolfreq(currfreq), ', Patient:',currentpat, ', Thres. = m+ n*std']);
+title([currcond,',in', getgreeksymbolfreq(currfreq), ', Patient:',currentpat, ', Thresh. = m+ 1*std']);
 drawnow update
 %schemaball(strNames, corrMatrix);
 [allmetrics] = calculategraphmatrixmetrics(corrMatrix, legendofmatrices);
@@ -60,7 +59,7 @@ allmetrics = {legendofmatrices, allmetrics};
 %save mat file
 [globalFsDir] =loadglobalFsDir();
 patpath = strcat(globalFsDir,currentpat);
-mattoload = strcat('networkmetrics_freq_',num2str(currfreq),'_',currcond,'_', currentpat,'_',patdate,'_',patsession,'.mat');
+%mattoload = strcat('networkmetrics_freq_',num2str(currfreq),'_',currcond,'_', currentpat,'_',patdate,'_',patsession,'.mat');
 fftfile = fullfile(patpath,'data','figures', mattoload);
 save(fftfile,'allmetrics')
 end
