@@ -1,42 +1,46 @@
-function [allmetrics] = graphtheoryanalysis(corrMatrix, channel_labels)
+function [allmetrics] = graphtheoryanalysis(corrMatrix, currentpat, currcond, currfreq, channel_labels)
 %graphtheoaryanalysis  build a network from corr_matrix in powerconnectivity_freq_*.mat and calculates network 
 % IN: optional argument. corrMatrix == []  get the correlation matrix
-%    : corrMatrix != [] correlation matrix from which to obtain the
-%    network , from the mat file powerconnectivity
+% : corrMatrix != [] correlation matrix from which to obtain the
+% network , from the mat file powerconnectivity
 % set currfreq
 global globalFsDir;
-global currfreq;
-global currcond;
+[globalFsDir] = loadglobalFsDir();
+% global currfreq;
+% global currcond;
 legendofmatrices = {};
 allmetricpercfp = [];
-patientsList = {'TWH024','TWH027','TWH028','TWH030','TWH031','TWH033','TWH034'};
-currentpat = patientsList{4};
+% patientsList = {'TWH024','TWH027','TWH028','TWH030','TWH031','TWH033','TWH034'};
+% currentpat = patientsList{4};
 typeofgraph =  {'undirectedu','undirectedw','directed'};
 indextype = 1; %1 undirected unweighted(0,1), undirected weighted, directed
 typeofgraph = typeofgraph{indextype};
-[globalFsDir] = loadglobalFsDir();
-centerfrequencies = {2, 6 , 10, 23.5, 40};
-currfreq = centerfrequencies{1};
-currcond = {'HYP', 'EO PRE', 'EC POST'};
-currcond = currcond{2};
-if nargin < 1
-    disp('Finding the corrrelation matrix prior to Load it...')
-    %correlation matrix for single patient
-    fprintf('Calculating Network metrics for Patient %s:\n\n',currentpat);
-    h = figure;
-    matfileid = 'powerconnectivity_freq_';
-    patpath = strcat(globalFsDir,currentpat);
-    [myfullname, EEG, channel_labels, patdate, patsession] = initialize_EEG_variables(currentpat,currcond);
-    mattoload = strcat(matfileid,num2str(currfreq),'_',currcond,'_', currentpat,'_',patdate,'_',patsession,'.mat');
-    fftfile = fullfile(patpath,'data','figures', mattoload);
-    fprintf('Opening correlation matrix....%s\n',fftfile);
-    matf= matfile(fftfile);
-    corrmatpersubband = matf.corr_matrix;
-    corrMatrix = corrmatpersubband; 
-    mattoload = strcat('networkmetrics_freq_',num2str(currfreq),'_',currcond,'_', currentpat,'_',patdate,'_',patsession,'.mat');
-else
+
+% centerfrequencies = {2, 6 , 10, 23.5, 40};
+% currfreq = centerfrequencies{1};
+% currcond = {'HYP', 'EO PRE', 'EC POST'};
+% currcond = currcond{2};
+
+%if nargin < 1
+%     disp('Finding the corrrelation matrix prior to Load it...')
+%     %correlation matrix for single patient
+%     fprintf('Calculating Network metrics for Patient %s:\n\n',currentpat);
+%     h = figure;
+%     matfileid = 'powerconnectivity_freq_';
+%     patpath = strcat(globalFsDir,currentpat);
+%     [myfullname, EEG, channel_labels, patdate, patsession] = initialize_EEG_variables(currentpat,currcond);
+%     mattoload = strcat(matfileid,num2str(currfreq),'_',currcond,'_', currentpat,'_',patdate,'_',patsession,'.mat');
+%     fftfile = fullfile(patpath,'data','figures', mattoload);
+%     fprintf('Opening correlation matrix....%s\n',fftfile);
+%     matf= matfile(fftfile);
+%     corrmatpersubband = matf.corr_matrix;
+%     corrMatrix = corrmatpersubband; 
+    %mattoload = strcat('networkmetrics_freq_',num2str(currfreq),'_',currcond,'_', currentpat,'_',patdate,'_',patsession,'.mat');
+
+    %else
     mattoload = strcat('networkmetrics_freq_',num2str(currfreq),'_',currcond,'.mat');
-end
+%end
+figure;
 strNames = channel_labels(2:end); %delete 'Event' channel
 %strNames= channel_labels;
 if strcmp(typeofgraph,'undirectedw') ==1

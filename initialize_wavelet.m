@@ -1,14 +1,14 @@
-function [half_of_wavelet_size, n_wavelet, n_data, n_convolution, wavelet_cycles, wtime] =   initialize_wavelet(EEG_study)
-% initialize_wavelet  initialize complex wavelet parameters
-% wavelet parameters
-wtime = -1:1/EEG_study.srate:1; % window width
-wavelet_cycles= 7; %time-frequency prcision trade-off 
-% 
-%w = 2(wavelet_cycles/(2 pi freq)^2)
-half_of_wavelet_size = (length(wtime)-1)/2;
-% convolution parameters
-n_wavelet     = length(wtime);
-n_data        = EEG_study.pnts*EEG_study.trials;
-n_convolution = n_wavelet+n_data-1;
-
+function [srate, min_freq, max_freq, num_frex, time, n_wavelet, half_of_wavelet_size, frex, s, wavelet_cycles] =   initialize_wavelet()
+min_freq =  1;
+max_freq = 30;
+num_frex = 30;
+srate = 1000;
+time = -1:1/srate:1;
+n_wavelet = length(time);
+half_of_wavelet_size = (n_wavelet-1)/2;
+frex = logspace(log10(min_freq),log10(max_freq),num_frex);
+% number of wavelet cycles changes in function of the frequency
+s = logspace(log10(3),log10(10),num_frex)./(2*pi*frex);
+% fixed number of wavelet cycles between 7 and 10 (long epochs)
+wavelet_cycles = 7;
 end

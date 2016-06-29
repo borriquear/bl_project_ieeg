@@ -1,9 +1,9 @@
-function [globalFsDir] = loadglobalFsDir()
+function globalFsDir = loadglobalFsDir()
 %load global variable globalFsDir
 if ~exist('globalFsDir','var')
-    fprintf('globalFsDir not found, loading it...\n')
+    %fprintf('globalFsDir not found, loading it...\n');
     eval('global globalFsDir');
     myp = 'D:\BIAL PROJECT\patients\';
-    eval(['globalFsDir=' 'myp']);
+    eval(['globalFsDir=' 'myp;']);
 end
 end
