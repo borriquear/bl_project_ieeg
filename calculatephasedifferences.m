@@ -1,4 +1,6 @@
 function [] = calculatephasedifferences(patientslist, conditionslist)
+% patientslist = {'TWH030', 'TWH033','TWH037','TWH038','TWH042'}
+% conditionslist = {'EC_PRE', 'EO_PRE'}
 global min_freq;
 global max_freq;
 global num_frex;
@@ -13,83 +15,135 @@ global wavelet_cycles;
 global num_cycles; %these 2 vars are the same, use one or the other
 global timewindow;
 global globalFsDir;
-[globalFsDir] = loadglobalFsDir();
+global spectcoher;
+
+globalFsDir = loadglobalFsDir();
 [srate, min_freq, max_freq, num_frex, time, n_wavelet, half_wavelet, freqs2use, s, wavelet_cycles]= initialize_wavelet();
 freqs2use  = logspace(log10(min_freq),log10(max_freq),8);
-num_cycles    = logspace(log10(4),log10(8),length(freqs2use));
+num_cycles = logspace(log10(4),log10(8),length(freqs2use));
 %uncomment this and comment previous line for fixednumber of wavelet cycles
 %wavelet_cycles = 7
 fprintf('Wavelet parameters loaded\n')
 timewindow = linspace(1.5,3,length(freqs2use)); % number of cycles on either end of the center point (1.5 means a total of 3 cycles))
 ispc_matrix{length(patientslist), length(conditionslist)} = [];
-phase_matrix{length(patientslist), length(conditionslist),length(freqs2use)} = [];
+pli_matrix{length(patientslist), length(conditionslist)} = [];
+icoh_matrix{length(patientslist), length(conditionslist)} = [];
 for ip=1:length(patientslist)
     eegpatient = patientslist{ip};
     for ic=1:length(conditionslist)
         eegcondition = conditionslist{ic};
         [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcondition);
         % initialize
-        %times2save = EEG.pnts;
         n_data               = EEG.pnts*EEG.trials;
-        n_convolution        = n_wavelet+n_data-1;
-        %ispc_matrix{ip, ic} = zeros(length(freqs2use),length(times2save));
-        %ps_matrix{ip, ic}  = zeros(length(freqs2use),length(times2save));
+        n_convolution        = n_wavelet + n_data-1;
+        %spectcoher = zeros(length(freqs2use),length(n_data));
         chani = 2; %initial channel (chani = 1 is reserved for the 'Event' channel)
         chanend = EEG.nbchan; %end channel
-        phase_matrix = {};
+        %phase_matrix{chanend-chani+1,chanend-chani+1,length(freqs2use)} = [];
+        phase_matrix = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
+        phase_matrix_pli = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
+        imag_coherence_ij = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
         for irow =chani:chanend
             ichan2use = channel_labels{irow};
-            for jcol =chani:chanend
+            data_fft1 = fft(reshape(EEG.data(irow,:,:),1,n_data),n_convolution);
+            for jcol =irow:chanend
                 jchan2use = channel_labels{jcol};
-                %calculate phase difference for two channels
-                data_fft1 = fft(reshape(EEG.data(irow,:,:),1,n_data),n_convolution);
+                %calculate phase difference for two channels                
                 data_fft2 = fft(reshape(EEG.data(jcol,:,:),1,n_data),n_convolution);
                 for fi=1:length(freqs2use)
                     % create wavelet and take FFT
-                    phaseij = calculatephasedifferences2channels(EEG, data_fft1,data_fft2, fi );
-                    phase_matrix{irow, jcol, fi} = phaseij;
-                    fprintf(' ISPC=%.3f . %s:%s, channels %s-%s frq=%d\n', phaseij, eegpatient, eegcondition, ichan2use, jchan2use, freqs2use(fi));
+                    [ispc_ij, pli_ij, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2, fi );
+                    phase_matrix(irow-1, jcol-1, fi) = ispc_ij;
+                    phase_matrix_pli(irow-1, jcol-1, fi) = pli_ij;
+                    imag_coherence_ij(irow-1, jcol-1, fi) = phase_icoh;
+                    fprintf(' ISPC=%.3f PLI=%.3f icoh=%.3f. %s:%s, channels %s-%s frq=%d\n', ispc_ij, pli_ij,phase_icoh, eegpatient, eegcondition, ichan2use, jchan2use, freqs2use(fi));
                 end % end frequency loop
             end
         end   
         ispc_matrix{ip,ic} = phase_matrix;
+        pli_matrix{ip,ic} = phase_matrix_pli;
+        icoh_matrix{ip,ic} = phase_icoh;
     end
 end
-
+%save ispc_matrix in mat file
+matfilename = 'phaseconn_matrices.mat';
+matfilename = fullfile(globalFsDir, matfilename);
+phaseconn_matrix = struct;
+phaseconn_matrix.ispc_matrix = ispc_matrix;
+phaseconn_matrix.pli_matrix = pli_matrix;
+phaseconn_matrix.icoh_matrix = icoh_matrix;
+phaseconn_matrix.patientsl = patientslist;
+phaseconn_matrix.conditionsl = conditionslist;
+phaseconn_matrix.freqsl = freqs2use;
+save(matfilename,'phaseconn_matrix');  
 end
 
-function [phaseij] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2,fi)
-%
+function [phase_ispc, phase_pli, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2,fi)
+%calculatephasedifferences2channels returns the ISPC for 2 channels (fft)
+%and a frequency
+%IN EEG, data_fft1,data_fft2,fi
+%OUT phaseij
+%Note compare ISPC versus measures insensitive to volumeconduction like
+%PLI, wPLI, imaginary coherence, phase-sloped index
 global freqs2use;
 global n_convolution;
 global half_wavelet;
 global num_cycles;
 global time;
 global timewindow;
+
 s = num_cycles(fi)/(2*pi*freqs2use(fi));
 wavelet_fft = fft( exp(2*1i*pi*freqs2use(fi).*time) .* exp(-time.^2./(2*(s^2))) ,n_convolution);
 % phase angles from channel 1 via convolution
 convolution_result_fft = ifft(wavelet_fft.*data_fft1,n_convolution);
 convolution_result_fft = convolution_result_fft(half_wavelet+1:end-half_wavelet);
-phase_sig1 = angle(reshape(convolution_result_fft,EEG.pnts,EEG.trials));
+sig1 = reshape(convolution_result_fft,EEG.pnts,EEG.trials);
+phase_sig1 = angle(sig1);
+
 % phase angles from channel 2 via convolution
 convolution_result_fft = ifft(wavelet_fft.*data_fft2,n_convolution);
 convolution_result_fft = convolution_result_fft(half_wavelet+1:end-half_wavelet);
-phase_sig2 = angle(reshape(convolution_result_fft,EEG.pnts,EEG.trials));
+sig2 = reshape(convolution_result_fft,EEG.pnts,EEG.trials);
+phase_sig2 = angle(sig2);
+
 % phase angle differences
 phase_diffs = phase_sig1-phase_sig2;
 
-% compute ICPS over trials
-%ps(fi,:) = abs(mean(exp(1i*phase_diffs(times2saveidx,:)),2));
-ps(fi,:) = abs(mean(exp(1i*phase_diffs(:)),2));
-% compute time window in indices for this frequency
+%imaginary coherence
+spec1 = sum(sig1.*conj(sig1),2);
+spec2 = sum(sig2.*conj(sig2),2);
+specX = sum(sig1.*conj(sig2),2);
+
+%uncomment for imaginary coherence with no tmp window
+%spectcoher(fi,:) = abs(imag(specX(times2saveidx)./sqrt(spec1(times2saveidx).*spec2(times2saveidx))));
+%icohabsl= abs(imag(specX./sqrt(spec1.*spec2)));
+%icoh = mean(icohabsl);
+
 time_window_idx = round((1000/freqs2use(fi))*timewindow(fi)/(1000/EEG.srate));
-%     time_window_idx = round(300/(1000/EEG.srate)); % set 300 to 100 for figure 3c/d
-for ti=time_window_idx+1:EEG.pnts-time_window_idx
+%ispc = zeros(1,time_window_idx+1:EEG.pnts-time_window_idx);
+%ispc_ind =EEG.pnts-time_window_idx - time_window_idx+1;
+wt_size = size(time_window_idx+1:time_window_idx:EEG.pnts-time_window_idx,2);
+%ispc = zeros(1, ispc_ind);
+ispc = zeros(1, wt_size);
+pliv = zeros(1, wt_size);
+cohmean = zeros(1, wt_size);
+%tic;
+wt = 0;
+%non averlapping window of time_window_idx = 1500
+for ti=time_window_idx+1:time_window_idx:EEG.pnts-time_window_idx %time_window_idx
     % compute phase synchronization
     phasesynch = abs(mean(exp(1i*phase_diffs(ti-time_window_idx:ti+time_window_idx,:)),1));
-    % average over trials
-    ispc(ti) = mean(phasesynch);
+    pli  = abs(mean(sign(imag(exp(1i*phase_diffs(ti-time_window_idx:ti+time_window_idx,:))))));
+    coh_t = abs(imag(specX(ti-time_window_idx:ti+time_window_idx)./sqrt(spec1(ti-time_window_idx:ti+time_window_idx).*spec2(ti-time_window_idx:ti+time_window_idx))));
+    %ispc = abs(mean(exp(1i*phases)));
+    wt = wt + 1;
+    %ispc(ti) = mean(phasesynch);
+    ispc(wt) = mean(phasesynch);
+    pliv(wt) = mean(pli);
+    cohmean(wt) = mean(coh_t);
 end
-phaseij = mean(ispc(:));
+%toc;
+phase_ispc = mean(ispc(:));
+phase_pli = mean(pliv(:));
+phase_icoh = mean(cohmean(:));
 end

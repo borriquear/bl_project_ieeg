@@ -51,13 +51,16 @@ plotspectrogram(patientslist, conditionslist, rois)
 patientslist = { 'TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043'};
 patientslist = { 'TWH034','TWH037','TWH038','TWH042','TWH043'};
 conditionslist = {'EC_PRE', 'HYP'}; 
-centerfrequencies = {2};%, 6 , 10, 23.5, 40};
+centerfrequencies =  {6 , 10, 23.5, 40}; %{2};
 createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies)
 %% network analysis
 % displaypowerconnectivity (display corr.matrx 
 % needs the mat with the corr_matrix and the network (graphtheoryanalysis.m)
 %displays the correlation matrix and the undirected network 
-displaypowerconnectivity(patientslist, conditionslist, centerfrequencies);
+
+%[srate, min_freq, max_freq, num_frex, time, n_wavelet, half_wavelet, freqs2use, s, wavelet_cycles]= initialize_wavelet();
+%centerfrequenciesl  = logspace(log10(min_freq),log10(max_freq),8)
+displaypowerconnectivity(patientslist, conditionslist, centerfrequenciesl);
 
 
 %% Phase-based Analysis
@@ -66,3 +69,5 @@ displaypowerconnectivity(patientslist, conditionslist, centerfrequencies);
 %Get the  bivariate phase difference for every 2 channels
 % append the result to the fft file
 calculatephasedifferences(patientslist, conditionslist)
+%% Calculate Wiring cost
+calculatewiringcostmatrices(patientslist, conditionslist)

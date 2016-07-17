@@ -1,18 +1,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 1. fouriertransformanalysis() extracts power-freq per one patient-condition for each channel and band
 %  OUT:  mat file (fft_%s_%s_%s_%s.mat',eegcond, eegpatient,eegdate,eegsession) and fig files (1 per channel) in figures directory
+% 1.1 plotpowerspectrum  display power spectra (powerxfreq) REQ: mat file above
+% 1.2 plotspectograme display spectograme (powerxfreqXtime)REQ: mat file above
 % 2. powerpercentchannelandband_all(list_of_patientid, list_of_patientcond) compares power-frequency across conditions per same patient or accross patients per one condition
-%  Req: Neds the variable 'percentlistoffrqperband' in the fft_%s_%s_%s_%s.mat file
+%  Req: Needs the variable 'percentlistoffrqperband' in the fft_%s_%s_%s_%s.mat file
 %  OUT: [] (display figure, save manually)
 % 3. changecolorpialelectrodes (depicts brain with some values)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% connectivity and correlation %%%%%%%%%%%%%%%%%%
 % 4. powerbasedconnectivityall (creates the mat file powerconnectivity_freq_2_HYP_TWH027_10222015_s2 for each freq band which contains the corr. matrix)
 %   calls to: powerbasedconnectivity(input_args) create correlation matrix using wavelets
-% creaes the mat file with the corr_matrix powerconnectivity_freq_2_EC_POST_TWH030_11172015_s1.mat
+%   creaes the mat file with the corr_matrix powerconnectivity_freq_2_EC_POST_TWH030_11172015_s1.mat
 % 5. displaypowerconnectivity (display corr.matrx per subj and band)
 %  needs the mat with the corr_matrix  
-%6. graphtheoryanalysis(corrMatrix), generates
+%6.  graphtheoryanalysis(corrMatrix), generates
 %networkmetrics_freq_2_HYP.mat
 %calls to [allmetrics] = calculategraphmatrixmetrics(corrmatrix, legend)
 % 8. comparecorrelationmatrix  (distance and mean of correlation matrix, display results) 
@@ -27,10 +29,11 @@ function [] = fouriertransformanalysis()
 % OUT: mat file with power vectors and figures in figures directory
 %% 1. Load epoch and Initialize data
 disp('Loading the EEG data....')
-global eegpatient;eegpatient = 'TWH030'
-global eegcond; eegcond = 'EC_POST'; 
-global eegcondtxt; eegcondtxt ='EC\_POST'; % for title in chart
+global eegpatient;eegpatient = 'TWH033'
+global eegcond; eegcond = 'EO_PRE'; 
+global eegcondtxt; eegcondtxt ='EO\_PRE'; % for title in chart
 fprintf('Loading EEG for patient: %s and condition: %s\n', eegpatient,eegcond);
+label = 'All';
 [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
 %patientcond, patientid, patdate, patsession
 % get condition, sesssion, patient and date
@@ -71,7 +74,7 @@ nyquistfreq = srate/2;
 hz = linspace(0,nyquistfreq,floor(n/2)+1);
 %initialize vectors that contain the pwer/amplitude values
 ampli_fft = zeros(tot_channels, length(hz));
-power_fft = zeros(tot_channels, length(hz)) ;
+power_fft = zeros(tot_channels, length(hz));
 ampli_mt =  zeros(tot_channels, length(hz)); %MT is multitaper
 power_mt = zeros(tot_channels, length(hz));
 ampli_onetaper = zeros(tot_channels, length(hz));
@@ -96,7 +99,7 @@ fprintf('Loop to calculate FFT, for number of channel,  = %d \n', chanend);
 chani = 2;
 chanend = EEG.nbchan;
 
-tot_channels = chanend - chani+1;
+tot_channels = chanend - chani + 1;
 %vector of channels (0,1) 1 when to display that channel
 vectorofchannelsprint = zeros(1,EEG.nbchan);
 vectorofchannelsprint(chani:chanend) = 1;
@@ -110,9 +113,8 @@ for irow =chani:chanend
         %if channel broken 
         fprintf('Fund interictal channel!!')
         %signal = EEG.data(1,:,trial2plot);
-    else
-        signal = EEG.data(irow,:,trial2plot);
-    end   
+    end
+    signal = EEG.data(irow,:,trial2plot);  
     fprintf('Calculating FFT for channel = %s, channel_id=%d / channel_total=%d ...\n', chan2use{1}, irow-1, chanend-1);
     signalX = zeros(size(signal));
     % fourier time is not the time in seconds but the time normalized
@@ -124,7 +126,6 @@ for irow =chani:chanend
         if vectorofchannelsprint(irow) == 1
             signalXF = fft(signal)/n;
             msgtitle = sprintf('Cond=%s Channel=%s Patient=%s Date=%s Session=%s',eegcondtxt,chan2use{1},eegpatient,eegdate,eegsession);
-
             ampli_fft(irow-1,:) = 2*abs(signalXF(1:length(hz)));
             if scaledlog == 1
                 ampli_fft = scalebylogarithm(ampli_fft);
@@ -278,7 +279,7 @@ for irow =chani:chanend
     x4 = 40.5;
 
     y1=get(gca,'ylim');
-    set(gca, 'xlim',[0 50])
+    set(gca, 'xlim',[1:5])
     hold on
     plot([x1 x1],y1)
     plot([x2 x2],y1)
@@ -359,7 +360,8 @@ save(filematname, 'frqperband', 'quantitytomeasure', 'ampli_fft','power_fft','po
 
 %%%% Calculate power per channel and band
 fprintf('Calling to powerpercentchannelandband : %s %s', eegpatient,eegcond);
-powerpercentchannelandband(eegpatient,eegcond, EEG);
+
+powerpercentchannelandband(eegpatient,eegcond, EEG, label);
 fprintf('.mat file crreated at %s', filematname)
 
 end

@@ -1,5 +1,5 @@
 function celloflabelswithq = getelectrodenamesfromfile(patientid, patientcond)
-%%  getelectrodenamesfromfile(patientid, patientcondition)
+%%  getelectrodenamesfromfile(patientid, patientcondition) DEPRECATED FUNCTION DELETE
 % IN:patientid, patientcondition
 % OUT: celloflabelswithq : a cell array containing: electrodevector(row) = 'label' from elec_recon\electrodeNames
 %     listtoplot  listtoplot(5) = quantitytomeasure(5), for the 5th element

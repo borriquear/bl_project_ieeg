@@ -1,5 +1,3 @@
-
-
 function filematname = fftperperpatient(eegpatient, eegcond)
 %IN patient, condition
 %OUT matfile handle
@@ -15,7 +13,7 @@ global plotsinglechannel;
 globalFsDir = loadglobalFsDir();
 fprintf('Calling to fftperperpatient for patient: %s and condition: %s\n', eegpatient,eegcond);
 [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
-fprintf('EEG object for patient: %s and condition: %s initialzed \n', eegpatient,eegcond);
+fprintf('EEG object for patient: %s and condition: %s initialized \n', eegpatient,eegcond);
 % nb of trials is 1 in Bial database
 trial2plot = EEG.trials;
 % set the channels we need to work on

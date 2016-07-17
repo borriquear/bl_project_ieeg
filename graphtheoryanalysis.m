@@ -67,17 +67,3 @@ patpath = strcat(globalFsDir,currentpat);
 fftfile = fullfile(patpath,'data','figures', mattoload);
 save(fftfile,'allmetrics')
 end
-
-function [threshold, nstds, corrMatrix] = calculatethresholdmatrix(corrMatrix)
-%calculatethresholdmatrix(corrMatrix) returns the threshold and the
-%threshold matrix given a correlation matrix
-%IN: corrMatrix [0,1] if [-1,1] the function calculates abs(corrMatrix)
-%OUT: threshold, new threshold matrix
-
-meanmatrix = mean2(abs(corrMatrix)); stdmatrix = std2(abs(corrMatrix));
-nstds = 1; %number of standard deviations
-threshold = meanmatrix + nstds*stdmatrix;
-fprintf('Corr matrix mean=%2.4f +(n)%d*(std)%2.4f = %2.4f\n', meanmatrix, nstds,stdmatrix, threshold);
-corrMatrix(corrMatrix >  threshold) = 1;
-corrMatrix(corrMatrix <= threshold) = 0;
-end

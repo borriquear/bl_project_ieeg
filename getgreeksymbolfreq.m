@@ -1,14 +1,14 @@
 function [freq_band] = getgreeksymbolfreq(freq)
 switch freq %2, 6 , 10, 23.5, 40};
-    case 2
+    case freq < 4 %2
         freq_band = '\delta';
-    case 6
+    case freq > 4 && freq < 8
         freq_band = '\theta';
-    case 10
+    case freq > 8 && freq < 12
         freq_band = '\alpha';
-    case 23.5
+    case freq > 12 && freq < 30
         freq_band = '\beta';
-    case 40
+    case freq > 30
         freq_band = '\gamma';
     otherwise
         fprintf('ERROR frequency band missing!!');

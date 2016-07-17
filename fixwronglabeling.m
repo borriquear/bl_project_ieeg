@@ -1,5 +1,7 @@
 function EEGcorr = fixwronglabeling(patientid, EEGorig)
-% change wrong labels in EEG 
+% change wrong labels in EEG .
+% It is called by initialize_EEG_variable tochange the actual EEG in the
+% mat file
 EEGcorr = EEGorig;
 switch patientid
     case 'TWH030'
@@ -14,5 +16,7 @@ switch patientid
             EEGcorr.chanlocs(24).labels = 'RAT1'; EEGcorr.chanlocs(25).labels = 'RAT2';EEGcorr.chanlocs(26).labels = 'RAT3';EEGcorr.chanlocs(27).labels = 'RAT4';
             EEGcorr.chanlocs(28).labels = 'RMT1'; EEGcorr.chanlocs(29).labels = 'RMT2';EEGcorr.chanlocs(30).labels = 'RMT3';EEGcorr.chanlocs(31).labels = 'RMT4';
             EEGcorr.chanlocs(32).labels = 'RPT1'; EEGcorr.chanlocs(33).labels = 'RPT2';EEGcorr.chanlocs(34).labels = 'RPT3';EEGcorr.chanlocs(35).labels = 'RPT4';EEGcorr.chanlocs(36).labels = 'RPT5';EEGcorr.chanlocs(37).labels = 'RPT6';
+    case 'TWH042'
+            %EEGcorr = EEGorig(2:49); %delete C49 C58, idid this manually
 end
 end
