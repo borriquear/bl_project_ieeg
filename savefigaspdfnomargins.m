@@ -2,7 +2,7 @@ function [ ] = savefigaspdfnomargins()
 %savefigaspdfnomargins save a .fig as a pdf without huge margins
 % Open only one figure at a time and change the pdfname prior to run this code
 
-pdfname = 'network-power-spearman-30-delta-hyp.pdf';
+pdfname = 'power-amount-42-allcond-allbands.pdf';
 path_fig_files = 'C:\workspace\github\figures';
 filename = fullfile(path_fig_files,pdfname);
 fh=findobj(0,'type','figure');
