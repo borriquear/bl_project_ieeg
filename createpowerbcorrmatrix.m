@@ -1,10 +1,10 @@
-function createpowerbcorrmatrix(eegpatientl, eegconditionl, centerfrequenciesl)
+function powerconn_matrix = createpowerbcorrmatrix(eegpatientl, eegconditionl, centerfrequenciesl)
 %createpowerbcorrmatrix calls to powerbasedconnectivity(eegpatient, eegcondition, centerfreq)
 % to calculate correlation analysis per patient and frequency band
 %OUT: mat file, powerconnectivity_freq_pat_cond  -- corr_matrix', 'channel_labels
 
 %eegconditionl = {'EC_PRE', 'EO_PRE'}; 
-%eegpatientl =  {'TWH030', 'TWH033','TWH037','TWH038','TWH042'};
+%eegpatientl =  {'TWH030', 'TWH031', 'TWH033','TWH037','TWH038','TWH042'};
 %[srate, min_freq, max_freq, num_frex, time, n_wavelet, half_wavelet, freqs2use, s, wavelet_cycles]= initialize_wavelet();
 %centerfrequenciesl  = logspace(log10(min_freq),log10(max_freq),8);
 global globalFsDir;
@@ -27,12 +27,13 @@ if exist(powerconnmatf, 'file') ~= 2
                 fprintf('Calling to powerbasedconnectivityperpatient %s %s %s',eegpatient, eegcondition, num2str(centerfreq) )
                 corr_matrix = createpowerbcorrmatrixperpatient(eegpatient, eegcondition, centerfreq);
                 corr_matrix_list{indpat,indcond,indexfreq} = corr_matrix;
+                %corr_matrix_list(indpat,indcond,indexfreq) = corr_matrix;
             end
         end
     end
     powerconn_matrix.power_matrix = corr_matrix_list;
-    powerconn_matrix.patientsl = patientslist;
-    powerconn_matrix.conditionsl = conditionslist;
+    powerconn_matrix.patientsl = eegpatientl;
+    powerconn_matrix.conditionsl = eegconditionl;
     powerconn_matrix.freqsl = centerfrequenciesl;
     save(powerconnmatf,'powerconn_matrix');
 else

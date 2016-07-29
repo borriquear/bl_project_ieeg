@@ -28,54 +28,60 @@ timewindow = linspace(1.5,3,length(freqs2use)); % number of cycles on either end
 ispc_matrix{length(patientslist), length(conditionslist)} = [];
 pli_matrix{length(patientslist), length(conditionslist)} = [];
 icoh_matrix{length(patientslist), length(conditionslist)} = [];
-for ip=1:length(patientslist)
-    eegpatient = patientslist{ip};
-    for ic=1:length(conditionslist)
-        eegcondition = conditionslist{ic};
-        [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcondition);
-        % initialize
-        n_data               = EEG.pnts*EEG.trials;
-        n_convolution        = n_wavelet + n_data-1;
-        %spectcoher = zeros(length(freqs2use),length(n_data));
-        chani = 2; %initial channel (chani = 1 is reserved for the 'Event' channel)
-        chanend = EEG.nbchan; %end channel
-        %phase_matrix{chanend-chani+1,chanend-chani+1,length(freqs2use)} = [];
-        phase_matrix = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
-        phase_matrix_pli = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
-        imag_coherence_ij = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
-        for irow =chani:chanend
-            ichan2use = channel_labels{irow};
-            data_fft1 = fft(reshape(EEG.data(irow,:,:),1,n_data),n_convolution);
-            for jcol =irow:chanend
-                jchan2use = channel_labels{jcol};
-                %calculate phase difference for two channels                
-                data_fft2 = fft(reshape(EEG.data(jcol,:,:),1,n_data),n_convolution);
-                for fi=1:length(freqs2use)
-                    % create wavelet and take FFT
-                    [ispc_ij, pli_ij, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2, fi );
-                    phase_matrix(irow-1, jcol-1, fi) = ispc_ij;
-                    phase_matrix_pli(irow-1, jcol-1, fi) = pli_ij;
-                    imag_coherence_ij(irow-1, jcol-1, fi) = phase_icoh;
-                    fprintf(' ISPC=%.3f PLI=%.3f icoh=%.3f. %s:%s, channels %s-%s frq=%d\n', ispc_ij, pli_ij,phase_icoh, eegpatient, eegcondition, ichan2use, jchan2use, freqs2use(fi));
-                end % end frequency loop
-            end
-        end   
-        ispc_matrix{ip,ic} = phase_matrix;
-        pli_matrix{ip,ic} = phase_matrix_pli;
-        icoh_matrix{ip,ic} = phase_icoh;
-    end
-end
-%save ispc_matrix in mat file
 matfilename = 'phaseconn_matrices.mat';
 matfilename = fullfile(globalFsDir, matfilename);
 phaseconn_matrix = struct;
-phaseconn_matrix.ispc_matrix = ispc_matrix;
-phaseconn_matrix.pli_matrix = pli_matrix;
-phaseconn_matrix.icoh_matrix = icoh_matrix;
-phaseconn_matrix.patientsl = patientslist;
-phaseconn_matrix.conditionsl = conditionslist;
-phaseconn_matrix.freqsl = freqs2use;
-save(matfilename,'phaseconn_matrix');  
+if exist(powerconnmatf, 'file') ~= 2
+    for ip=1:length(patientslist)
+        eegpatient = patientslist{ip};
+        for ic=1:length(conditionslist)
+            eegcondition = conditionslist{ic};
+            [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcondition);
+            % initialize
+            n_data               = EEG.pnts*EEG.trials;
+            n_convolution        = n_wavelet + n_data-1;
+            %spectcoher = zeros(length(freqs2use),length(n_data));
+            chani = 2; %initial channel (chani = 1 is reserved for the 'Event' channel)
+            chanend = EEG.nbchan; %end channel
+            %phase_matrix{chanend-chani+1,chanend-chani+1,length(freqs2use)} = [];
+            phase_matrix = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
+            phase_matrix_pli = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
+            imag_coherence_ij = zeros(chanend-chani+1,chanend-chani+1,length(freqs2use));
+            for irow =chani:chanend
+                ichan2use = channel_labels{irow};
+                data_fft1 = fft(reshape(EEG.data(irow,:,:),1,n_data),n_convolution);
+                for jcol =irow:chanend
+                    jchan2use = channel_labels{jcol};
+                    %calculate phase difference for two channels
+                    data_fft2 = fft(reshape(EEG.data(jcol,:,:),1,n_data),n_convolution);
+                    for fi=1:length(freqs2use)
+                        % create wavelet and take FFT
+                        [ispc_ij, pli_ij, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2, fi );
+                        phase_matrix(irow-1, jcol-1, fi) = ispc_ij;
+                        phase_matrix_pli(irow-1, jcol-1, fi) = pli_ij;
+                        imag_coherence_ij(irow-1, jcol-1, fi) = phase_icoh;
+                        fprintf(' ISPC=%.3f PLI=%.3f icoh=%.3f. %s:%s, channels %s-%s frq=%d\n', ispc_ij, pli_ij,phase_icoh, eegpatient, eegcondition, ichan2use, jchan2use, freqs2use(fi));
+                    end % end frequency loop
+                end
+            end
+            ispc_matrix{ip,ic} = phase_matrix;
+            pli_matrix{ip,ic} = phase_matrix_pli;
+            icoh_matrix{ip,ic} = phase_icoh;
+        end
+        phaseconn_matrix.ispc_matrix = ispc_matrix;
+        phaseconn_matrix.pli_matrix = pli_matrix;
+        phaseconn_matrix.icoh_matrix = icoh_matrix;
+        phaseconn_matrix.patientsl = patientslist;
+        phaseconn_matrix.conditionsl = conditionslist;
+        phaseconn_matrix.freqsl = freqs2use;
+        save(matfilename,'phaseconn_matrix');
+    end
+else
+    %add the additional patient to phaseconn_matrix
+    %open file and add last patient
+    fprintf('File phaseconn_matrix already exists, delete it to run this function' )
+end
+%save ispc_matrix in mat file
 end
 
 function [phase_ispc, phase_pli, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2,fi)
