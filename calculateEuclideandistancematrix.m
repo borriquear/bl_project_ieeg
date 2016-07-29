@@ -1,7 +1,7 @@
 function [distMatrix] = calculateEuclideandistancematrix(patientid)
 %calculateEuclideandistancematrix returns the matrix containing the
 %euclidean distance matrix for pair of electrodesbelonging to a label e.g. BiTemp, HD, F... 
-%IN: patientid (NOTE patien 31 has not loc file with electrodes coordinates)
+%IN: patientid (NOTE patient 31 has not loc file with electrodes coordinates)
 %OUT: distance matrix
 %patientid  = 'TWH042';
 global globalFsDir;
