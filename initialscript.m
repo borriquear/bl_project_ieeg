@@ -14,12 +14,12 @@
 % TWH038 = ALL
 % TWH042 = ALL
 % TWH043 = ALL
-% TWH045 = 
+% TWH045 = EC_PRE EO_PRE HYP
 % TWH049 = ALL
 %% Create mat file with power FFT . For power analysis, to identify channels with most power and frequency bnds that pick up maximum power
 %1.Define list of patients and conditions to analyze
-patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043'};
-conditionslist = {'EC_PRE', 'HYP'};%,'EC_POST'};
+patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
+conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
 % Generate the mat filewith that calcualtes amplitide and power from the
 % fft to find the frequency components of the signal (patient, condition)
 % globalFsDir\eegpatient\data\figures\fft_%pat_%cond_%date_%ses.ma -> 'ampli_fft','power_fft','power_fft_perband', 'power_fft_mean_perband','channel_labels'
@@ -41,8 +41,8 @@ for i =ip:length(patientslist)
 end
 %%  1.2. Display the power spectra for the patients
 ip = 1; ic =1;
-patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043'};
-conditionslist = {'EC_PRE', 'HYP'};
+patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
+conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};
 powerspecmatrix = {};
 powerfreqsindexes = {};
 powerspecmatrix_freqbands = {};

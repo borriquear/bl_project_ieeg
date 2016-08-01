@@ -146,5 +146,54 @@ patientchannelClass(11).indexes = {[2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 1
 save(filechannel,'patientchannelClass');
 fprintf('patientchannelClass created in file %s\n', filechannel );   
 
+%TWH044,  12
+
+%TWH045, only Right Side
+patientchannelClass(13).patientid = 'TWH045';
+patientchannelClass(13).labels= {'HD', 'NOHD','FP','AF','MF','PF', 'F', 'IH', 'AT', 'MT', 'PT', 'T', 'BiTemp', 'All'};
+patientchannelClass(13).indexes = {[2 3 4 5], %HD
+                                  [6 7 8 9 10 11 12 13 14 15 16 17  18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49  50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65], %NOHD
+                                  [6 7 8 9 10 11 12 13 14 15 16 17 ], %FP
+                                  [ 18 19 20 21 22 23 24 25], %AF
+                                  [ 26 27 28 29 30 31], %MF
+                                  [ 32 33 34 35 36 37 38 39], %PF
+                                  [ 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39], %F
+                                  [40 41 42 43 44 45 46 47 48 49  50 51], %IH A+P
+                                  [52 53 54 55], %AT
+                                  [56 57 58 59], %MT
+                                  [60 61 62 63 64 65], %PT
+                                  [52 53 54 55 56 57 58 59 60 61 62 63 64 65], %T
+                                  [2 3 4 5 52 53 54 55 56 57 58 59 60 61 62 63 64 65],%BiTemp
+                                  [2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49  50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 ]}; %All
+
+ %TWH047, 14
+ %TWH048, 15
+ %TWH049, Only Right
+ patientchannelClass(16).patientid = 'TWH049';
+patientchannelClass(16).labels= {'HD', 'NOHD','FP','AF','MF','PF', 'F', 'AT', 'MT', 'PT', 'T', 'BiTemp', 'IH', 'All'};
+patientchannelClass(16).indexes = {[2 3 4 5], %HD
+                                  [6 7 8 9 10 11 12 13 14 15 16 17  18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49  50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65], %NOHD
+                                  [6 7 8 9 10 11 12 13 14 15 16 17 ], %FP
+                                  [ 18 19 20 21 22 23 24 25], %AF
+                                  [ 26 27 28 29 30 31], %MF
+                                  [ 32 33 34 35 36 37 38 39], %PF
+                                  [ 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39], %F
+                                  [40 41 42 43 ], %AT
+                                  [44 45 46 47], %MT
+                                  [48 49  50 51 52 53], %PT
+                                  [40 41 42 43 44 45 46 47 48 49  50 51 52 53 ], %T
+                                  [2 3 4 5 40 41 42 43 44 45 46 47 48 49  50 51 52 53],%BiTemp
+                                  [54 55 56 57 58 59 60 61 62 63 64 65],%IH A + P
+                                  [2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49  50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 ]}; %All
+   
+ 
+
+save(filechannel,'patientchannelClass');
+fprintf('patientchannelClass created in file %s\n', filechannel );  
+
+
+
+
+
 %[channelclassindexes] = getindexesfromlabel('TWH024', 'T',patientchannelClass)
 end
