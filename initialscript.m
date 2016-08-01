@@ -1,11 +1,18 @@
 %% Script that goes step by step processing the data
-%0. the EEG objects for each patients need to be already created (EEGLab)
-
-%% Create mat file with power FFT 
+%0. The EEG objects for each patients need to be already created (EEGLab)
+% cuteoneepochNEW.m, read overleaf documenttation 
+%% Create mat file with power FFT . For power analysis, to identify channels with most power and frequency bnds that pick up maximum power
 %1.Define list of patients and conditions to analyze
 patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043'};
 conditionslist = {'EC_PRE', 'HYP'};%,'EC_POST'};
-% Generate the mat filewith power fft 
+% Generate the mat filewith that calcualtes amplitide and power from the
+% fft to find the frequency components of the signal (patient, condition)
+% globalFsDir\eegpatient\data\figures\fft_%pat_%cond_%date_%ses.ma -> 'ampli_fft','power_fft','power_fft_perband', 'power_fft_mean_perband','channel_labels'
+%ranges of frequency f = 0:50;hz = linspace(0,nyquistfreq,floor(n/2)+1);
+%FFT fft(X) computes the discrete Fourier transform (DFT) of X using a fast Fourier transform (FFT) algorithm.
+%     signalXF = fft(signal)/n;
+%     ampli_fft(irow-1,:) = 2*abs(signalXF(1:length(hz)));
+%     power_fft(irow-1,:) = abs(signalXF(1:length(hz))).^2;
 ip = 1; ic =1;
 for i =ip:length(patientslist)
     eegpatient = patientslist{i};
