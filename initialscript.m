@@ -1,6 +1,6 @@
 %% Script that goes step by step processing the data
 %0. The EEG objects for each patients need to be already created (EEGLab)
-% cuteoneepochNEW.m, read overleaf documenttation 
+% cuteoneepochNEW.m, read overleaf documenttation        
 % Patients conditions
 % TWH024 =               HYP
 % TWH027 =               HYP
