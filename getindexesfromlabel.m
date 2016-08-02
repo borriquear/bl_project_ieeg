@@ -38,7 +38,7 @@ elseif isequal(patientid, 'TWH047') == 1
     idpatnb = 14;
 elseif isequal(patientid, 'TWH048') == 1
     idpatnb = 15;
-elseif isequal(patientid, 'TWH047') == 1
+elseif isequal(patientid, 'TWH049') == 1
     idpatnb = 16;
 else
     error('ERROR: Patientif is incorrect, patient doesnt exist')
