@@ -30,6 +30,16 @@ elseif isequal(patientid, 'TWH042') == 1
     idpatnb = 10;
 elseif isequal(patientid, 'TWH043') == 1
     idpatnb = 11;
+elseif isequal(patientid, 'TWH044') == 1
+    idpatnb = 12;
+elseif isequal(patientid, 'TWH045') == 1
+    idpatnb = 13;
+elseif isequal(patientid, 'TWH047') == 1
+    idpatnb = 14;
+elseif isequal(patientid, 'TWH048') == 1
+    idpatnb = 15;
+elseif isequal(patientid, 'TWH047') == 1
+    idpatnb = 16;
 else
     error('ERROR: Patientif is incorrect, patient doesnt exist')
 end

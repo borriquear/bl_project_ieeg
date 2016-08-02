@@ -47,6 +47,32 @@ if strcmp(patientid, 'TWH043') == 1
     elseif strcmp(pre_label, 'EO_POST') == 1
         pre = 'fft_EO_POST_TWH043_05042016_s1.mat';
     end
+    
+elseif strcmp(patientid, 'TWH045') ==1
+    if strcmp(pre_label, 'EC_PRE')  == 1
+        pre = 'fft_EC_PRE_TWH045_06022016_s1.mat';
+    elseif strcmp(pre_label, 'EO_PRE') == 1
+        pre = 'fft_EO_PRE_TWH045_06022016_s1.mat';
+    elseif strcmp(pre_label, 'HYP') == 1
+        pre = 'fft_HYP_TWH045_06022016_s1.mat';
+    elseif  strcmp(pre_label, 'EC_POST') == 1
+        pre = 'fft_EC_POST_TWH045_06022016_s1.mat';
+    elseif  strcmp(pre_label, 'EO_POST') == 1
+        pre = 'fft_EO_POST_TWH045_06022016_s1.mat';
+    end
+elseif strcmp(patientid, 'TWH049') ==1
+    if strcmp(pre_label, 'EC_PRE')  == 1
+        pre = 'fft_EC_PRE_TWH049_06292016_s1.mat';
+    elseif strcmp(pre_label, 'EO_PRE') == 1
+        pre = 'fft_EO_PRE_TWH049_06292016_s1.mat';
+    elseif strcmp(pre_label, 'HYP') == 1
+        pre = 'fft_HYP_TWH049_06292016_s1.mat';
+    elseif  strcmp(pre_label, 'EC_POST') == 1
+        pre = 'fft_EC_POST_TWH049_06292016_s1.mat';
+    elseif  strcmp(pre_label, 'EO_POST') == 1
+        pre = 'fft_EO_POST_TWH049_06292016_s1.mat';
+    end
+    
 elseif strcmp(patientid, 'TWH042') ==1
     if strcmp(pre_label, 'EC_PRE')  == 1
         pre = 'fft_EC_PRE_TWH042_05042016_s1.mat';

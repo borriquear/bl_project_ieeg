@@ -18,7 +18,7 @@
 % TWH049 = ALL
 %% Create mat file with power FFT . For power analysis, to identify channels with most power and frequency bnds that pick up maximum power
 %1.Define list of patients and conditions to analyze
-patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
+patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
 conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
 % Generate the mat filewith that calcualtes amplitide and power from the
 % fft to find the frequency components of the signal (patient, condition)
@@ -42,7 +42,9 @@ end
 %%  1.2. Display the power spectra for the patients
 ip = 1; ic =1;
 patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
+patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038'};
 conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};
+conditionslist = {'EC_PRE','HYP'}
 powerspecmatrix = {};
 powerfreqsindexes = {};
 powerspecmatrix_freqbands = {};
@@ -62,6 +64,7 @@ for i =ip:length(patientslist)
 end
 % plot power spectra per ROIs per areas ALL patients condition
 rois = {'HD','T','F', 'IH'};
+rois = {'HD', 'NOHD'};
 plotpowerspectrumallpatientsROI(patientslist, conditionslist, powerspecmatrix, powerfreqsindexes, powerspecmatrix_freqbands, rois);
 % Statistical significance between conditions in power spectra
 plotstatisticalsignificance_powerspec(patientslist, conditionslist, powerspecmatrix, powerfreqsindexes, powerspecmatrix_freqbands, rois);

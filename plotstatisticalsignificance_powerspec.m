@@ -44,11 +44,13 @@ end
 % %[h,p] = ttest2(xx1, yy2);
 % [h p] = ttest2(mean(xx1), mean(yy2));
 % fprintf('p-value for Power spectra in conditions % and % =%s \n',conditionslist{1},conditionslist{2}, num2str(p) )
-for i=1:length(patientlist)
-    fprintf('Calculating ttest2 for patient=%s, %s-%s\n',  patientlist{i}, conditionslist{1}, conditionslist{2});
-    pause(1.0);
-    [h, p]= ttest2(powerx_mean_perbands{i,1},powerx_mean_perbands{i,2});
-    disp([h p])
+if length(conditionslist) > 1
+    for i=1:length(patientlist)
+        fprintf('Calculating ttest2 for patient=%s, %s-%s\n',  patientlist{i}, conditionslist{1}, conditionslist{2});
+        pause(1.0);
+        [h, p]= ttest2(powerx_mean_perbands{i,1},powerx_mean_perbands{i,2});
+        disp([h p])
+    end
 end
 %Calculating ttest2 for patient=TWH030, EC_PRE-HYP
 %          0         0         0         0         0    0.4009    0.7562    0.0655    0.1730    0.9251
@@ -107,10 +109,12 @@ if isempty(rois) == 0
                 fprintf('Skipping Patient %s, she has not area %s\n',eegpatient,curoi);
             end
             if skippatient < 1
-                fprintf('Calculating ttest2 for patient=%s, %s-%s in ROI=%s\n',  patientlist{ip}, conditionslist{1}, conditionslist{2}, curoi);
-                pause(1.0);
-                [h, p]= ttest2(meanavgbandroipatcond{ip,1},meanavgbandroipatcond{ip,2});
-                disp([h p]);
+                if length(conditionslist) > 1
+                    fprintf('Calculating ttest2 for patient=%s, %s-%s in ROI=%s\n',  patientlist{ip}, conditionslist{1}, conditionslist{2}, curoi);
+                    pause(1.0);
+                    [h, p]= ttest2(meanavgbandroipatcond{ip,1},meanavgbandroipatcond{ip,2});
+                    disp([h p]);
+                end
             end
         end
     end

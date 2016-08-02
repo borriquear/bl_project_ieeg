@@ -1,4 +1,4 @@
-function [] = plotpowerspectrumallpatients(patientlist,conditionslist,powerspecmatrix,powerfreqsindexes )
+function [] = plotpowerspectrumallpatients(patientlist,conditionslist, powerspecmatrix, powerfreqsindexes )
 %plot all patients mean of all channels in one figure
 %figure1=figure('Position', [100, 100, 1024, 1200]);
 figm = figure;

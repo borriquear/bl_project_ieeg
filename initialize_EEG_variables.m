@@ -18,7 +18,7 @@ EEG = load(myfullname);
 if isstruct(EEG) == 1
     if (strcmp(patientid, 'TWH033') + strcmp(patientid, 'TWH034') + strcmp(patientid, 'TWH024')) == 1
         EEG = EEG.EEG;
-    elseif (strcmp(patientid,'TWH037')+ strcmp(patientid,'TWH038')+ strcmp(patientid,'TWH042')+ strcmp(patientid,'TWH043')) == 1
+    elseif (strcmp(patientid,'TWH037')+ strcmp(patientid,'TWH038')+ strcmp(patientid,'TWH042')+ strcmp(patientid,'TWH043')+ strcmp(patientid,'TWH045')+ strcmp(patientid,'TWH049')) == 1
         EEG = EEG.EEGepocht10t20;
         if strcmp(patientid,'TWH042') == 1
             %42 has 48 channels
