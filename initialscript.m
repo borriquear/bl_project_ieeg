@@ -1,4 +1,4 @@
-%% Script that goes step by step processing the data
+%% Script that goes step by step processing the data.
 %0. The EEG objects for each patients need to be already created (EEGLab)
 % cuteoneepochNEW.m, read overleaf documenttation        
 % Patients conditions
@@ -80,7 +80,7 @@ createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies)
 %% network analysis
 % displaypowerconnectivity (display corr.matrx 
 % needs the mat with the corr_matrix and the network (graphtheoryanalysis.m)
-%displays the correlation matrix and the undirected network 
+%displays the correlation matrix and the undirected network   
 
 %[srate, min_freq, max_freq, num_frex, time, n_wavelet, half_wavelet, freqs2use, s, wavelet_cycles]= initialize_wavelet();
 %centerfrequenciesl  = logspace(log10(min_freq),log10(max_freq),8)
