@@ -14,7 +14,7 @@ for indpat=1:length(eegpatientl)
         channels_pat{indpat} = channel_labels;
         fprintf('Calculating corr. matrix for patient %s', eegpatientl{indpat});
         for indexfreq = 1:length(centerfrequencies) % delta, theta, alpha, beta, gamma
-            centerfreq = centerfrequencies{indexfreq};
+            centerfreq = centerfrequencies(indexfreq);
             initelem = zeros(length(channel_labels)-1,length(channel_labels)-1);
             allmatrixpowcon{indpat,indcond, indexfreq} = initelem;
             allmatrixpowcon{indpat,indcond, indexfreq} = opencorrelationmatrix(curpatient, curcondition,centerfreq,eegdate, eegsession);

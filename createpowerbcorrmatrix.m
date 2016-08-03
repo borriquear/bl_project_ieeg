@@ -3,7 +3,7 @@ function powerconn_matrix = createpowerbcorrmatrix(eegpatientl, eegconditionl, c
 % to calculate correlation analysis per patient and frequency band
 %OUT: mat file, powerconnectivity_freq_pat_cond  -- corr_matrix', 'channel_labels
 
-%eegconditionl = {'EC_PRE', 'EO_PRE'}; 
+%eegconditionl = {'EC_PRE', 'EO_PRE'};
 %eegpatientl =  {'TWH030', 'TWH031', 'TWH033','TWH037','TWH038','TWH042'};
 %[srate, min_freq, max_freq, num_frex, time, n_wavelet, half_wavelet, freqs2use, s, wavelet_cycles]= initialize_wavelet();
 %centerfrequenciesl  = logspace(log10(min_freq),log10(max_freq),8);
@@ -15,30 +15,37 @@ powerconnmatf = fullfile(globalFsDir, 'powerconn_matrices.mat');
 %fh = load(powerconnmatf);
 %corr_matrix_list = zeros(length(eegpatientl),length(eegconditionl),length(centerfrequenciesl));
 corr_matrix_list = {};
-if exist(powerconnmatf, 'file') ~= 2
-    %if file doesnt exist, create file from scratch
-    fprintf('Creating %s from scratch \n', powerconnmatf)
-    for indpat=1:length(eegpatientl)
-        eegpatient = eegpatientl{indpat};
-        for indcond=1:length(eegconditionl)
-            eegcondition = eegconditionl{indcond};
-            for indexfreq = 1:length(centerfrequenciesl) % delta, theta, alpha, beta, gamma
-                centerfreq = centerfrequenciesl(indexfreq);
-                fprintf('Calling to powerbasedconnectivityperpatient %s %s %s',eegpatient, eegcondition, num2str(centerfreq) )
-                corr_matrix = createpowerbcorrmatrixperpatient(eegpatient, eegcondition, centerfreq);
-                corr_matrix_list{indpat,indcond,indexfreq} = corr_matrix;
-                %corr_matrix_list(indpat,indcond,indexfreq) = corr_matrix;
-            end
+%if exist(powerconnmatf, 'file') ~= 2
+%if file doesnt exist, create file from scratch
+fprintf('Creating %s from scratch \n', powerconnmatf)
+for indpat=1:length(eegpatientl)
+    eegpatient = eegpatientl{indpat};
+    for indcond=1:length(eegconditionl)
+        eegcondition = eegconditionl{indcond};
+        for indexfreq = 1:length(centerfrequenciesl) % delta, theta, alpha, beta, gamma
+            centerfreq = centerfrequenciesl(indexfreq);
+            fprintf('Calling to powerbasedconnectivityperpatient %s %s %s',eegpatient, eegcondition, num2str(centerfreq) )
+            corr_matrix = createpowerbcorrmatrixperpatient(eegpatient, eegcondition, centerfreq);
+            corr_matrix_list{indpat,indcond,indexfreq} = corr_matrix;
+            %corr_matrix_list(indpat,indcond,indexfreq) = corr_matrix;
         end
     end
+    % save powerconn_matrix.mat for patients done so far
     powerconn_matrix.power_matrix = corr_matrix_list;
-    powerconn_matrix.patientsl = eegpatientl;
+    powerconn_matrix.patientsl = eegpatientl(1:indpat);
     powerconn_matrix.conditionsl = eegconditionl;
     powerconn_matrix.freqsl = centerfrequenciesl;
     save(powerconnmatf,'powerconn_matrix');
-else
-    %added matrices from new patient or condition
 end
+% overwrite final powerconn_matrix.mat for all patients in patientsl
+powerconn_matrix.power_matrix = corr_matrix_list;
+powerconn_matrix.patientsl = eegpatientl;
+powerconn_matrix.conditionsl = eegconditionl;
+powerconn_matrix.freqsl = centerfrequenciesl;
+save(powerconnmatf,'powerconn_matrix');
+%else
+%added matrices from new patient or condition
+%end
 end
 
 
@@ -52,7 +59,7 @@ function [ corr_matrix ] = createpowerbcorrmatrixperpatient(eegpatient, eegcondi
 % electrodes of the patient (powerconnectivity_freq_)This file is needed in
 % displaypowerconnectivity
 %% 1. Load epoch and Initialize data
-powerconnperpatient = 0;
+%powerconnperpatient = 0;
 fprintf('Loading EEG for patient:%s and condition%s\n',eegpatient,eegcondition);
 [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcondition);
 [eegpathname eegfilename eegextname]= fileparts(myfullname);
@@ -121,13 +128,14 @@ for irow =chani:chanend
     end
 end
 %entropym = sum(corr_matrix(corr_matrix~=0).*log(corr_matrix(corr_matrix~=0)));
-if powerconnperpatient == 1
-    %save mat file for each patient in the patient directory, this is
-    %redundant since we have all in globalFsDir/powerconn_matrices.mat
-    [globalFsDir] = loadglobalFsDir();
-    patpath = strcat(globalFsDir,eegpatient);
-    mattoload = strcat('powerconnectivity_freq_',num2str(centerfreq),'_',eegcondition,'_', eegpatient,'_',eegdate,'_',eegsession,'.mat');
-    fftfile = fullfile(patpath,'data','figures', mattoload);
-    save(fftfile,'corr_matrix', 'channel_labels')
-end
+%if powerconnperpatient == 1
+%save mat file for each patient in the patient directory, this is
+%redundant since we have all in globalFsDir/powerconn_matrices.mat, but
+%displaypowerconnectivity.m needs those files to do the network analysis
+[globalFsDir] = loadglobalFsDir();
+patpath = strcat(globalFsDir,eegpatient);
+mattoload = strcat('powerconnectivity_freq_',num2str(centerfreq),'_',eegcondition,'_', eegpatient,'_',eegdate,'_',eegsession,'.mat');
+fftfile = fullfile(patpath,'data','figures', mattoload);
+save(fftfile,'corr_matrix', 'channel_labels')
+%end
 end
