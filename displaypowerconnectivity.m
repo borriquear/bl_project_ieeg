@@ -19,7 +19,7 @@ for indpat=1:length(eegpatientl)
             allmatrixpowcon{indpat,indcond, indexfreq} = initelem;
             allmatrixpowcon{indpat,indcond, indexfreq} = opencorrelationmatrix(curpatient, curcondition,centerfreq,eegdate, eegsession);
         end
-        drawnow limitrate nocallbacks
+        %drawnow limitrate nocallbacks
     end
 end
 %display charts from allmatrixpowcon
@@ -33,9 +33,9 @@ for indpat=1:length(eegpatientl)
             %display correlation matrix
             %one figure for each freq band for corrplot
            h(j) = figure;
-           displaycorrelationmatrix(allmatrixpowcon{indpat,indcond, j},curpatient,curcondition, centerfrequencies{j},h(j),channels_pat{indpat});
+           displaycorrelationmatrix(allmatrixpowcon{indpat,indcond, j},curpatient,curcondition, centerfrequencies(j),h(j),channels_pat{indpat});
            % generate the network
-           [allmetrics] = graphtheoryanalysis(allmatrixpowcon{indpat,indcond, j}, curpatient,curcondition, centerfrequencies{j}, channels_pat{indpat});
+           [allmetrics] = graphtheoryanalysis(allmatrixpowcon{indpat,indcond, j}, curpatient,curcondition, centerfrequencies(j), channels_pat{indpat});
         end
    end
 end

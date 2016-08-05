@@ -68,26 +68,31 @@ rois = {'HD', 'NOHD'};
 plotpowerspectrumallpatientsROI(patientslist, conditionslist, powerspecmatrix, powerfreqsindexes, powerspecmatrix_freqbands, rois);
 % Statistical significance between conditions in power spectra
 plotstatisticalsignificance_powerspec(patientslist, conditionslist, powerspecmatrix, powerfreqsindexes, powerspecmatrix_freqbands, rois);
-%% Spectrogram
+%% 1.3. Spectrogram
 fprintf('Calling to plotspectrogramperpatient, Patient %s, Condition %s\n', eegpatient,eegcond)
 plotspectrogram(patientslist, conditionslist, rois)
-%% create power based correlation matrix
+%% 1.4. create power based correlation matrix
 % creates the correlation matrix with Spearman, powerbased 
-patientslist = {'TWH030','TWH031','TWH033', 'TWH034','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
-conditionslist = {'EC_PRE', 'HYP'}; 
-centerfrequencies =  {6 , 10, 23.5, 40}; %{2};
+patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
+conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
+%centerfrequencies =  {6 , 10, 23.5, 40}; %{2};
+centerfrequencies  = logspace(log10(1),log10(50),8);
 createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies)
-%% network analysis
-% displaypowerconnectivity (display corr.matrx 
-% needs the mat with the corr_matrix and the network (graphtheoryanalysis.m)
+%% 1.5 network analysis
+% displaypowerconnectivity display corr.matrx 
+% needs the mat with the corr_matrix for each patient and the network (graphtheoryanalysis.m)
 %displays the correlation matrix and the undirected network   
 
 %[srate, min_freq, max_freq, num_frex, time, n_wavelet, half_wavelet, freqs2use, s, wavelet_cycles]= initialize_wavelet();
 %centerfrequenciesl  = logspace(log10(min_freq),log10(max_freq),8)
+patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
+conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
+%centerfrequencies =  {6 , 10, 23.5, 40}; %{2};
+centerfrequencies  = logspace(log10(1),log10(50),8);
 displaypowerconnectivity(patientslist, conditionslist, centerfrequencies);
 
-
-%% Phase-based Analysis
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Phase-based Analysis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 2. Phase-based Analysis
 %Calculate the Inter Siete Phase Clustering
 % R = ||1/n \sum_t=1,n e^i(\phi_ch1,t - \phi_ch2,t) 
 %Get the  bivariate phase difference for every 2 channels

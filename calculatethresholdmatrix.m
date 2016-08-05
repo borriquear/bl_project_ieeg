@@ -4,7 +4,8 @@ function [threshold, nstds, corrMatrix] = calculatethresholdmatrix(corrMatrix)
 %IN: corrMatrix [0,1] if [-1,1] the function calculates abs(corrMatrix)
 %OUT: threshold, new threshold matrix
 
-meanmatrix = mean2(abs(corrMatrix)); stdmatrix = std2(abs(corrMatrix));
+%meanmatrix = mean2(abs(corrMatrix)); stdmatrix = std2(abs(corrMatrix));
+meanmatrix = mean(abs(corrMatrix(:))); stdmatrix = std(abs(corrMatrix(:)));
 nstds = 2; %number of standard deviations
 threshold = meanmatrix + nstds*stdmatrix;
 %threshold = 0;
