@@ -1,4 +1,4 @@
-function powerconn_matrix = createpowerbcorrmatrix(eegpatientl, eegconditionl, centerfrequenciesl)
+function powerconn_matrix = createpowerbcorrmatrix(eegpatientl, eegconditionl, centerfrequenciesl, temporalwindow)
 %createpowerbcorrmatrix calls to powerbasedconnectivity(eegpatient, eegcondition, centerfreq)
 % to calculate correlation analysis per patient and frequency bandtemporalw
 %OUT: mat file, powerconnectivity_freq_pat_cond  -- corr_matrix', 'channel_labels
@@ -7,18 +7,26 @@ function powerconn_matrix = createpowerbcorrmatrix(eegpatientl, eegconditionl, c
 %eegpatientl =  {'TWH030', 'TWH031', 'TWH033','TWH037','TWH038','TWH042'};
 %[srate, min_freq, max_freq, num_frex, time, n_wavelet, half_wavelet, freqs2use, s, wavelet_cycles]= initialize_wavelet();
 %centerfrequenciesl  = logspace(log10(min_freq),log10(max_freq),8);
+
 global globalFsDir;
 globalFsDir = loadglobalFsDir();
 powerconn_matrix = struct;
-%open file with power conn matrices all patients, conds and freqs
 powerconnmatf = fullfile(globalFsDir, 'powerconn_matrices.mat');
+%open file with power conn matrices all patients, conds and freqs
+if (nargin < 4 || temporalwindow < 1)
+    temporalwindow = 0; % by default, take the entire data raw sequence
+else
+    powerconnmatf = fullfile(globalFsDir, 'powerconn_matrices_tw.mat');
+end
+powerconn_matrix.temporalwindow = temporalwindow;
 %fh = load(powerconnmatf);
 %corr_matrix_list = zeros(length(eegpatientl),length(eegconditionl),length(centerfrequenciesl));
 corr_matrix_list = {};
 %if exist(powerconnmatf, 'file') ~= 2
 %if file doesnt exist, create file from scratch
 fprintf('Creating %s from scratch \n', powerconnmatf)
-temporalwinow = 1; % freq-time power series with temporal window
+%temporalwindow = 1; % freq-time power series with temporal window
+
 for indpat=1:length(eegpatientl)
     eegpatient = eegpatientl{indpat};
     for indcond=1:length(eegconditionl)
@@ -26,9 +34,9 @@ for indpat=1:length(eegpatientl)
         for indexfreq = 1:length(centerfrequenciesl) % delta, theta, alpha, beta, gamma
             centerfreq = centerfrequenciesl(indexfreq);
             fprintf('Calling to powerbasedconnectivityperpatient %s %s %s',eegpatient, eegcondition, num2str(centerfreq) )
-            if temporalwinow == 1
-                temporalwsecs = 4; %temporal window of 4 seconds
-                corr_matrix = createpowerbcorrmatrixperpatient_tempw(eegpatient, eegcondition, centerfreq, temporalwsecs);
+            if temporalwindow == 1
+                %temporalwsecs = 4; %temporal window in seconds
+                corr_matrix = createpowerbcorrmatrixperpatient_tempw(eegpatient, eegcondition, centerfreq, temporalwindow);
             else
                 corr_matrix = createpowerbcorrmatrixperpatient(eegpatient, eegcondition, centerfreq);
             end
@@ -146,23 +154,6 @@ save(fftfile,'corr_matrix', 'channel_labels')
 %end
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function [ corr_matrix ] = createpowerbcorrmatrixperpatient_tempw(eegpatient, eegcondition, centerfreq, temporalwsecs)
 % createpowerbcorrmatrixperpatient_tempw Returns the correlation matrix for
 % the time frequency power correlation for a given temporal window
@@ -180,7 +171,7 @@ chanend = EEG.nbchan;
 tot_channels = chanend - chani + 1;
 disp(['Total number of channels=' num2str(EEG.nbchan)]);
 srate = EEG.srate;
-disp(['Sampling rate=\', num2str(srate)]);
+disp(['Sampling rate=', num2str(srate)]);
 %total seconds of the epoch
 tot_seconds = floor(EEG.pnts/srate);
 disp(['Total seconds of the session=' num2str(tot_seconds)])
@@ -261,10 +252,7 @@ end
 %displaypowerconnectivity.m needs those files to do the network analysis
 [globalFsDir] = loadglobalFsDir();
 patpath = strcat(globalFsDir,eegpatient);
-mattoload = strcat('powerconnectivity_TW_freq_',num2str(centerfreq),'_',eegcondition,'_', eegpatient,'_',eegdate,'_',eegsession,'.mat');
+mattoload = strcat('powerconnectivity_tmpw_',num2str(temporalwsecs), '_freq_', num2str(centerfreq),'_',eegcondition,'_', eegpatient,'_',eegdate,'_',eegsession,'.mat');
 fftfile = fullfile(patpath,'data','figures', mattoload);
-save(fftfile,'corr_matrix', 'channel_labels')
-
-
-
+save(fftfile,'corr_matrix', 'channel_labels', 'temporalwsecs')
 end
