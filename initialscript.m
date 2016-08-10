@@ -82,9 +82,7 @@ plotspectrogram(patientslist, conditionslist, rois)
 % creates the correlation matrix with Spearman, powerbased 
 patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH047', 'TWH048','TWH049'};
 conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
-
 centerfrequencies  = logspace(log10(1),log10(50),8);
-
 %create powerconn matrices, first for segments of temporalwindow secs in powerconn_matrices.mat
 temporalwindow = 4; % 4 seconds powerconn_matrices_tw.mat
 createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies, temporalwindow);
@@ -107,7 +105,8 @@ conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
 centerfrequencies  = logspace(log10(1),log10(50),8);
 centerfrequencies  = centerfrequencies(3:end);
 displaypowerconnectivity(patientslist, conditionslist, centerfrequencies);
-
+powerconnmatf = fullfile(globalFsDir, 'powerconn_matrices.mat');
+fprintf('Created file of power connectivity in %s\n', powerconnmatf);
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Phase-based Analysis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% 2. Phase-based Analysis
 %Calculate the Inter Siete Phase Clustering
@@ -117,6 +116,11 @@ displaypowerconnectivity(patientslist, conditionslist, centerfrequencies);
 patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH047', 'TWH048','TWH049'};
 conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
 centerfrequencies  = logspace(log10(1),log10(50),8);
-calculatephasedifferences(patientslist, conditionslist)
+patientslist = {'TWH030'}; conditionslist = {'HYP'}; centerfrequencies = 1;
+%temporalwindow in miliseconds
+calculatephasedifferences(patientslist, conditionslist, temporalwindow*1000);
+matfilename = fullfile(globalFsDir, 'phaseconn_matrices.mat');
+fprintf('Created file of phase connectivity in %s\n', matfilename);
+
 %% 3. Calculate Wiring cost
 calculatewiringcostmatrices(patientslist, conditionslist)
