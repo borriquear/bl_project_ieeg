@@ -1,6 +1,8 @@
-function [] = calculatephasedifferences(patientslist, conditionslist)
-% patientslist = {'TWH030', 'TWH033','TWH037','TWH038','TWH042'}
-% conditionslist = {'EC_PRE', 'EO_PRE'}
+function [] = calculatephasedifferences(patientslist, conditionslist, time_window_idx)
+% calculatephasedifferences create file phaseconn_matrices.mat with
+% phaseconn_matrix struct
+%time_window_idx time window in secs*srate
+
 global min_freq;
 global max_freq;
 global num_frex;
@@ -31,7 +33,7 @@ icoh_matrix{length(patientslist), length(conditionslist)} = [];
 matfilename = 'phaseconn_matrices.mat';
 matfilename = fullfile(globalFsDir, matfilename);
 phaseconn_matrix = struct;
-if exist(powerconnmatf, 'file') ~= 2
+%if exist(matfilename, 'file') ~= 2
     for ip=1:length(patientslist)
         eegpatient = patientslist{ip};
         for ic=1:length(conditionslist)
@@ -56,7 +58,7 @@ if exist(powerconnmatf, 'file') ~= 2
                     data_fft2 = fft(reshape(EEG.data(jcol,:,:),1,n_data),n_convolution);
                     for fi=1:length(freqs2use)
                         % create wavelet and take FFT
-                        [ispc_ij, pli_ij, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2, fi );
+                        [ispc_ij, pli_ij, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2, fi,time_window_idx );
                         phase_matrix(irow-1, jcol-1, fi) = ispc_ij;
                         phase_matrix_pli(irow-1, jcol-1, fi) = pli_ij;
                         imag_coherence_ij(irow-1, jcol-1, fi) = phase_icoh;
@@ -74,17 +76,18 @@ if exist(powerconnmatf, 'file') ~= 2
         phaseconn_matrix.patientsl = patientslist;
         phaseconn_matrix.conditionsl = conditionslist;
         phaseconn_matrix.freqsl = freqs2use;
+        phaseconn_matrix.temporalwindow = time_window_idx/srate;
         save(matfilename,'phaseconn_matrix');
     end
-else
-    %add the additional patient to phaseconn_matrix
-    %open file and add last patient
-    fprintf('File phaseconn_matrix already exists, delete it to run this function' )
-end
+% else
+%     %add the additional patient to phaseconn_matrix
+%     %open file and add last patient
+%     fprintf('File phaseconn_matrix already exists, delete it to run this function' )
+% end
 %save ispc_matrix in mat file
 end
 
-function [phase_ispc, phase_pli, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2,fi)
+function [phase_ispc, phase_pli, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2,fi, time_window_idx)
 %calculatephasedifferences2channels returns the ISPC for 2 channels (fft)
 %and a frequency
 %IN EEG, data_fft1,data_fft2,fi
@@ -125,7 +128,7 @@ specX = sum(sig1.*conj(sig2),2);
 %icohabsl= abs(imag(specX./sqrt(spec1.*spec2)));
 %icoh = mean(icohabsl);
 
-time_window_idx = round((1000/freqs2use(fi))*timewindow(fi)/(1000/EEG.srate));
+%time_window_idx = round((1000/freqs2use(fi))*timewindow(fi)/(1000/EEG.srate));
 %ispc = zeros(1,time_window_idx+1:EEG.pnts-time_window_idx);
 %ispc_ind =EEG.pnts-time_window_idx - time_window_idx+1;
 wt_size = size(time_window_idx+1:time_window_idx:EEG.pnts-time_window_idx,2);
