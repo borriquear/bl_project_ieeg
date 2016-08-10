@@ -85,10 +85,14 @@ createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies)
 
 %[srate, min_freq, max_freq, num_frex, time, n_wavelet, half_wavelet, freqs2use, s, wavelet_cycles]= initialize_wavelet();
 %centerfrequenciesl  = logspace(log10(min_freq),log10(max_freq),8)
-patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH049'};
+patientslist = {'TWH030','TWH031', 'TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH047', 'TWH048', 'TWH049'};%,
+patientslist = {'TWH047'};
 conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
+conditionslist  = {'EO_PRE'}
 %centerfrequencies =  {6 , 10, 23.5, 40}; %{2};
 centerfrequencies  = logspace(log10(1),log10(50),8);
+centerfrequencies = centerfrequencies(3:end);
+%centerfrequencies = 50;
 displaypowerconnectivity(patientslist, conditionslist, centerfrequencies);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Phase-based Analysis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
