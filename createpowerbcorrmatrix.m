@@ -34,7 +34,11 @@ for indpat=1:length(eegpatientl)
         for indexfreq = 1:length(centerfrequenciesl) % delta, theta, alpha, beta, gamma
             centerfreq = centerfrequenciesl(indexfreq);
             fprintf('Calling to powerbasedconnectivityperpatient %s %s %s',eegpatient, eegcondition, num2str(centerfreq) )
+<<<<<<< HEAD
             if temporalwindow > 0
+=======
+            if temporalwindow == 1
+>>>>>>> 9884fa8d3103d4dea8c8ddbdf344e053a9463cd3
                 %temporalwsecs = 4; %temporal window in seconds
                 corr_matrix = createpowerbcorrmatrixperpatient_tempw(eegpatient, eegcondition, centerfreq, temporalwindow);
             else
@@ -255,4 +259,8 @@ patpath = strcat(globalFsDir,eegpatient);
 mattoload = strcat('powerconnectivity_tmpw_',num2str(temporalwsecs), '_freq_', num2str(centerfreq),'_',eegcondition,'_', eegpatient,'_',eegdate,'_',eegsession,'.mat');
 fftfile = fullfile(patpath,'data','figures', mattoload);
 save(fftfile,'corr_matrix', 'channel_labels', 'temporalwsecs')
+<<<<<<< HEAD
 end
+=======
+end
+>>>>>>> 9884fa8d3103d4dea8c8ddbdf344e053a9463cd3

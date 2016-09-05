@@ -47,6 +47,7 @@ for i=1:Srows
     histo = S{i,2};
     nmetrics = S{i}{2};
     [Lia1] = ismember(freq,listoffreqs);
+    tot_nb_edges = (pow2(length(corrmat),2) - length(corrmat))/2;
     %build list of frequencies
     if sum(Lia1(:)) == 0
         listoffreqs = [listoffreqs freq];
@@ -69,7 +70,7 @@ for i=1:Srows
         if strcmp(patient, patient_ot)==1 && freq == freq_ot && strcmp(condition, condition_ot) < 1
             conditiondoff= sprintf('%s-%s', condition{1}, condition_ot{1});
             kd = KLDiv(histo,histo_ot); jd = JSDiv(histo,histo_ot);
-            nb_edges_norm_diff = (sum(corrmat(:)) - sum(corrmat_ot(:)))/length(corrmat);
+            nb_edges_norm_diff = (sum(corrmat(:)) - sum(corrmat_ot(:)))/tot_nb_edges;
             density_coeff_diff = nmetrics{4} - nmetrics_ot{4};
             transitivity_coeff_diff = nmetrics{6} - nmetrics_ot{6};
             assort_coeff_diff = nmetrics{10} - nmetrics_ot{10};
@@ -93,7 +94,14 @@ disp(totalrowofdifferences)
 % f=1 delta.. f= length(listoffreqs) = gamma
 %k=1=  kd, k=2= jd, 3 nb_edges_norm_diff, 4 degree_coeff_diff, 5 density_coeff_diff, 6 clustering_coeff_diff, 7 transitivity_coeff_diff, 8 assort_coeff_diff, 9 charpathlength_coeff_diff, 10 BC_norm_diff, 11 pagerank_diff]
 %resvector, 1,f,k,label
-plotdistanceresults(resvector, listofpats, listoffreqs,length(listoffreqs), 6, label);
+for fq=1:length(listoffreqs)
+    for k=1:11
+        fprintf('Calling to plotdistanceresults fq=%s measure= %s \n', getgreeksymbolfreq(listoffreqs(fq)), getmetriclabelfromindex(k));
+        plotdistanceresults(resvector, listofpats, listoffreqs, fq, k, label);
+    end
+    %correlation between pair of measures
+    plotcorrelationpairs(resvector, listofpats, listoffreqs, fq, label)
+end
 end
 
 function [resvector] = calculatedistancresults(totalrowofdifferences,listofpats, listoffreqs, label)
@@ -140,10 +148,10 @@ end
 
 function [] = plotdistanceresults(resvector, listofpats, listoffreqs, fq, k, label)
 
+figure;
 label  = strsplit(label, '_'); label = label{1};
 band = listoffreqs(fq);
 metric = getmetriclabelfromindex(k);
-figure;
 nbconds = length(resvector);
 condl1 = resvector{1};
 kvalues1 = condl1(fq,:,k);
@@ -166,6 +174,72 @@ xlabel('Patients'), ylabel(ylabellab), grid on
 %phase/powr corr band metric
 sp = sprintf('%s corr fq=%.2f %s',label, band, metric);
 title(sp);
+end
+
+function [] = plotcorrelationpairs(resvector, listofpats, listoffreqs, fq, label)
+%k=1=  kd, k=2= jd, 3 nb_edges_norm_diff, 4 degree_coeff_diff, 5 density_coeff_diff, 6 clustering_coeff_diff, 7 transitivity_coeff_diff, 8 assort_coeff_diff, 9 charpathlength_coeff_diff, 10 BC_norm_diff, 11 pagerank_diff]
+%initialize
+kkd1=[]; jjsd1 = []; eedges1= []; ddegree1 = []; ddensity1= []; cclustering1 = [];  ttransitivity1 =[];  aassort1 = []; ppathl1 = []; ppager1 = [];cond1multiv=[];
+kkd2=[]; jjsd2 = []; eedges2= []; ddegree2 = []; ddensity2= []; cclustering2 = [];  ttransitivity2 =[];  aassort2 = []; ppathl2 = []; ppager2 = [];cond2multiv=[];
+kkd3=[]; jjsd3 = []; eedges3= []; ddegree3 = []; ddensity3= []; cclustering3 = [];  ttransitivity3 =[];  aassort3 = []; ppathl3 = []; ppager3 = [];cond3multiv=[];
+
+%cond1 = ECPRE-EOPRE
+condl1 = resvector{1};
+kvalues1 = condl1(fq,:,:);
+kd1= kvalues1(1,:,1)';
+jsd1 = kvalues1(1,:,2)';
+edges1 = kvalues1(1,:,3)';
+degree1 = kvalues1(1,:,4)';
+density1 = kvalues1(1,:,5)';
+clustering1 = kvalues1(1,:,6)';
+transitivity1 = kvalues1(1,:,7)';
+assort1= kvalues1(1,:,8)';
+pathl1= kvalues1(1,:,9)';
+pager1= kvalues1(1,:,11)';
+for i=1:length(listofpats)
+    kkd1(i)= kd1{i}; jjsd1(i)= jsd1{i};eedges1(i) = edges1{i} ;ddegree1(i)= degree1{i}; ddensity1(i) = density1{i}; cclustering1(i)= clustering1{i};  ttransitivity1(i)= transitivity1{i};  aassort1(i)= assort1{i}; ppathl1(i)= pathl1{i}; ppager1(i) = pager1{i};
+end
+cond1multiv = [kkd1'  jjsd1' ddegree1' ddensity1'  cclustering1' ppathl1' ];
+[R1,PValue1] = corrplot(cond1multiv,'tail','right');
+tt= sprintf('Freq = %.2f, cond =%s',listoffreqs(fq), label );
+title(tt);
+
+condl2 = resvector{2};
+kvalues2 = condl2(fq,:,:);
+kd2= kvalues2(1,:,2)';
+jsd2 = kvalues2(1,:,2)';
+edges2 = kvalues2(1,:,3)';
+degree2 = kvalues2(1,:,4)';
+density2 = kvalues2(1,:,5)';
+clustering2 = kvalues2(1,:,6)';
+transitivity2 = kvalues2(1,:,7)';
+assort2= kvalues2(1,:,8)';
+pathl2= kvalues2(1,:,9)';
+pager2= kvalues2(1,:,9)';
+for i=1:length(listofpats)
+    kkd2(i)= kd2{i}; jjsd2(i)= jsd2{i};eedges2(i) = edges2{i} ;ddegree2(i)= degree2{i}; ddensity2(i) = density2{i}; cclustering2(i)= clustering2{i};  ttransitivity2(i)= transitivity2{i};  aassort2(i)= assort2{i}; ppathl2(i)= pathl2{i}; ppager2(i) = pager2{i};
+end
+cond2multiv = [kkd2'  jjsd2'  ddegree2' ddensity2'  cclustering2' ppathl2' ];
+[R2,PValue2] = corrplot(cond2multiv,'tail','right');
+
+condl3 = resvector{3};
+kvalues3 = condl3(fq,:,:);
+kd3= kvalues3(1,:,3)';
+jsd3 = kvalues3(1,:,3)';
+edges3 = kvalues3(1,:,3)';
+degree3 = kvalues3(1,:,4)';
+density3 = kvalues3(1,:,5)';
+clustering3 = kvalues3(1,:,6)';
+transitivity3 = kvalues3(1,:,7)';
+assort3= kvalues3(1,:,8)';
+pathl3= kvalues3(1,:,9)';
+pager3= kvalues3(1,:,9)';
+for i=1:length(listofpats)
+    kkd3(i)= kd3{i}; jjsd3(i)= jsd3{i};eedges3(i) = edges3{i} ;ddegree3(i)= degree3{i}; ddensity3(i) = density3{i}; cclustering3(i)= clustering3{i};  ttransitivity3(i)= transitivity3{i};  aassort3(i)= assort3{i}; ppathl3(i)= pathl3{i}; ppager3(i) = pager3{i};
+end
+cond3multiv = [kkd3'  jjsd3'  ddegree3' ddensity3'  cclustering3' ppathl3' ];
+[R3,PValue3] = corrplot(cond3multiv,'tail','right');
+
 end
 
 function metric = getmetriclabelfromindex(k)
@@ -195,7 +269,5 @@ switch(k)
         metric =  'page rank';
     otherwise
         fprintf('ERROR')
-        
 end
-
 end

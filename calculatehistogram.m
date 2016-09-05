@@ -1,0 +1,15 @@
+function [hp, ep] = calculatehistogram(P, nbins)
+%calculatehistogram retunrs the hisograma for P and nbins(for example P binary matrix)
+%nbins =2
+if nargin < 2
+    nbins = 2;
+end
+lp = length(P);
+%convert P binary matrix into one dimensional vector
+P = reshape(P, 1, lp*lp);
+[hp, ep] = histcounts(P,nbins);
+fprintf('The histogram bins for P = 0s=%s 1s=%s\n', num2str(hp(1)), num2str(hp(2)));
+%kd = KLDiv(hp,hq); jd = JSDiv(hp,hq);
+%[JSD,Smax]=DJS_and_significanse(hp,hq,2);
+%fprintf('KLDiv= %s, JSDiv=%s, JSD=%s Smax=%s\n', num2str(kd), num2str(jd));%, num2str(JSD), Smax);
+end

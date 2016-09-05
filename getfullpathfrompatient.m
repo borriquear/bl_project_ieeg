@@ -45,6 +45,12 @@ switch patientid
     case 'TWH043'
         patdate = '05042016';
         patsession ='s1';
+    case 'TWH047'
+        patdate = '06282016';
+        patsession ='s1';
+    case 'TWH048'
+        patdate = '06292016';
+        patsession ='s1';
     case 'TWH045'
         patdate = '06022016';
         patsession ='s1';
@@ -55,12 +61,12 @@ switch patientid
         warningMessage = sprintf('Error: patient %s does not exist:\n%s', patientid);
         uiwait(msgbox(warningMessage));
 end
+patfile1 = 'EEG_cut_';
 if nargin > 2
     patfile1 = 'EEG_entire_session_BL_';
 else
-    patfile1 = 'EEG_cut_BL_';
-    if (strcmp(patientid, 'TWH037') + strcmp(patientid, 'TWH038')+  strcmp(patientid, 'TWH042') + strcmp(patientid, 'TWH043')+  strcmp(patientid, 'TWH045') + strcmp(patientid, 'TWH049')) == 1
-        patfile1 = 'EEG_cut_';
+    if (  strcmp(patientid, 'TWH030') + strcmp(patientid, 'TWH031')+  strcmp(patientid, 'TWH033') + strcmp(patientid, 'TWH034')) == 1
+        patfile1 =  'EEG_cut_BL_';
     end
 end
 patfile2 = patientcond;

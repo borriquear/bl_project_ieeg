@@ -78,6 +78,9 @@ for irow =chani:chanend
 end
 % saving the matfile
 patdir = fullfile(globalFsDir, eegpatient, 'data\figures');
+if ~exist(patdir, 'dir')
+    mkdir(patdir);
+end
 fprintf('Saving the mat file with power vector in %s \n',patdir);
 filematname = sprintf('fft_%s_%s_%s_%s.mat',eegcond, eegpatient, eegdate, eegsession);
 filematname = fullfile(patdir,filematname);

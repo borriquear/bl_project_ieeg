@@ -1,13 +1,14 @@
-function [distMatrix] = calculateEuclideandistancematrix(patientid)
+function [distMatrix] = calculateEuclideandistancematrix(patientid, label)
 %calculateEuclideandistancematrix returns the matrix containing the
-%euclidean distance matrix for pair of electrodesbelonging to a label e.g. BiTemp, HD, F... 
-%IN: patientid (NOTE patient 31 has not loc file with electrodes coordinates)
+%euclidean distance matrix for pair of electrodesbelonging to a label e.g. BiTemp, HD, F...
+%IN: patientid
 %OUT: distance matrix
 %patientid  = 'TWH042';
+%label = 'All';  %BiTemp
 global globalFsDir;
 globalFsDir =loadglobalFsDir();
-label = 'BiTemp';
-%the distMatrix is casted with the vector of electrodes indices [2 3 4 ...66] 
+
+%the distMatrix is casted with the vector of electrodes indices [2 3 4 ...66]
 [channelclassindexes] = getindexesfromlabel(patientid, label);
 %size of the subset electrodes requested
 sizeofReqdistmatrix = length(channelclassindexes);
@@ -26,7 +27,7 @@ M = textscan(fhloc, formatfile);
 fclose(fhloc);
 %celldisp(M);
 %M{1} = LAT, M{2} = 4; M{3} =X;M{4} = Y, M{5}= Z,M{6}= L|R ,M{7}= S|D, %
-labelsid = M{1}; labelsnb = M{2}; Xpos = M{3};Ypos = M{4}; Zpos = M{5}; 
+labelsid = M{1}; labelsnb = M{2}; Xpos = M{3};Ypos = M{4}; Zpos = M{5};
 Side = M{6}; Depth = M{7};
 for i = 1:length(labelsid)
     channelsid{i} = strcat(labelsid{i},num2str(labelsnb(i)));
@@ -37,11 +38,11 @@ distMatrix = zeros(sizeofReqdistmatrix,sizeofReqdistmatrix);
 eventi = 2;
 for i = 1:sizeofReqdistmatrix
     labelrow = channel_labels{i+1};
-    [isin1 irow] = ismember(labelrow, channelsid);
+    [isin1 irow] = ismember(lower(labelrow), lower(channelsid));
     %irow = channelclassindexes(i);
     for j = i+1:sizeofReqdistmatrix
         labelcol = channel_labels{j+1};
-        [isin2 jcol] = ismember(labelcol, channelsid);
+        [isin2 jcol] = ismember(lower(labelcol), lower(channelsid));
         %jcol = channelclassindexes(j);
         %d(i,j) = sqrt((x-x')^2 + (y-y')^2 + (z-z')^2)
         if isin1 + isin2 > 1
@@ -52,11 +53,14 @@ for i = 1:sizeofReqdistmatrix
         end
     end
 end
-%disp(distMatrix);
-patpath = strcat(globalFsDir,patientid,'\elec_recon');
-fileloc = strcat(patientid,'euclideandistanceMatrix.mat');
-savedmatrix = fullfile(patpath, fileloc);
-fprintf('Saving euclidena distance matrix at %s\n',savedmatrix);
-save(savedmatrix,'distMatrix','channel_labels','channelclassindexes')
-fprintf('Patient = %s. The mean distance across all %s channels is = %.2f\n', patientid, label, mean2(distMatrix));
+if isempty(distMatrix)
+    fprintf('WARNING: distMatrix is empty!!!! not %s channels found. Patient = %s', label, patientid);
+else
+    patpath = strcat(globalFsDir,patientid,'\elec_recon');
+    fileloc = strcat(patientid,'euclideandistanceMatrix.mat');
+    savedmatrix = fullfile(patpath, fileloc);
+    fprintf('Saving euclidean distance matrix at %s\n',savedmatrix);
+    save(savedmatrix,'distMatrix','channel_labels','channelclassindexes')
+    fprintf('Patient = %s. The mean distance across all-- %s channels is = %.2f\n', patientid, label, mean2(distMatrix));
+end
 end

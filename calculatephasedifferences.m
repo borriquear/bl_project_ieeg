@@ -68,7 +68,7 @@ phaseconn_matrix = struct;
             end
             ispc_matrix{ip,ic} = phase_matrix;
             pli_matrix{ip,ic} = phase_matrix_pli;
-            icoh_matrix{ip,ic} = imag_coherence_ij;
+            icoh_matrix{ip,ic} = phase_icoh;
         end
         phaseconn_matrix.ispc_matrix = ispc_matrix;
         phaseconn_matrix.pli_matrix = pli_matrix;
@@ -79,6 +79,12 @@ phaseconn_matrix = struct;
         phaseconn_matrix.temporalwindow = time_window_idx/srate;
         save(matfilename,'phaseconn_matrix');
     end
+% else
+%     %add the additional patient to phaseconn_matrix
+%     %open file and add last patient
+%     fprintf('File phaseconn_matrix already exists, delete it to run this function' )
+% end
+%save ispc_matrix in mat file
 end
 
 function [phase_ispc, phase_pli, phase_icoh] = calculatephasedifferences2channels(EEG, data_fft1,data_fft2,fi, time_window_idx)

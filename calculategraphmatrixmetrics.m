@@ -68,7 +68,13 @@ klevel = 6;
 %C, binary vector of optimal core structure
 % C = 1 represents nodes in the core
 % C = 0 represents nodes in the periphery
+try
 coreperip_v  = core_periphery_dir(corrmatrix) 
+catch ME
+    warning('Problem using function.  core_periphery_dir(corrmatrix)');
+    coreperip_v = 0;
+end
+    
 %Paths and Distances
 fprintf('Paths and Distances metrics')
 %Dmatrix = lengths of shortest paths between all

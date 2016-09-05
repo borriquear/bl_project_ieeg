@@ -1,13 +1,21 @@
 function [] = plotpowerspectrumallpatientsROI(patientlist, conditionslist, powerspecmatrix, powerfreqsindexes, powerx_mean_perbands, rois )
 %plotpowerspectrumallpatientsROI plot all patients mean of all channels in one figure
 %figure1=figure('Position', [100, 100, 1024, 1200]);
+if strcmpi(rois, 'All') == 1
+    displayperRois = 0; 
+    fprintf('Plotting FFT for all Areas \n');
+else
+    displayperRois = 1; 
+    fprintf('Plotting FFT for all Areas and ROIs\n')
+end
+
 figm = figure;%powerx (plot)
 figp = figure;   %powerxperband (bars)
 % figstd = figure;
 % suptitle(['Mean and std Power spectra All areas']);
 nbp = length(patientlist);
 nbc = length(conditionslist);
-xlimtodisplay = 30;
+xlimtodisplay = 50;
 freq_bands = {'\delta'; '\theta'; '\alpha'; '\beta'; '\gamma'};
 nbfreqs = length(freq_bands);
 % % rois = {'HD','T','F', 'IH'};
@@ -28,9 +36,12 @@ for ip=1:length(patientlist)
         % plot mean as such
         plot(freqsindexl,meanvx);
         set(gca, 'YLim', [0, 1.1*maxofmean], 'XLim', [0 xlimtodisplay]);
-        ylabel('Power ')
-        msgt = sprintf('Mean Power spectra All ROIS %s %s', eegpatient, eegcondition);
-        title(msgt);
+        ystr = sprintf('Power %s',eegpatient);
+        ylabel(ystr);
+        msgt = sprintf('Mean Power spectra All ROIS %s', eegcondition);
+        if ip == 1
+            title(msgt, 'interpreter', 'none');
+        end
         %plot bars of plot per band
         figure(figp);
         subplot(nbp,nbc,nbc*(ip-1) + ic);
@@ -41,13 +52,33 @@ for ip=1:length(patientlist)
         normfqb = sum(mean(powerx_mean_perbands{ip,ic}));
         bar(mean(powerx_mean_perbands{ip,ic})/normfqb);
         set(gca, 'XTickLabel',freq_bands);
-        xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
-        msgt = sprintf('Mean Power spectra per Band All ROIS %s %s', eegpatient, eegcondition);
-        title(msgt);
+        ystr2 = sprintf('Normalized Power %s', eegpatient);
+        xlabel('Frequency Bands'), ylabel(ystr2);
+        msgt = sprintf('Mean Power spectra  All ROIS %s', eegcondition);
+        if ip == 1
+            title(msgt, 'interpreter', 'none');
+        end
         yel = mean(powerx_mean_perbands{ip,ic})/normfqb;
         ylistpat(ip,ic,:) = yel;
     end
 end
+%mean all patients per frequency band. from figure 2, one row and = number
+%of conditions
+figure;
+ympb = zeros(nbc,nbfreqs);
+for idxc =1:nbc
+    for idxf=1:nbfreqs
+        ympb(idxc, idxf)= mean(ylistpat(:,idxc,idxf))
+    end
+    subplot(1, nbc,idxc);
+    bar(ympb(idxc,:));
+    set(gca, 'XTick', 1:nbfreqs, 'XTickLabel',freq_bands);
+    ylim([0 1]);
+    xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
+    msgt = sprintf('Mean Power spectra All patients-ROIS %s',conditionslist{idxc});
+    title(msgt,'interpreter', 'none');
+end
+
 %Show imagesc chart p[atientsxbands for pat andcond
 figure;
 for cc=1:length(conditionslist)
@@ -56,17 +87,17 @@ for cc=1:length(conditionslist)
     new_C = C;%delete rows all zeros
     new_C(~any(C,2),:) = [];
     imagesc(new_C);
-    set(gca,'XTick', [1:nbfreqs], 'YTick',[]);
+    set(gca,'XTick', [1:nbfreqs], 'YTickLabel',patientlist,'ytick', 1:length(patientlist));
     set(gca,'XTickLabel', freq_bands);
     ylabel('Patients'), xlabel('Frequency bands');
     condl = conditionslist(cc);
     msgt= sprintf('Power normalized ALL regions in %s' ,condl{1});
-    title(msgt)
+    title(msgt,'interpreter', 'none')
     colorbar;
     caxis([0 1]);
 end
 %Charts per ROIs
-displayperRois = 1; %0
+
 if displayperRois > 0
     ycondp = zeros(length(patientlist),length(conditionslist),nbfreqs );
     yrois = {};
@@ -102,7 +133,7 @@ if displayperRois > 0
                         set(gca, 'YLim', [0, 1.1*maxofmean], 'XLim', [0 xlimtodisplay]);
                         ylabel('Power ')
                         msgt = sprintf('Mean Power spectra ROI= %s, %s, %s', curoi, eegpatient, eegcondition);
-                        title(msgt);
+                        title(msgt,'interpreter', 'none');
                         %plot bars avg frequency
                         figure(figureareas_bars(ia));
                         powepp = powerx_mean_perbands{ip,ic};
@@ -117,20 +148,43 @@ if displayperRois > 0
                         set(gca, 'XTickLabel',freq_bands);
                         xlabel('Frequency Bands'), ylabel('Power per Band')
                         msgt = sprintf('Mean Power spectra per Band ROI= %s %s %s', curoi, eegpatient, eegcondition);
-                        title(msgt);
+                        title(msgt,'interpreter', 'none');
                         yel = mean(power_avg_bands)/normfqb;
                         ycondp(ip,ic,:) = yel;
-                        
-                        
                     end
                 else
                     %close(figureareas(ia));
                     fprintf('Skipping Patient %s, she has not area %s\n',eegpatient,curoi);
                 end
-                
             end
             yrois{ia} = ycondp;
+            
+            
+            
+            figure;
+ympb = zeros(nbc,nbfreqs);
+for idxc =1:nbc
+    for idxf=1:nbfreqs
+        ympb(idxc, idxf)= mean(ylistpat(:,idxc,idxf))
+    end
+    subplot(1, nbc,idxc);
+    bar(ympb(idxc,:));
+    set(gca, 'XTick', 1:nbfreqs, 'XTickLabel',freq_bands);
+    ylim([0 1]);
+    xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
+    msgt = sprintf('Mean Power spectra All patients-ROIS %s',conditionslist{idxc});
+    title(msgt,'interpreter', 'none');
+end
+            
+            
+            
+            
         end
+        
+        
+        
+        
+        
         for ir=1:length(rois)
             curoi = rois{ir};
             figure(figuresc(ir));
@@ -145,11 +199,12 @@ if displayperRois > 0
                 set(gca,'XTickLabel', freq_bands);
                 ylabel('Patients'), xlabel('Frequency bands'); cd= conditionslist(cc);
                 msgt= sprintf('Power normalized in ROI=%s in %s',curoi ,cd{1});
-                title(msgt)
+                title(msgt,'interpreter', 'none')
                 colorbar;
                 caxis([0 1]);
             end
         end
+        
     end
 end %end displayperROIs
 end
