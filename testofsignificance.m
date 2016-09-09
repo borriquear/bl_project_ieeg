@@ -362,7 +362,7 @@ fprintf(fileID, ' High patients:\n');
 fprintf(fileID,' %s ', HpatientsL{1,:});
 fprintf(fileID, ' Low patients:\n');
 fprintf(fileID,' %s ', LpatientsL{1,:});
-fprintf(fileID, 'Condition(1=HYP) %s, Freq Band:%s\n',caseinfo{1},num2str(getgreeksymbolfreq( getfreqbandindfromind(freqind))));
+fprintf(fileID, 'Condition(1=HYP) %s, Freq Band:%s\n',caseinfo{1},num2str(getgreeksymbolfreq(getfreqbandindfromind(freqind))));
 fprintf(fileID,'\n\n');
 for col = 1:ncols
     fprintf(fileID,'\n');

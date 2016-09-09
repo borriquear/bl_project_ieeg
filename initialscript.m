@@ -20,8 +20,8 @@
 % TWH048 = ALL
 % TWH049 = ALL
 %To save figures 
-%>>print -f1 -djpeg twh045condA % make a jpg of Figure 1
-%>>savefig('twh045condA') % save current figure to disk as a MATLAB fig file
+%>>print -f3 -djpeg 'D:\BIAL PROJECT\patients\figure_results\ECEO-Allroisfigi1'
+%>>savefig('D:\BIAL PROJECT\patients\figure_results\ECEO-Allroisfigi1')
 %% Create mat file with power/amplitud calculated via the FFT. Power analysis, identify channels with most power and the frequency bands that pick up maximum power
 %OUTPUT: % globalFsDir\eegpatient\data\figures\fft_%pat_%cond_%date_%se.mat -> 'ampli_fft','power_fft','power_fft_perband', 'power_fft_mean_perband','channel_labels'
 global globalFsDir;
@@ -33,8 +33,8 @@ conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};
 % Generate the mat file (fft_%s_%s_%s_%s.mat',eegcond, eegpatient, eegdate, eegsession)
 %power_fft_perband (1x50) with the power for each frequency from 1 to 51
 %power_fft_mean_perband (nbchanneslx5) for each channel the % of power
-%relative to the other bands. Thesum of each row is 1.
-%power_fft ((nbchanneslxtimepoints)
+%relative to the other bands. The sum of each row is 1.
+%power_fft (nbchanneslxtimepoints)
 % that calculates amplitude and power from the
 % fft to find the frequency components of the signal (patient, condition)
 % ranges of frequency f = 0:50 (bins);hz = linspace(0,nyquistfreq,floor(n/2)+1);
@@ -60,15 +60,14 @@ end
 % for each patient,condition
 ip = 1; ic =1;
 patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH047', 'TWH048','TWH049'};
-%patientslist = {'TWH047', 'TWH048'};
-conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};
 %conditionslist = {'EC_PRE', 'EO_PRE', 'HYP', 'EC_POST','EO_POST'};
+conditionslist = {'EC_PRE', 'EO_PRE'}%, 'HYP'};
 
 powerspecmatrix = {};
 powerfreqsindexes = {};
 powerspecmatrix_freqbands = {};
 %Set xlimtodisplay = 50 in plotpowerspectrumallpatientsROI.m
-% plot Power Spectra (mean , std) ALL channels per patient/condition
+%plot Power Spectra (mean, std) ALL channels per patient/condition
 for i =ip:length(patientslist)
     eegpatient = patientslist{i};
     for j = ic:length(conditionslist)
@@ -81,13 +80,14 @@ for i =ip:length(patientslist)
         powerspecmatrix_freqbands{i,j} = powerx_mean_perbands;
     end
 end
-%rois = 'All' plot all reas, rois ~= All, plor all Areas and Region of
-%interest, rb HD
+%rois = 'All' plot all areas, rois ~= All, plot all Areas and Region of
+%interest, eg HD
 roislist = {'All','T','F','FP','IH','Grid', 'HD','NOHD', 'D', 'BiTemp'};
-rois = roislist(2);
+rois = roislist(8);
 plotpowerspectrumallpatientsROI(patientslist, conditionslist, powerspecmatrix, powerfreqsindexes, powerspecmatrix_freqbands, rois);
 
-% Statistical significance between conditions in power spectra
+% Statistical significance between conditions in power spectra.
+% Calculate ttest to compare
 plotstatisticalsignificance_powerspec(patientslist, conditionslist, powerspecmatrix, powerfreqsindexes, powerspecmatrix_freqbands, rois);
 %% 1.3 Spectrogram
 fprintf('Calling to plotspectrogramperpatient, Patient %s, Condition %s\n', eegpatient,eegcond)

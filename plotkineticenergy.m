@@ -1,9 +1,9 @@
 function kinetic_matrices = plotkineticenergy(wiring_matrices)
 %plotkineticenergy plot bars of kinetic energy (P*F*frequency)^2
-%the wise multiplication of the physicl distance and the functional
-%connectivity multiplied by the Hertz, givesus distance/s which is the
+%the wise multiplication of the physical distance and the functional
+%connectivity multiplied by the Hertz, gives us distance/s which is the
 %velocity.
-% 1/2v^2 is the kinetic energy to trnsport a puntual mass m=1 between two
+% 1/2v^2 is the kinetic energy to transport a punctual mass m=1 between two
 % points, electrode positions.
 %IN wiring_matrices
 
@@ -54,14 +54,14 @@ disp(kinetic_matrices)
 save(matfilename,'kinetic_matrices');
 
 for p=1:nbpats
-        for ic=1:nbconds
-            for f=initfreq:nbfreqs
+    for ic=1:nbconds
+        for f=initfreq:nbfreqs
             barmatrix_ispc(p,(ic-1)*nbfreqs + f)=  mean2(kinetic_matrices.wiring_ispc{p,ic,f});%closed
             barmatrix_pli(p,(ic-1)*nbfreqs + f)=  mean2(kinetic_matrices.wiring_pli{p,ic,f});%closed
             barmatrix_power(p,(ic-1)*nbfreqs + f)=  mean2(kinetic_matrices.wiring_power{p,ic,f});%closed
-%             barmatrix_chg_ispc(p,f*nbconds +(ic - nbconds)) = mean2(kinetic_matrices.distMatrixcell{p}) - mean2(kinetic_matrices.wiring_ispc{p,ic,f});
-%             barmatrix_chg_pli(p,f*nbconds +(ic - nbconds)) = mean2(kinetic_matrices.distMatrixcell{p}) - mean2(kinetic_matrices.wiring_pli{p,ic,f});
-%             barmatrix_chg_power(p,f*nbconds +(ic - nbconds))= mean2(kinetic_matrices.distMatrixcell{p}) - mean2(kinetic_matrices.wiring_power{p,ic,f});
+            %             barmatrix_chg_ispc(p,f*nbconds +(ic - nbconds)) = mean2(kinetic_matrices.distMatrixcell{p}) - mean2(kinetic_matrices.wiring_ispc{p,ic,f});
+            %             barmatrix_chg_pli(p,f*nbconds +(ic - nbconds)) = mean2(kinetic_matrices.distMatrixcell{p}) - mean2(kinetic_matrices.wiring_pli{p,ic,f});
+            %             barmatrix_chg_power(p,f*nbconds +(ic - nbconds))= mean2(kinetic_matrices.distMatrixcell{p}) - mean2(kinetic_matrices.wiring_power{p,ic,f});
         end
     end
 end
@@ -179,6 +179,10 @@ set(gca,'XTick', [1:nbfreqs], 'XTickLabel', round(freqlist(1:end),1,'significant
 ylabel('Patients'), xlabel('Frequency bands')
 ts = sprintf('K %s, Power based', pairlabel);
 title(ts);
+%plot relationship between  and percentage of power. 2 gropus, 10 data
+%points one for eaach gruoup.
+
+
 
 %plot binary matrices +/-
 bin = im2bw(barmatrix_pli_df(:,initfreq:end), 0.0);

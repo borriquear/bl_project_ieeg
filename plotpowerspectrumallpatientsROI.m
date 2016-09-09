@@ -70,14 +70,28 @@ for idxc =1:nbc
     for idxf=1:nbfreqs
         ympb(idxc, idxf)= mean(ylistpat(:,idxc,idxf))
     end
-    subplot(1, nbc,idxc);
-    bar(ympb(idxc,:));
-    set(gca, 'XTick', 1:nbfreqs, 'XTickLabel',freq_bands);
-    ylim([0 1]);
-    xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
-    msgt = sprintf('Mean Power spectra All patients-ROIS %s',conditionslist{idxc});
-    title(msgt,'interpreter', 'none');
+%     subplot(1, nbc,idxc);
+%     bar(ympb(idxc,:));
+%     set(gca, 'XTick', 1:nbfreqs, 'XTickLabel',freq_bands);
+%     ylim([0 1]);
+%     xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
+%     msgt = sprintf('Mean Power spectra All patients-ROIS %s',conditionslist{idxc});
+%     title(msgt,'interpreter', 'none');
+    %%%%
+    bar_handle(idxc) = bar(ympb(idxc,:));
+    set(bar_handle(idxc),'FaceColor',[mod(nbc-idxc+1,2),mod(nbc-idxc+1,2),mod(nbc-idxc+1,2)])
+    hold on
+    set(gca, 'XTick', 1:nbfreqs, 'XTickLabel',freq_bands);      
 end
+%show power per frequency bar in the same plot fro all conditions 
+%ympb = (conditions, freq bands)
+ylim([0 1]);
+xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
+msgt = sprintf('Mean Power spectra All patients-ROIS');
+%legend(conditionslist{1}, conditionslist{2}, 'Interpreter', 'None')
+legend('EC PRE', 'EO PRE', 'Interpreter', 'None')
+title(msgt,'interpreter', 'none');
+
 
 %Show imagesc chart p[atientsxbands for pat andcond
 figure;
@@ -160,37 +174,30 @@ if displayperRois > 0
             yrois{ia} = ycondp;
             
             
-            
-            figure;
-ympb = zeros(nbc,nbfreqs);
-for idxc =1:nbc
-    for idxf=1:nbfreqs
-        ympb(idxc, idxf)= mean(ylistpat(:,idxc,idxf))
-    end
-    subplot(1, nbc,idxc);
-    bar(ympb(idxc,:));
-    set(gca, 'XTick', 1:nbfreqs, 'XTickLabel',freq_bands);
-    ylim([0 1]);
-    xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
-    msgt = sprintf('Mean Power spectra All patients-ROIS %s',conditionslist{idxc});
-    title(msgt,'interpreter', 'none');
-end
-            
-            
-            
+%         %%%%% plot relative power for ROIs    
+%             figure;
+%             ympb = zeros(nbc,nbfreqs);
+%             for idxc =1:nbc
+%                 for idxf=1:nbfreqs
+%                     ympb(idxc, idxf)= mean(ylistpat(:,idxc,idxf))
+%                 end
+%                 subplot(1, nbc,idxc);
+%                 bar(ympb(idxc,:));
+%                 set(gca, 'XTick', 1:nbfreqs, 'XTickLabel',freq_bands);
+%                 ylim([0 1]);
+%                 xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
+%                 msgt = sprintf('Mean Power spectra All patients-ROIS %s',conditionslist{idxc});
+%                 title(msgt,'interpreter', 'none');
+%             end
             
         end
-        
-        
-        
-        
         
         for ir=1:length(rois)
             curoi = rois{ir};
             figure(figuresc(ir));
+            actualmatrix = yrois{ir};
             for cc=1:length(conditionslist)
                 subplot(1, length(conditionslist),cc);
-                actualmatrix = yrois{ir}
                 C = reshape(actualmatrix(:,cc,:),[],length(freq_bands));
                 new_C = C;%delete rows all zeros
                 new_C(~any(C,2),:) = [];
@@ -204,7 +211,30 @@ end
                 caxis([0 1]);
             end
         end
-        
+        %plot mean per patient for ROIS
+        figure;
+        [np nc nf] = size(actualmatrix);
+        condmeanrois = zeros(nc,nf);
+        for cc=1:nc
+            for cf=1:nf
+                condmeanrois(cc,cf ) = mean(actualmatrix(:,cc,cf));
+            end
+        end 
+        %plot mean per ROI
+        for cc=1:nc
+            bar_handle(cc) = bar(condmeanrois(cc,:));
+            hold on
+            set(bar_handle(cc),'FaceColor',[mod(nc-cc+1,2),mod(nc-cc+1,2),mod(nc-cc+1,2)])
+            hold on
+            set(gca, 'XTick', 1:nbfreqs, 'XTickLabel',freq_bands);     
+        end
+        ylim([0 1]);
+        xlabel('Frequency Bands'), ylabel('Normalized Power per Band')
+        msgt = sprintf('Mean Power spectra All patients-ROI=%s',curoi);
+        %legend(conditionslist{1}, conditionslist{2}, 'Interpreter', 'None')
+        legend('EC PRE', 'EO PRE', 'Interpreter', 'None')
+        title(msgt,'interpreter', 'none');
+
     end
 end %end displayperROIs
 end

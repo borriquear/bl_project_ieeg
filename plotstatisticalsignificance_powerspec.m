@@ -5,7 +5,7 @@ function [] = plotstatisticalsignificance_powerspec(patientlist, conditionslist,
 nbp = length(patientlist);
 nbc = length(conditionslist);
 nbc = 1; %compare conditions in one chart
-xlimtodisplay = 30;
+xlimtodisplay = 50;
 freq_bands = {'\delta'; '\theta'; '\alpha'; '\beta'; '\gamma'};
 % % rois = {'HD','T','F', 'IH'};
 %

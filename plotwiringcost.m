@@ -21,8 +21,8 @@ end
 freqlist = wiring_matrices.frequencylist;
 %freqlist = [freqlist(2),freqlist(4), freqlist(5), freqlist(7), freqlist(7), freqlist(8)]
 nbfreqs = length(freqlist);
-nbconds = size( wiring_matrices.conditionslist, 2);
-initfreq= 3;
+nbconds = size( wiring_matrices.conditionslist, 2); nbconds = 2;
+initfreq = 3;
 initcond =1;
 listofselectedpats = wiring_matrices.patientslist(initpat:nbpats);
 
@@ -68,9 +68,72 @@ subplot(1,3,3)
 bar(barmatrix_power);
 ax = set(gca,'XTick',1:length(listofselectedpats),'XTickLabel', listofselectedpats,'Fontsize',7,'XTickLabelRotation', 45);%xticklabel_rotate([],45,[],'Fontsize',6);
 xlabel('Frequencies x Conds Patients '), ylabel('Power wiring cost P.*F')
+%plot the mean of all patients
+ispc_diff = zeros(1,nbfreqs ); pli_diff = zeros(1, nbfreqs ); power_diff = zeros(1,nbfreqs );
+for fqs=initfreq:nbfreqs
+    ispc_diff(fqs) = mean(barmatrix_ispc(:, fqs)) - mean(barmatrix_ispc(:, nbfreqs + fqs ));
+    pli_diff(fqs) = mean(barmatrix_pli(:, fqs)) - mean(barmatrix_pli(:, nbfreqs + fqs ));
+    power_diff(fqs) = mean(barmatrix_power(:, fqs)) - mean(barmatrix_power(:, nbfreqs + fqs ));    
+end
+figure;
+%R measure
+subplot(1,3,1)
+for fqs=initfreq:nbfreqs
+    if fqs ==5 
+        %delta band
+        bar(fqs, ispc_diff(fqs), 'EdgeColor', [0 .9 .9], 'FaceColor', [0 .5 .5]);
+    else
+       bar(fqs, ispc_diff(fqs));
+    end
+    hold on
+end
+set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
+ylabel('Patients'), xlabel('Frequency bands')
+ts = sprintf('Mean P*R_C-P*R_O ROI=%s', electrodelabel{1});
+%legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
+title(ts);
+
+%PLI measure
+subplot(1,3,2)
+for fqs=initfreq:nbfreqs
+    if fqs ==5 
+        %delta band
+        bar(fqs, pli_diff(fqs), 'EdgeColor', [0 .9 .9], 'FaceColor', [0 .5 .5]);
+    else
+       bar(fqs, pli_diff(fqs));
+    end
+    hold on
+end
+set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
+ylabel('Patients'), xlabel('Frequency bands')
+ts = sprintf('Mean P*PLI_C-P*PLI_O ROI=%s', electrodelabel{1});
+%legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
+title(ts);
+
+%Power measure
+subplot(1,3,3)
+for fqs=initfreq:nbfreqs
+    if fqs ==5 
+        %delta band
+        bar(fqs, power_diff(fqs), 'EdgeColor', [0 .9 .9], 'FaceColor', [0 .5 .5]);
+    else
+       bar(fqs, power_diff(fqs));
+    end
+    hold on
+end
+set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
+ylabel('Patients'), xlabel('Frequency bands')
+ts = sprintf('Mean P*Pw_C-P*Pw_O ROI=%s', electrodelabel{1});
+legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
+title(ts);
 
 %calculate cond1-cond2, condn-1- condn
-pairlabellist= {'ECPRE-EOPRE', 'ECPRE-HYP','EOPRE-HYP'};
+if nbconds == 2
+    pairlabellist= {'ECPRE-EOPRE'};
+elseif nbconds == 3
+    pairlabellist= {'ECPRE-EOPRE', 'ECPRE-HYP','EOPRE-HYP'};
+end
+
 for indexp=1:length(pairlabellist)
     pairlabel = pairlabellist{indexp};
     fprintf('Calculating distance for %s\n',pairlabel );
@@ -146,6 +209,7 @@ set(gca,'XTick', [1:nbfreqs], 'XTickLabel', round(freqlist(1:end),1,'significant
 ylabel('Patients'), xlabel('Frequency bands')
 ts = sprintf('Wiring Cost %s, PLI based ROIS=%s', pairlabel, electrodelabel{1});
 title(ts);
+
 subplot(1,3,2);
 imagesc(barmatrix_ispc_df(:,initfreq:end));
 [hStrings,textColors ] = plotvaluesinimageesc(barmatrix_ispc_df(:,initfreq:end));
