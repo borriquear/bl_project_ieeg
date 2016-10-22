@@ -1,6 +1,7 @@
 function powerconn_matrix = createpowerbcorrmatrix(eegpatientl, eegconditionl, centerfrequenciesl, temporalwindow)
 %createpowerbcorrmatrix calls to powerbasedconnectivity(eegpatient, eegcondition, centerfreq)
-% to calculate correlation analysis per patient and frequency bandtemporalw
+%to calculate correlation analysis per patient, frequency band and temporal
+%window
 %OUT: mat file, powerconnectivity_freq_pat_cond  -- corr_matrix', 'channel_labels
 
 %eegconditionl = {'EC_PRE', 'EO_PRE'};
@@ -24,7 +25,7 @@ powerconn_matrix.temporalwindow = temporalwindow;
 corr_matrix_list = {};
 %if exist(powerconnmatf, 'file') ~= 2
 %if file doesnt exist, create file from scratch
-fprintf('Creating %s from scratch \n', powerconnmatf)
+fprintf('Creating %s from scratch \n', powerconnmatf);
 %temporalwindow = 1; % freq-time power series with temporal window
 
 for indpat=1:length(eegpatientl)
@@ -33,15 +34,11 @@ for indpat=1:length(eegpatientl)
         eegcondition = eegconditionl{indcond};
         for indexfreq = 1:length(centerfrequenciesl) % delta, theta, alpha, beta, gamma
             centerfreq = centerfrequenciesl(indexfreq);
-            fprintf('Calling to powerbasedconnectivityperpatient %s %s %s',eegpatient, eegcondition, num2str(centerfreq) )
-<<<<<<< HEAD
             if temporalwindow > 0
-=======
-            if temporalwindow == 1
->>>>>>> 9884fa8d3103d4dea8c8ddbdf344e053a9463cd3
-                %temporalwsecs = 4; %temporal window in seconds
+                fprintf('Calling to powerbasedconnectivityperpatient %s %s %s Temporal W=%s',eegpatient, eegcondition, num2str(centerfreq), num2str(temporalwindow) )
                 corr_matrix = createpowerbcorrmatrixperpatient_tempw(eegpatient, eegcondition, centerfreq, temporalwindow);
             else
+                fprintf('Calling to powerbasedconnectivityperpatient %s %s %s Temporal W=%s',eegpatient, eegcondition, num2str(centerfreq), num2str(temporalwindow) )
                 corr_matrix = createpowerbcorrmatrixperpatient(eegpatient, eegcondition, centerfreq);
             end
             corr_matrix_list{indpat,indcond,indexfreq} = corr_matrix;
@@ -61,9 +58,7 @@ powerconn_matrix.patientsl = eegpatientl;
 powerconn_matrix.conditionsl = eegconditionl;
 powerconn_matrix.freqsl = centerfrequenciesl;
 save(powerconnmatf,'powerconn_matrix');
-%else
-%added matrices from new patient or condition
-%end
+
 end
 
 
@@ -159,11 +154,13 @@ save(fftfile,'corr_matrix', 'channel_labels')
 end
 
 function [ corr_matrix ] = createpowerbcorrmatrixperpatient_tempw(eegpatient, eegcondition, centerfreq, temporalwsecs)
-% createpowerbcorrmatrixperpatient_tempw Returns the correlation matrix for
+% createpowerbcorrmatrixperpatient_tempw returns the correlation matrix for
 % the time frequency power correlation for a given temporal window
 % temporalw to help increase the SNR
-%We segment the data into nonoverlapping chunks of temporalw seconds, compute a correlation coefficient on each segment, and then average the correlation
-%coefficients together. This will help to increase the signal-to-noise ratio.
+%IN: eegpatient, eegcondition, centerfreq, temporalwsecs
+%OUT:corr_matrix structure that will be savein powerconn_matrices_tw.mat 
+% We segment the data into nonoverlapping chunks of temporalw seconds, compute a correlation coefficient on each segment, and then average the correlation
+% coefficients together. This will help to increase the signal-to-noise ratio.
 
 fprintf('Loading EEG for patient:%s and condition%s\n',eegpatient,eegcondition);
 [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcondition);
@@ -259,8 +256,4 @@ patpath = strcat(globalFsDir,eegpatient);
 mattoload = strcat('powerconnectivity_tmpw_',num2str(temporalwsecs), '_freq_', num2str(centerfreq),'_',eegcondition,'_', eegpatient,'_',eegdate,'_',eegsession,'.mat');
 fftfile = fullfile(patpath,'data','figures', mattoload);
 save(fftfile,'corr_matrix', 'channel_labels', 'temporalwsecs')
-<<<<<<< HEAD
 end
-=======
-end
->>>>>>> 9884fa8d3103d4dea8c8ddbdf344e053a9463cd3

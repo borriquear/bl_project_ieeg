@@ -1,0 +1,95 @@
+function  [mean_mi,mean_entropy_x,mean_entropy_y,mean_entropy_xy, mean_nbins] = mutualinformation(electrodes4mi, EEG)
+%mutualinformation mutual information between two channels
+%sliding segment
+
+% eegpatient = 'TWH033'
+% eegcond = 'HYP'
+% [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
+%electrodes4mi = {'RFP1','LHD2'}
+timewindow = 400; % in ms
+stepsize = 100; %ms
+epochtime = length(EEG.data);
+times2save = 1:stepsize:epochtime;
+times2save =  timewindow:stepsize:length(EEG.times) -1000;
+
+% convert ms to indices
+timewindowidx = round(timewindow/(1000/EEG.srate)/2);
+times2saveidx = zeros(size(times2save));
+for i=1:length(times2save)
+    [junk,times2saveidx(i)] = min(abs(EEG.times-times2save(i)));
+end
+electrodesidx(1) = find(strcmpi(electrodes4mi{1},{EEG.chanlocs.labels}));
+electrodesidx(2) = find(strcmpi(electrodes4mi{2},{EEG.chanlocs.labels}));
+% initialize outputs
+entropy = zeros(3,length(times2save));
+mi      = zeros(2,length(times2save));
+nbins   = zeros(1,length(times2save));
+for timei = 1:length(times2save)
+    datax = EEG.data(electrodesidx(1),times2saveidx(timei)-timewindowidx:times2saveidx(timei)+timewindowidx);
+    datay = EEG.data(electrodesidx(2),times2saveidx(timei)-timewindowidx:times2saveidx(timei)+timewindowidx);
+    
+    [mi(1,timei),entropy(:,timei),nbins(timei)] = mutualinformationx(datax,datay); %variable number of bins
+    %[mi(2,timei),entropy(:,timei)             ] = mutualinformationx(datax,datay,20); %fixed umber of bins
+end
+mean_mi = mean(mi(1,:)); %mean mutual information in bits
+mean_entropy_x = mean(entropy(1,:)); %mean entropy channel x
+mean_entropy_y = mean(entropy(2,:)); %mean entropy channel y
+mean_entropy_xy = mean(entropy(3,:)); %mean joint entropy channels x,y
+mean_nbins = mean(nbins); % number of bins used for discretization
+%                  (based on Freedman-Diaconis rule)
+plotfigures = 0;
+if plotfigures > 0
+    
+    figure
+    set(gcf,'name',[ 'Mutual information between ' electrodes4mi{1} ' and ' electrodes4mi{2} ])
+    
+    subplot(221)
+    plot(times2save,mi(1,:))
+    xlabel('Time (ms)'), ylabel('MI (bits)')
+    title('Variable bin length')
+    set(gca,'xlim',[times2save(1)-50 times2save(end)+50],'ylim',[min(mi(:))-.01 max(mi(:))+.01])
+    
+    subplot(222)
+    plot(nbins,mi(1,:),'.')
+    xlabel('bin length'), ylabel('MI (bits)')
+    title('Bin length vs. MI')
+    set(gca,'ylim',[min(mi(:))-.01 max(mi(:))+.01])
+    
+    subplot(223)
+    plot(times2save,mi(2,:))
+    xlabel('Time (ms)'), ylabel('MI (bits)')
+    title('Constant bin length')
+    set(gca,'xlim',[times2save(1)-50 times2save(end)+50],'ylim',[min(mi(:))-.01 max(mi(:))+.01])
+end
+end
+%%
+function  [mi_matrix] = mutualinformation_matrix(patientid, condition)
+%mutualinformation_matrix returns the MI matrix a symmetric mstrix with the
+%MI for each pair of channels
+patientlist = {'TWH030','TWH030','TWH030','TWH030','TWH030','TWH030'}
+conditionslist = {'EC_PRE', 'EO_PRE','HYP','EC_POST','EO_POST'}
+[myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
+%get all the combination of pairs
+channel_labels= {EEG.chanlocs.labels};
+channel_pairs = combntns(channel_labels(2:end),2);
+total_pairs= length(channel_pairs);
+matrix_MI = zeros(length(channel_labels)-1);
+for i=1:total_pairs
+    electrodes4mi = channel_pairs(i,:);
+    electrodesidx(1) = find(strcmpi(electrodes4mi{1},{EEG.chanlocs.labels}));
+    electrodesidx(2) = find(strcmpi(electrodes4mi{2},{EEG.chanlocs.labels}));
+    % mi is non positive and symmetric, thus we do the triangular superior
+    if electrodesidx(1) <= electrodesidx(2)
+        fprintf('Calculating MI for channels %s and %s\n',electrodes4mi{1} , electrodes4mi{2});
+        [mi, hx, hy, hxy, nb] = mutualinformation(electrodes4mi, EEG);
+        fprintf(' MI = %s , H(x)=%s H(y)=%s H(xy)=%s Nbins= %s\n',num2str(mi) , num2str(hx),num2str(hy),num2str(hxy),num2str(nb));
+        matrix_MI(electrodesidx(1)-1,electrodesidx(2)-1) = mi;
+    else
+        matrix_MI(electrodesidx(2)-1,electrodesidx(1)-1) =matrix_MI(electrodesidx(1)-1,electrodesidx(2)-1);
+    end
+end
+disp(size(matrix_MI))
+disp(matrix_MI)
+
+
+end

@@ -1,0 +1,28 @@
+function [] = divergence2distributions(P, Q)
+%P = rand(1,10000); Q = rand(1,10000);
+lp = length(P); lq= length(Q);
+DP = zeros(1,2); % distribution vector with 2 states 0 and 1
+DP = zeros(1,2);
+%if P Q are connectivity matrices (undirected unweighted graph)
+for i=1:lp
+    if P(i) > 0 DP(1) = DP(1) + 1;
+    elseif P(i) < 1 DP(0) = DP(0) + 1;
+    end
+    if Q(i) > 0 DQ(1) = DQ(1) + 1;
+    elseif P(i) < 1 DQ(0) = DQ(0) + 1;
+    end
+end
+% for i=1:lp
+%     if P(i) > 0 P(i) = 2;
+%     elseif P(i) > 0.5 P(i) = 1;
+%     else P(i)=0;
+%     end
+%       if Q(i) > 0.6 Q(i) = 2;
+%       elseif Q(i) > 0.1  Q(i) = 1;
+%       else Q(i)=0;
+%       end
+% end
+%P = [P 3]; Q = [Q 3];
+hp = hist(P,3); hq = hist(Q,3);
+kd = KLDiv(hp,hq); jd = JSDiv(hp,hq);
+end    

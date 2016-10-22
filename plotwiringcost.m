@@ -6,6 +6,7 @@ global nbpats;
 global freqlist;
 global nbfreqs;
 global nbconds;
+global initfreq;
 if nargin > 1
     fprintf('Casting wiring_matrices...\n');
     wiring_matrices = castimplantwithlabel(wiring_matrices, typeobject, electrodelabel);
@@ -88,8 +89,8 @@ for fqs=initfreq:nbfreqs
     hold on
 end
 set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
-ylabel('Patients'), xlabel('Frequency bands')
-ts = sprintf('Mean P*R_C-P*R_O ROI=%s', electrodelabel{1});
+ylabel('W_c - W_o'), xlabel('Frequency bands')
+ts = sprintf('P*R_C-P*R_O ROI=%s', electrodelabel{1});
 %legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
 title(ts);
 
@@ -105,8 +106,8 @@ for fqs=initfreq:nbfreqs
     hold on
 end
 set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
-ylabel('Patients'), xlabel('Frequency bands')
-ts = sprintf('Mean P*PLI_C-P*PLI_O ROI=%s', electrodelabel{1});
+ylabel('W_c - W_o'), xlabel('Frequency bands')
+ts = sprintf('P*PLI_C-P*PLI_O ROI=%s', electrodelabel{1});
 %legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
 title(ts);
 
@@ -122,8 +123,8 @@ for fqs=initfreq:nbfreqs
     hold on
 end
 set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
-ylabel('Patients'), xlabel('Frequency bands')
-ts = sprintf('Mean P*Pw_C-P*Pw_O ROI=%s', electrodelabel{1});
+ylabel('W_c - W_o'), xlabel('Frequency bands')
+ts = sprintf('P*Pw_C-P*Pw_O ROI=%s', electrodelabel{1});
 legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
 title(ts);
 
@@ -173,29 +174,30 @@ end
 
 function [] = plotPFdistance2conds(barmatrix_pli_df,barmatrix_ispc_df,barmatrix_power_df,pairlabel,patientslist,electrodelabel)
 global freqlist;
+global initfreq;
 sti = sprintf('Difference in Wiring Cost for %s ROIS=%s', pairlabel,electrodelabel{1});
 barfdf = figure;
 subplot(1,3,1)
 %bar(barmatrix_chg_pli_df);
-bar(barmatrix_pli_df(:,3:end));
+bar(barmatrix_pli_df(:,initfreq:end));
 xlabel('Frequencies Patients'), ylabel('Change in PLI wiring cost P*(F1-F2)')
 ax = set(gca,'xtick',1:length(patientslist),'XTickLabel', patientslist,'Fontsize',7,'XTickLabelRotation', 45);%xticklabel_rotate([],45,[],'Fontsize',6);
 
 subplot(1,3,2)
 %bar(barmatrix_chg_ispc_df);
-bar(barmatrix_ispc_df(:,3:end));
+bar(barmatrix_ispc_df(:,initfreq:end));
 xlabel('Frequencies Patients '), ylabel('Change in R wiring cost  P*(F1-F2)')
 ax = set(gca,'xtick',1:length(patientslist),'XTickLabel', patientslist,'Fontsize',7,'XTickLabelRotation', 45);%xticklabel_rotate([],45,[],'Fontsize',6);
 title(sti, 'Interpreter', 'none');
 subplot(1,3,3)
 %bar(barmatrix_chg_power_df);
-bar(barmatrix_power_df(:,3:end));
+bar(barmatrix_power_df(:,initfreq:end));
 xlabel('Frequency-Patients EC-EO'), ylabel('Change in Power wiring cost  P*(F1-F2)')
 ax = set(gca,'xtick',1:length(patientslist),'XTickLabel', patientslist,'Fontsize',7,'XTickLabelRotation', 45);%xticklabel_rotate([],45,[],'Fontsize',6);
 legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
 % plot imagesc
-initfreq = 3;
-nbfreqs = size(barmatrix_ispc_df(:,3:end),2);
+
+nbfreqs = size(barmatrix_ispc_df(:,initfreq:end),2);
 freqlist  = logspace(log10(1),log10(50),8);
 freqlist = freqlist(initfreq:end);
 imgf = figure;
@@ -252,6 +254,8 @@ set(gca,'XTick', [1:nbfreqs], 'XTickLabel', round(freqlist(1:end),1,'significant
 ylabel('Patients'), xlabel('Frequency bands')
 ts = sprintf('+/- wiring Cost %s, Power based ROIS=%s',pairlabel, electrodelabel{1});
 title(ts)
+
+
 end
 
 function [hStrings,textColors ] = plotvaluesinimageesc(mat)

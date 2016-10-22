@@ -1,13 +1,15 @@
 \documentclass[11pt, onecolumn]{article}
 \newcommand{\myreferences}{C:/workspace/github/bibliography-jgr/bibliojgr}
 \usepackage{graphicx}
-\usepackage{subfigure}
+%\usepackage{subfigure}
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{fancyhdr}
 \pagestyle{myheadings}
+\usepackage{subcaption}
 \usepackage{float}
+\usepackage{sidecap} %figure caption on the side
 \usepackage{graphicx}
 \usepackage{epstopdf}
 \usepackage{textcomp}  %for degree symbol
@@ -43,15 +45,83 @@
 \date{}
 \maketitle
 
-\begin{abstract}
-
-\end{abstract}
+\abstract{The study of the neural correlates of hypnosis is still in its infancy, and arguably much of the same can be said of cognition and consciousness. Research concerning the neural underpinnings of hypnosis, encounters substantial difficulties such as the spatiotemporal limitations of EEG, PET and fMRI, the "ecological validity" of hypnosis sessions in the laboratory, individual differences in susceptibility, and the unfitness of neuroimaging protocols to distinguish between the observable brain effects of hypnotic induction and hypnotic suggestion. 
+Here, for the first time, the neurophysiological mechanisms of hypnosis are investigated using intracranial electroencephalography (iEEG). This recording methodology removes the resolution problems associated with functional imaging. Patients with intractable epilepsy and implanted as part of their diagnostic exam were hypnotized. Baseline hypnosis was measured following a standard induction procedure and before the administration of motoric and cognitive suggestions. Patients with high and low hypnotizability were tested and compared. Phase based synchronization for connectivity analysis was calculated for three different conditions: pre hypnotic state (eyes open and eyes closed), neutral hypnosis (eyes closed) and post hypnotic state (eyes open and eyes closed), across multiple frequency bands. We computed the intersite phase clustering difference between all the intracranial electrodes across delta, theta, alpha, beta and gamma frequencies, for all conditions.
+In high hypnotizable patients with bi-temporal burr holes, we find more intersite synchronization, for theta and alpha bands, in the hypnotic condition than in the eyes closed conditions, and a more modular organization (more partitionable) in both the hypnotic and the eyes closed conditions, compared to the eyes open conditions. Phase synchronization distribution distance for all bands between hypnotic and post hypnotic states was shorter in high than in low hypnotizable patients. Our preliminary results suggest that hypnosis represents a genuine brain state whose distinctiveness from states of deep relaxation is in need of clarification. In future work, we will build on this research to further explore the electrophysiology underlying volitional and nonvolitional actions, as well as the neural correlates of subjective experience in response to hypnotic suggestions.}
 %\end{@twocolumnfalse}
 %]
+\section{Basic DSP}
+The Fourier transform indicates that under some conditions any bounded signal can be written ( decomposed )into a sum of cosines and sines (complex exponentials in euler's formula notation)at different frequencies f.
+Formally,
+\begin{equation}
+s(t) = \int_{-\infty}^{+\infty} S(f)e^{2 \pi f t} df
+\end{equation}
+In words, the equation shows that the value of the signal s at time t, s(t), corresponds to the sum of the complex exponentials weighted by the coefficients S(f) at all frequencies $(-\infty, +\infty)$. This equation is commonly known as the IFT of S(f) The weights are the frequency domain representation of s(t).S(f) is expressed in Hz. or number of oscillations per second and it allows the study of periodicities in the signal. S(f) is obtained via the Fourier transform.
+\begin{equation}
+S(f) = \int_{-\infty}^{+\infty} s(t)e^{2 \pi f t} dt
+\end{equation}
+The spectral representation or S(f) indicates which frequencies are present in the signal (min, max, range of bandwidth formed by the difference between min and max). .An analytic is signal is such that $Z(f) = 0, f < 0$
+where Z(f) is the FT of z(t) or F(z(t)) = Z(f). The analytic
+associate, z(t), is used in practice rather than the real signal s(t) . The imaginary part of the analytic signal z(t) is related to the real part s(t) by the Hilbert Transform).
+Thus the FT of a signal s(t) is the inner product of s(t) and the complex exponential $e j 2 \pi f_k t = cos (2 \pi f_k ) + j sin 2 \pi f_k $. This results in a harmonic decomposition of the signal into its components at frequencies $f_k$. The HT on the other hand is what allows us to relate the imaginary part of the analytic signal with the real part of the signal
+
 \section{Introduction}
 \label{se:intro}
+In \citep{fingelkurts_cortex_2007} study the differences between the hypnotic condition and the baseline were observable at five different bands, based on this results the authors argued that alteration of functional connectivity in resting state can be used as neural correlate of hypnosis. 
+EEG during hypnosis has different characteristics compared to normal non-hypnotic EEG, especially in the frontal area of the brain. In  \citep{behbahani_relation_2013} a fuzzy metric, the Fuzzy Similarity Index (FSI) was used to discriminate between hypnotic and non hypnotic EEG signals. Their results showed more activity during hypnosis is reported in right frontal areas for right handed individuals.
+In \citep{barnier_hypnosis_2003} it is argued that hypnosis research "offers powerful techniques to isolate psychological
+processes in ways that allow their neural bases to be mapped".
 
-\section{Methods}
+For an extensive review on neuroimaging (PET and fMRI) studies of hypnosis see \citep{landry_hypnosis_2015}. There the authors, review 
+neuroimaging studies to appraise current opinions concerning the neurobiological underpinnings of hypnosis. It ought to be remarked that 
+imaging studies of hypnosis have yet to deliver convincing evidence that would inform a reliable neurobiological theory of hypnosis.
+Hypnotic induction without task-specific suggestion is examined, as well as suggestions concerning sensation and perception, memory, and ideomotor response.
+These observations propose that suggestions may have the ability to target focal brain networks.
+Limitations include burdening participants with unusual tests and postures, However, hypnotic effects seem to largely transcend these caveats and ecological barriers \citep{landry_hypnosis_2015}.
+Hypnosis typically encompasses an induction procedure, designed to increase the hypnotic response, followed by direct suggestions to modify perception, cognition, or behavior \citep{Kihlstrom, 2008}.
+An important limitation in the study of hypnosis with neuroimaging is that neuroimaging protocols provide little means to differentiate between the effects of hypnotic induction and the effects of hypnotic suggestions. Indeed, the instructions during the induction procedure already represent some form of suggestion \citep{gandhi_does_2005}.
+
+The hypnotic procedure produced a modest increase in suggestibility when it was called 'relaxation,' but a very significant increase if it was labeled 'hypnosis.' 
+Thus, labeling an induction procedure 'hypnosis' is an important determinant of subsequent responses to suggestion. (placebo effect of labeling a procedure as hypnosis rather than relaxation).
+
+\citep{kihlstrom_neuro-hypnotism:_2013}
+Until recently, much of this research has been geared toward
+understanding hypnosis itself, including the biological bases of individual differences in hypnotizability, state-dependent changes in cortical activity occurring with the induction of hypnosis, and the neural correlates of response to particular hypnotic suggestions (especially the clinically useful hypnotic analgesia). More recently, hypnosis has begun to
+be employed as a method for manipulating subjects’ mental states, both cognitive and affective, to provide information about the neural substrates of experience, thought, and action. This instrumental use of hypnosis is particularly well-suited for identifying the neural correlates of conscious and unconscious perception and memory, and of voluntary and involuntary action.
+There are wide individual differences in hypnotizability.
+The study of the neural correlate of hypnosis is still in its infancy \citep{kihlstrom_neuro-hypnotism:_2013}.
+
+In the textbook \citep{baars_cognition_2010} it is said that about one forth of the population is highly hypnotizable, as assessed by standard hypnotic procedure and about $5\%$ as virtuosi.
+The mild sense of movement control experience in hypnosis indicates that hypnosis may be related with a dissociation between self-control (DLPFC) and self-monitoring (ACC). Deactivation of the precuneus a brain structure that is supposed to be involved in the perception of one self.
+Human tendency to autosuggestion "medical student syndrome"
+
+Complementary and alternative treatments in hypnosis: EEG biofeedback, yoga-meditation, hypnosis \citep{shorvon_treatment_2008}. A report with only two patients showed that hypnosis can be effective in control of seizures
+
+\subsection{Comparing EC versus EO}
+In \citep{geller2014eye} study eye closure using electrocorticography (ECoG) aiming at showing the anatomical areas that are involved in eye closure. The study by analysing the effect of eyes closing on ECoG power aims at identifying the spatial location of the brain responses to eyes o/c as well as identifying the frequencies involved. 
+They also show at which frequencies the eye closure effect take place.Subjects were asked to eyes and open the eyes repeatedly, many trials. The conclusion is that Eye closure (1) affects a broad range of frequencies outside the $\alpha$ band and (2) involves a distributed network of neural activity in anatomical areas outside visual cortex.
+Eye closure is the single most effective behavioral modulator of the human electroencephalogram (EEG). modulates activity not only in the $\alpha$ but also in the $\delta$, $\theta$ and $\beta$ bands. Animal studies showed that  cortical generators uniquely contributed to the $\alpha$ effect ($\alpha$ rhythm emerged from sub-cortical structures, the lateral geniculate nucleus among others), but it remains a challenge to expand this results to human studies. 
+ECoG can localize behavioral effects (of the undrlying task) with maximal anatomical precision. Aditionally to this, iEEG can also record high-frequency activity $\gamma$ without the muscular artifact that occurs at the scalp \citep{yuval2008transient}.
+
+Thus, the question of precisely which anatomical regions (outside of the visual cortex) respond to eye-closure has largely been unexplored.
+Fora review on iEEG for cognitive processing or cognitive electrophysiology \citep{jacobs2010direct}. 
+
+
+The patients were pharmacologically refractory to epilepsy underwent surgery for subdural implants in the cortical areas(Note that the HYP patients the intervention is mostly in hippocampal and temporal and other areas.
+
+Results can be shown using Power Spectral Density (PSD) and Time-Frequency Spectrograms, the spectrograma epcoh should be short in orde to be computationally feasible to display. The PSD represents two curves one for condition 1 and another for condition 2 in the y-asis ($\log(\mu V^2) $) and in the x-axis the frequencies. We can have one PSD for each brain areas (HD, BiTemp, Frontal) withmeans for all subjects having that. The specrogram is FreqxTime for the difference in Poer between the two groups.
+Additionally we can exploit the spatial precision of iEEG to do a P values comparison of power during eyes closed vs. eyes open.
+eye closure is associated with significant power increases not only in the $\alpha$ band, but in all low-frequency bands, from the $\delta$-band (2-4 Hz) to the $\beta$-band (15-30 Hz).
+Our paper might look for conformation that eye closure increases the amount of $\alpha$ oscillatory power over posterior electrodes in the scalp electroencephalogram. eye closure is associated with a reliable decrease in high-frequency power. Eyes open then would implies an increase in $\gamma$ alongside a decrease in all the other frequencies.
+use of direct brain recordings to investigate the spatial location of the spectral modulations during eyes open, eyes closed and hyp.
+
+YS: H0  visual activation triggers an anatomically widely-distributed network, one which includes areas that have not been classically implicated in visual processing. Can we see this in our data using network analysis?
+YS: In the visual cortex eyes closure we would expect increase in $\alpha$-range power over occipital cortex, 
+YS: Which areas are modulated at low and high frequencies for each condition. Confirm that eye closure causes an anatomically widespread power increase for a broad range of low frequencies (2–30 Hz).
+YS: Limitation we do not have recording from thalamus and brain stem which are send input to the cortical visual areas in visual perception.
+
+
+\section{Materials and Methods}
 \label{se:methods}
 % show diff btw h and l
 % build variance covariance matrix and distance matrix, one for each band
@@ -59,12 +129,34 @@
 % meand differences,variability , pca and multidimensionality analysis. clustering?
 %connectivity, graph theory?
 % spectral analysis?
+We first describe the type of patients, number ,se x ethics etc.
+\begin{center}
+ \begin{tabular}{||c c c c||} 
+ \hline
+ ID & Gender & Age & Handedness & #BPD & \\ Electrode Coverage[0.5ex] 
+ \hline\hline
+  30 & M & 40 & L &108 & BiTemp burr\\ 
+ \hline
+  \\
+ \hline
+  \\
+ \hline
+  \\
+ \hline
+ \\ [1ex] 
+ \hline
+\end{tabular}
+\end{center}
+% number of bipolar electrode pairs BPD	
+YS: Signals were referenced to a common electrode placed either intracranially or on the scalp or mastoid process.
+
+If several trials we can z-transform time domain values to the session-wise mean and standard deviation and from that do spectral power analysis  convolving the iEEG signal with Morlet wavelet (YS wavelet number 7.5?) to obtain magnitude and phase information. Each wavelet was convolved with YS 1000-2000? ms of ECoG data,  The wavelet was used to transform the voltage trace at each electrode to an instantaneous power trace for each frequency. These frequency-domain values were then log-transformed.
+
 
 \subsection{Tests of significance}
 For a set of p variables $\{X_1 ... X_p\}$ obtained by measurements over a set of n individuals, if the individuals (patients) belong to two different groups, in our case, high and low hypnotizability, a question of interest is whether the mean of some  variable is the same for either of the two groups. Thus, we have now two samples, $n_1$ and $n_2$ for the high and low hyponotizability patients respectively, the question is whether the two samples are significantly different in the sense that the observed mean difference is so large that is unlikely that to have occurred if the population means are equal (t-test). 
 A test to detect the to sample means (for groups H and L) involves calculating the t-statistic.This test is very robust if the variable is normally distributed and for sample sizes sufficiently big (e.g. 20) (note that the test is particularly robust if the samples have equal or very similar size \citep{carter_effect_1979s},\citep{coombs_univariate_1996} , this is not our case, so caveat t-test). The t-test can be done for each of the p variables  $\{X_1 ... X_n\}$ or measurements and decide which of these variables have different mean values for the 2 groups (samples).
 
-\subsubsection{Tests of significance}
 Here we address the question of whether there is any difference
 between the H and the L hypnotizability patients with respect to the mean values of variables (power correlation of each electrode with the other electrodes). Since the patients (samples) have a different number of variables or measurements (electrodes) we need to take a subset of samples that share those measurements. (bi temporal, monto temporal or hippocampal).
 Let us assume that patients 1 and 2 are H and patients 3 to 10 are L. The variables are 
@@ -91,6 +183,14 @@ In general there will be p variables $\{X_1 ... X_n\}$ two samples of $n_1$ and 
 %if sample sizes are very different as well, then a modified test can be used
 %(Yao, 1965), but this still relies on the assumption of multivariate normality
 
+\subsection*{Clustering}
+Clustering is a method to discover the hidden structure in  data set. 
+Clustering algorithms group a set of objects in such a way that objects in the same cluster are more similar to each other than to those in other clusters \citep{vathy2013graph}. Clustering can be used to segment data into homogeneous subsets, find cluster prototypes, classify and also to initialize regression and classification models. To build a graph that truly captures the structure the real structure of data the intrinsic relations of data should be modeled. Except the k-means all qunatisation algorithms \footnote{vector quantisation (VQ)  is a data reduction method, the original data structure -a graph or a correlation matrix- is replaced by another simpler structure that contains "representative elements" rather than all the original observations} result in a graph which emphasises the dominant topology. k-means clustering partitions data into clusters and minimises distance between cluster centres (code vectors) and data related to the cluster. The main drawback of this algorithm is that it is sensitive to the selection of the initial partition. In our case the clusters can be straightforwardly   defined as strips, depths and grids implants. Cluster centres can be
+seen as the reduced representation (representative elements) of the data. Thus, we can study for each condition, frequency and implant type how representative is the center of the cluster versus its data points or put in another way how much information we may loose if we collapse the strip (4 electrodes) into a single node. The priors can be assigned as the number of implant types, we can also study this without any prior assignment, using the Linde-buzo-gray algorithm (LBG) which starts with one cluster, the centroid of the entire data set, in each iteration dynamically duplicates the number of the representative elements and reassigns the objects to be analysed among the cluster centres. The algorithm stops when the desired number of centroids is obtained \citep{linde1980algorithm}.
+
+
+
+
 \subsection*{Multidimensional scaling}
 Multidimensional scaling (MDS) represents proximity data (measures of similarity, e.g. physical closeness, correlation,relatedness etc. ) as distances in a multidimensional space. The MDS algorithm moves the points iteratively so that the fit between distances and data is improved until no further improvement seems possible \citep{borg_modern_2005}.
 
@@ -110,21 +210,577 @@ We calculate the monotonic regression of $M_{ij}(F)$ in $M_{ij}(P)$. The best es
 
 First, we calculate $M_{ij}(P)$, we use the euclidean distance, note that there is only one physical configuration matrix for each patient.
 
-Second for each patient, condition and frequency band we calculate $M_{ij}(F)$ whcih defines the functional connectivity matrix according to some correlation criterion, for example power correlation, phase lag index etc.
+Second for each patient, condition and frequency band we calculate $M_{ij}(F)$ which defines the functional connectivity matrix according to some correlation criterion, for example power correlation, phase lag index etc.
 
 Third, we calculate the monotonic regression of  $M_{ij}(F)$ to fit $M_{ij}(P)$ to obtain $\hat{M_{ij}}(F)$. Finally we calculate the distance between $M_{ij}(P)$ and $\hat{M_{ij}}(F)$, we do this for each correlation criterion, frequency band, condition and patient in order to asses which functional configuration is closer to the metric (Euclidean) space defined by the intra craneal implant $M_{ij}(P)$.
 
 
+\section{Power based connectivity}
+"PB connectivity are arguably the most similar ti connectivity measures using fMRI  this is because the correlated fluctuations in activity is relatively slower compared with phase-connectivity (Cohen pag324)". 
+Phase-based connectivity assumes that the connectivity is instantaneous and at the same frequency, power based lacks this constrain which make it more suitable to exploratory analysis.
+The power based connectivity results that we show are based on bivariate correlation coefficients, in particular, Spearman coefficient. Spearman is nonparametric but a rank correlation (transform data values into a ranking, and then use the Pearson formula, covariance of two variables normalized by the variance, that is, two steps, first rank-transforming and last) 
+Since we only care about the delta band (0-4 Hz. activity), technically speaking we need only one wavelet.
+The number of cycles for the Gaussian taper i defined in initializedwavelet function. This parameter controls the trade-off between temporal and frequency precisions. below, a larger number of cycles gives you better frequency precision at the
+cost of worse temporal precision, and a smaller number of cycles gives you better temporal
+precision at the cost of worse frequency precision.
+Our trial period is longm 3 min,therefore we favour  frequency-band-specific  rather than time-specific activity, a
+larger number of cycles (7-10) will facilitate identifying temporally sustained activity. Note that previously we have used 4.5(waveletcycles in initializewavelet). These results  are for waveletcycles = 7. Note that waveletcycles and the frequency are not the same , the last is the frequency we are filtering, that is from the actual signal, and the first is the cycles of the Gaussian we use to filter, that is, the Morlet wavelet.
 
 
-\section{Results}
+
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/power-spearman-30-delta-eopre.pdf}
+        \caption{30-delta-eopre}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/power-spearman-30-delta-ecpre.pdf}
+        \caption{30-delta-ecpre}
+    \end{subfigure}
+        \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/power-spearman-30-delta-hyp.pdf}
+        \caption{30-delta-hyp}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/power-spearman-30-delta-ecpost.pdf}
+        \caption{30-delta-ecpost}
+    \end{subfigure}
+    \caption{30-delta power-based Spearman correlation matrix}
+\end{figure*}
+%%%%%%% network 30 %%%%%
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/network-power-spearman-30-delta-eopre.pdf}
+        \caption{30-delta-eopre. Entropy =5.5334, charpathlengthcoeff is
+    1.8561, transcoeff is
+    0.9846, assortcoeff is
+    0.6242}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/network-power-spearman-30-delta-ecpre.pdf}
+        \caption{30-delta-ecpre. Entropy 5.6368, charpathlengthcoeff is
+    1.6489, assortcoeff is
+    0.4374, transcoeff is
+    1.1584, densitycoeff is
+    0.0984}
+    \end{subfigure}
+        \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/network-power-spearman-30-delta-hyp.pdf}
+        \caption{30-delta-hyp. Entropy 6.3875, charpathlengthcoeff is 1.5287, assortcoeff is -0.0637, transcoeff is 1.2062, densitycoeff is 0.1016}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/network-power-spearman-30-delta-ecpost.pdf}
+        \caption{30-delta-ecpost. Entropy = 6.4708, charpathlengthcoeff is
+    2.8258, assortcoeff is
+    0.1790, transcoeff is
+    1.0667}
+    \end{subfigure}
+    \caption{30-delta power-based Spearman correlation matrix}
+\end{figure*}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/power-spearman-27-delta-hyp.pdf}
+        \caption{27-delta-hyp}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/power-spearman-24-delta-hyp.pdf}
+        \caption{24-delta-hyp}
+    \end{subfigure}
+        \caption{24-delta power-based Spearman correlation matrix}
+\end{figure*}
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/network-power-spearman-27-delta-hyp.pdf}
+        \caption{27-delta-hyp $threshold = meand + 1*std$.  Entropy = 6.4989, charpathlengthcoeff is 1.0946, assort coeff is 0.6866, transcoeff is 1.2484}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.5\textwidth}
+        \centering
+        \includegraphics[height=1.2in]{C:/workspace/github/figures/network-power-spearman-24-delta-hyp.pdf}
+        \caption{24-delta-hyp. Entropy = 5.6727, charpathlength coeff =1.4545, assortcoeff is
+   -0.0393, transcoeff is
+    1.0840, densitycoeff is
+    0.1000}
+    \end{subfigure}
+        \caption{27 and 24-delta power-based network connectivity based on Spearman correlation matrix}
+\end{figure*}
+
+\section{Phase based connectivity}
+
+The concept of phase synchronization (for chaotic oscillators) was extensively discussed by Rosenblum and coworkers \citep{rosenblum1996phase}. Rigorous phase locking between two systems requires that their phase difference is constant, while the weaker concept of phase entrainment introduced by Rosenblum only requires that the phase difference remains bounded (the bound has to be smaller than $2\pi$). Using this definition, phase synchronization can be determined for noisy, nonstationary, and chaotic signals. (restrict ourselves to (isofrequency) case with $n = m = 1$, that is, $\delta \phi = \phi_1 - \phi_2$. To compute the phase synchronization, it is necessary to know the instantaneous phase of the two signals involved. This can be realized using the analytical signal \footnote{An analytic signal or Euler's formula  is a complex-valued function that has no negative frequency components. The real and imaginary parts of an analytic signal are real-valued functions related to each other by the Hilbert transform. The basic idea is that the negative frequency components of the Fourier transform (or spectrum) of a real-valued function are superfluous, due to the Hermitian symmetry of such a spectrum} based on the Hilbert transform [the approach with wavelets provides similar results: \citep{bruns2004fourier}.
+Formally, the analytical signal of time series x(t) is $z(t) = x(t) + j\hat{x}(t) = A(t)e^{j\phi(t)}$, where $\hat{x}(t)$ is the Hilbert's transform of $x(t)$.The instantaneous amplitude and the instantaneous phase are calculated using the time series and the analytical signal. $A(t) = \sqrt{x(t)^2 + \hat{x(t)^2}}, phi(t) = \arctan\frac{\hat{x(t)}{x(t)}$. 
+The Hilbert transform of u can be thought of as the convolution of $u(t)$ with the function $h(t) = \frac{1}{\pi t}$, and because $\pi t$ the integrals defining the convolution do not converge, to solve this we use the Cauchy principal value.
+(When the Hilbert transform is applied twice in succession to a function u, the result is negative u).
+Instantaneous phase differences are projected on the unit circle, and the length R of the average resultant vector is computed via $R = ISPC = <e^{j \delta \phi}>$. R is insensitive to the amplitudes and only depends upon the phase relations between the two signals, thus, contrasts more conventional coherence.
+  
+Coherency between two EEG-channels is a measure of
+the linear relationship of the two at a specific frequency. The formal definition is given in \citep{nunez1997eeg}. Coherency is just the normalized cross spectrum between two channels i and j is the product of the analytic signal and the complex conjugate , ie $S_{ij}(f) = <x_i(f)x_j^*(f)>$. Thus coherence is 
+
+\begin{equation}
+C_{ij}(f) = \frac{S_{ij}(f)}{\sqrt{S_{ii}(f)S_{ij}^*(f)}}
+\end{equation}
+Finally coherence is the absolute value of coherency $Coh_{ij}(f) = |C_{ij}(f)|$. Note that coherency is the full complex information and coherence is its magnitude. Coherency essentially measures how the phases in
+channel i and j are coupled to each other. Lachaux et al. \citep{lachaux1999measuring} gave two arguments why phase synchrony is preferable to coherency. Coherency is a characteristic quantity of a stationary as well as a non-stationary process. Only if we
+interpret it as a parameter of a stationary process we actually assume stationarity. Similarly, we do not assume that the processes are linear by calculating a linear measure. We only look at the linear properties. Phase synchrony is indeed a clearer measure of the phase relationship only, and if $\delta \phi$ is statistically independent of the amplitudes, there is no reason to weight with respect to amplitudes.
+
+
+%The general coherence takes values in the range zero (in the case of linearindependence between Xω and Yω) to one (in the case of perfect linear prediction between Xω  and Yω. \citep{pascual2007coherence}
+%The term “phase synchronization” has a very rigorous physics definition (see e.g. \citep{rosenblum1996phase}
+Imaginary coherence is formalized in \citep{nolte2004identifying} insensitive to false connectivity arising from volume conduction
+
+%Nolte paper
+Probably the simplest and most popular measure of ‘interaction’ at a specific frequency is coherence, a generalization of correlation to the frequency domain \citep{nunez1999eeg}.  Coherence is almost always studied as a relation between EEG or MEG channels while one is interested in relations between brain sites. Since the activity of a single generator within the brain
+is typically observable in many channels outside the head, with details of this mapping depending on the volume conductor (Sarvas, 1987), it is likely that a relation between channels is rather a trivial ‘volume conduction artefact’ than a reflection of an underlying interacting brain. A plausible attempt to avoid artefacts from volume conduction is first to apply an inverse method (see \citep{baillet2001electromagnetic} for an overview). The problem is that a fully satisfactory inverse method does not exist and cannot exist. The imaginary part of coherency is only
+sensitive to synchronizations of two processes which are
+time-lagged to each other. If volume conduction does not
+cause a time-lag, the imaginary part of coherency is hence insensitive to artifactual ‘self-interaction’.
+
+
+Stam paper, where they create the PLI and compared it with more classic measures, like phase coherence \citep{mormann2000mean}and imaginary phase coherence \citep{nolte2004identifying}
+The PLI is a measure of the asymmetry of the distribution of phase differences between two signals. The PLI (phase lag index) gets estimates of synchronization that are independent of the presence of common sources (volume conduction). The idea is to discard phase difference around $0 mod \pi$. We do this by using an asymmetry index around a phase difference of 0. If there is no phase coupling this distribution will be flat, that is, as many on the negative as in the positive side. Thus, any deviation from the flat distribution indicates phase synchronization between the two channels. Formally, $PLI = |sign([ \delta(\phi_t)])|$. $PLI = 0$ is no coupling or the coupling is around $0mod \pi$. $PLI =1$ indicates perfect phase locking at a value different from $0 mod \pi$ (the PLI for 2 identical channels is 0 because the locking is perfect but around 0)
+\section{Results per Patient}
 \label{se:results}
+
+Description of results patient by patient
+24,27 (solo HYP) and 30 have identical configuration.
+33 has that T and HD setting plus F, IH and P.
+38 has also that setting but, RPT-4 (no 6) and has faulty electrodes (LMT-1-4 and LPT6)
+42 also same setting but LPT is more precise, becomes LPST,LPMT and LPIT
+%File variables saves are:
+%save(filematname, 'frqperband', 'quantitytomeasure', 'ampli_fft','power_fft','power_mt','requested_frequences_power_bnds', 'channel_labels')
+%percentlistoffrqperband  per cent of power per band and channel
+
+\subsection{TWH024}
+36 channels. Male-Left.
+[LR][AMP]T
+[LR]HD 4+4 
+%posterior has strips of 6 + 6 , others all trips of 4.
+\subsection{TWH027}
+36 channels. Male-Right.
+[LR][AMP]T
+[LR]HD 4+4 
+%27 and 30 are perfecty comparable
+\subsection{TWH028}
+88 channels. All on the right side. Female-Right.
+Grid-64
+[AMP]IH
+OJO RIH1-4 refers to depth electrodes in IH , rename as 
+[R][IH]D
+
+\subsection{TWH030}
+36 channels. Female-Right.
+[LR][AMP]T
+[LR]HD 4+4
+\subsection{TWH031}
+Male-?. NO TIENE Free-Surf - Bioimage Data.
+[LR][AMP]F
+[LR][AP]IH  (posterior only for Right side)
+[LR][AMP]T
+\subsection{TWH033}
+82 channels. Male-Left. Strip and Depth. 
+[LR][AMP]T
+R[PMA]F
+[LR][H]D  4+4
+R[PA]IH  6+6
+[R][F]P fronto parietal  12
+
+\subsection{TWH034}
+108, All channel on the Left. Female-Left. Grid-64 Strip channels, Temporal, Occipital, Parietal and Depth.
+Grid on Left, Strips in L[AMP]T-12, L[SI]P-16 (sup inf parietal), L[IS]TO-12(inf sup temp-occipital), Depth LHD-4
+
+% 34 EC PRE
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_BLECPRE_TWH034_02092016_s2.pdf}
+\caption{Mean power per frequency band, EC PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_PRE_TWH034_02092016_s2.pdf}
+\caption{Power per channel, EC PRE} \label{fig:b}
+\end{subfigure}
+\caption{TWH034, Grid-64 Strip channels, Temporal, Occipital, Parietal and Depth. EC PRE} \label{fig:34PRE}
+\end{figure}
+
+
+% 37 HYP
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_BLHYP_TWH034_02092016_s2.pdf}
+\caption{Mean power per frequency band, HYP} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Amplitude_AllCh_HYP_TWH034_02092016_s2.pdf}
+\caption{Power per channel, HYP} \label{fig:b}
+\end{subfigure}
+\caption{TWH034, Grid-64 Strip channels, Temporal, Occipital, Parietal and Depth. HYP} \label{fig:34HYP}
+\end{figure}
+
+
+%34 POST
+
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_BLECPOST_TWH034_02092016_s2.pdf}
+\caption{Mean power per frequency band, EC POST} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_POST_TWH034_02092016_s2.pdf}
+\caption{Power per channel, EC POST} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_BLEOPOST_TWH034_02092016_s2.pdf}
+\caption{Mean power per frequency band, EO POST} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_POST_TWH034_02092016_s2.pdf}
+\caption{Power per channel, EO POST. LAT5 have interictal spikes} \label{fig:b}
+\end{subfigure}
+\caption{TWH034, 
+ Grid-64 Strip channels, Temporal, Occipital, Parietal and Depth. POST} \label{fig:38PRE}
+\end{figure}
+
+
+\subsection{TWH037}
+90 Strip channels, Frontal and IH. Female-Right.
+[LR][AMP]F
+[LR][P]IH
+[LR]IHA  ? esta mal creo, seria [A]IH anterior IH
+%37 PRE
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_CPRE_TWH037_03142016_s1.pdf}
+\caption{Mean power per frequency band, EC PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_PRE_TWH037_03142016_s1.pdf}
+\caption{Power per channel, EC PRE} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_OPRE_TWH037_03142016_s1.pdf}
+\caption{Mean power per frequency band, EO PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_PRE_TWH037_03142016_s1.pdf}
+\caption{Power per channel, EO PRE} \label{fig:b}
+\end{subfigure}
+\caption{TWH037, 
+90 Strip channels  Frontal and IH. EC and EO PRE.} \label{fig:37PRE}
+\end{figure}
+
+
+
+% 37 HYP
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_HYPTWH037_03142016_s1_.pdf}
+\caption{Mean power per frequency band, HYP} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_HYP_TWH037_03142016_s1.pdf}
+\caption{Power per channel, HYP} \label{fig:b}
+\end{subfigure}
+\caption{TWH037, 90 Strip channels  Frontal and IH. HYP} \label{fig:37HYP}
+\end{figure}
+
+
+%37 POST
+
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_CPOST_TWH037_03142016_s1.pdf}
+\caption{Mean power per frequency band, EC POST} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_POST_TWH037_03142016_s1.pdf}
+\caption{Power per channel, EC POST} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_OPOST_TWH037_03142016_s1.pdf}
+\caption{Mean power per frequency band, EO POST} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_POST_TWH037_03142016_s1.pdf}
+\caption{Power per channel, EO POST. LAT5 have interictal spikes} \label{fig:b}
+\end{subfigure}
+\caption{TWH037, 
+90 Strip channels  Frontal and IH. EC and EO POST. OJO! Las labels clinicas estan mal, donde dice T es F
+LAT es LAF or RPT es RPF etc} \label{fig:38PRE}
+\end{figure}
+
+%37 notes
+%LAT1==LAF1 removed from TWH037
+%Las labels clinicas estan mal, donde dice T es F
+%LAT es LAF or RPT es RPF etc
+
+\subsection{TWH038}
+
+34 channels. Bi-temp for strips and depths. Female-Right. [R|L]{HD, AT,MT,PT}. All Surface channels except, LHD and RHD (4 + 4)channels.
+[LR][AMP]T  right posterior 
+[LR]HD
+
+Channels (34 -5 Faulty = 29)
+DELETED LPT6 S L
+DELETED LMT4 S L
+DELETED LMT3 S L
+DELETED LMT2 S L
+DELETED LMT1 S L
+
+
+% 38 PRE
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_CPRE_TWH038_03082016_s1.pdf}
+\caption{Mean power per frequency band, EC PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_PRE_TWH038_03082016_s1.pdf}
+\caption{Power per channel, EC PRE} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_OPRE_TWH038_03082016_s1.pdf}
+\caption{Mean power per frequency band, EO PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_PRE_TWH038_03082016_s1.pdf}
+\caption{Power per channel, EO PRE} \label{fig:b}
+\end{subfigure}
+\caption{Bi-temp for strips and depths. EC and EO PRE} \label{fig:38PRE}
+\end{figure}
+
+% 38 HYP
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_HYPTWH038_03082016_s1_.pdf}
+\caption{Mean power per frequency band, HYP} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_HYP_TWH038_03082016_s1.pdf}
+\caption{Power per channel, HYP} \label{fig:b}
+\end{subfigure}
+\caption{Bi-temp for strips and depths. HYP} \label{fig:38HYP}
+\end{figure}
+
+% 38 POST
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_CPOST_TWH038_03082016_s1.pdf}
+\caption{Mean power per frequency band, EC POST} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_POST_TWH038_03082016_s1.pdf}
+\caption{Power per channel, EC POST} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_OPOST_TWH038_03082016_s1.pdf}
+\caption{Mean power per frequency band, EO POST} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_POST_TWH038_03082016_s1.pdf}
+\caption{Power per channel, EO POST. LAT4 and RPT2 channels have interictal spikes} \label{fig:b}
+\end{subfigure}
+\caption{Bi-temp for strips and depths. EC and EO POST.} \label{fig:38PRE}
+\end{figure}
+
+
+
+\subsection{TWH042}
+
+48 channels [L|R][A|M|P]-4,[L|R]HD-4, LP[SMI]T-6  All Strip minus 4+4 HD.
+
+\begin{figure}[t!]
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_CPRE_TWH042_05042016_s1.pdf}
+\caption{Mean power per frequency band, EC PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_PRE_TWH042_05042016_s1.pdf}
+\caption{Power per channel, EC PRE} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_OPRE_TWH042_05042016_s1.pdf}
+\caption{Mean power per frequency band, EO PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_PRE_TWH042_05042016_s1.pdf}
+\caption{Power per channel, EO PRE} \label{fig:b}
+\end{subfigure}
+\caption{Bi-temp for strips and depths. EC and EO PRE.
+EC : delta (HD, AT, rMT) alpha (lMT,PST,PMT,PIT) rPT() theta, alpha and delta.
+EO : rPT delta while in close was more variable , HD also delta, PST, PMT PIT more variable in open than in close, rAT theta. In conclusion HD is delta in both C and O, LP[SMI]T is alpha in closed but more variable in open. rPT is delta in open and more variable in close.)
+} \label{fig:42PRE}
+\end{figure}
+
+% 42 HYP
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_HYPTWH042_05042016_s1_.pdf}
+\caption{Mean power per frequency band, HYP} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_HYP_TWH042_05042016_s1.pdf}
+\caption{Power per channel, HYP} \label{fig:b}
+\end{subfigure}
+\caption{Bi-temp for strips and depths. HYP} \label{fig:42HYP}
+\end{figure}
+
+
+%42 POST
+
+\begin{figure}[t!]
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_CPOST_TWH042_05042016_s1.pdf}
+\caption{Mean power per frequency band, EC PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_POST_TWH042_05042016_s1.pdf}
+\caption{Power per channel, EC PRE} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_OPOST_TWH042_05042016_s1.pdf}
+\caption{Mean power per frequency band, EO PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_POST_TWH042_05042016_s1.pdf}
+\caption{Power per channel, EO PRE} \label{fig:b}
+\end{subfigure}
+\caption{Bi-temp for strips and depths. EC and EO POST.
+EC : HD clearly delta, AT mostly delta, big variability, delta, theta , alpha for the rest.
+} \label{fig:42POST}
+\end{figure}
+
+%all bands and conditions power 42
+\begin{figure}[t!]
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power-amount-42-allcond-allbands.pdf}
+\caption{Power per channel in all conditions and bands. Channels in this order: 'HD', 'AT','MT','PT'} \label{fig:42all}
+\end{figure}
+
+
+\subsection{TWH043}
+
+76 channels all in the Right Side. Grid-64 and Depth-12. Male Right.
+[M|A|P][L]D  (Lateral Depth)
+
+
+\begin{figure}[t!]
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_CPRE_TWH043_05042016_s1.pdf}
+\caption{Mean power per frequency band, EC PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_PRE_TWH043_05042016_s1.pdf}
+\caption{Power per channel, EC PRE} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_OPRE_TWH043_05042016_s1.pdf}
+\caption{Mean power per frequency band, EO PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_PRE_TWH043_05042016_s1.pdf}
+\caption{Power per channel, EO PRE} \label{fig:b}
+\end{subfigure}
+\caption{ 43, Grid-64 and LAteral Depth-12. EC,EO PRE
+} \label{fig:43PRE}
+\end{figure}
+
+
+
+
+% 43 HYP
+\begin{figure}[t!] % "[t!]" placement specifier just for this example
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_HYPTWH043_05042016_s1_.pdf}
+\caption{Mean power per frequency band, HYP} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_HYP_TWH043_05042016_s1.pdf}
+\caption{Power per channel, HYP} \label{fig:b}
+\end{subfigure}
+\caption{Grid and depth. HYP} \label{fig:42HYP}
+\end{figure}
+
+
+
+%43 POST
+\begin{figure}[t!]
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_CPOST_TWH043_05042016_s1.pdf}
+\caption{Mean power per frequency band, EC POST} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EC_POST_TWH043_05042016_s1.pdf}
+\caption{Power per channel, EC POST} \label{fig:b}
+\end{subfigure}
+
+\medskip
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power_per_condition_OPOST_TWH043_05042016_s1.pdf}
+\caption{Mean power per frequency band, EO PRE} \label{fig:a}
+\end{subfigure}\hspace*{\fill}
+\begin{subfigure}{0.48\textwidth}
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/fft_Power_AllCh_EO_POST_TWH043_05042016_s1.pdf}
+\caption{Power per channel, EO POST} \label{fig:b}
+\end{subfigure}
+\caption{ 43, Grid-64 and Lateral Depth-12. EC,EO POST
+} \label{fig:43POST}
+\end{figure}
+
+
+%all bands and conditions power 43
+\begin{figure}[t!]
+\includegraphics[width=\linewidth]{C:/workspace/github/figures/power-amount-43-allcond-allbands.pdf}
+\caption{ Power per channel in all conditions and bands. 43, Grid-64 and Lateral Depth-12.} \label{fig:43POST}
+\end{figure}
 
 
 
 \bibliographystyle{apalike}
 %\bibliographystyle{apacite}
 \bibliography{C:/workspace/github/bibliography-jgr/bibliojgr}
+
+
 
 \end{document}
 
@@ -134,3 +790,22 @@ Third, we calculate the monotonic regression of  $M_{ij}(F)$ to fit $M_{ij}(P)$ 
 \label{se:suppinf}
 
 \subsection*{S1 Appendix}
+\subsection{Notes about entropy}
+Shannon's entropy is not really a formula for the information of a particular message. It’s a formula for the average information of a message chosen from some probability distribution. (https://johncarlosbaez.wordpress.com/2010/10/12/algorithmic-thermodynamics/). As the formula clearly shows, we sum all over possible messages factored by the probability of their appearance $H = -\sum p_i-\log(p_i)$ where $p_i$ is the probability of the ith message.  For Shannon, information means new information.
+Kolmogorov complexity is a way of measuring the information in a single message rather than a probability distribution of messages and it is just the length of the shortest computer program that prints out this message.
+
+One idea is to observe the effect of hypnosis by comparing the information gain between pre and post. Let us $q$ the probability distribution post (e.g. eyes closed post) and $p$ the probability distribution pre (e.g. eyes closed pre) in between these two conditions there is the hypnosis state. The "information gain"  is a quantity computed from two distributuons, in our case, pre and post. More precisely,
+
+\begin{equation}
+informational gain = -\sum_i p_i -\log \frac{p_i}{q_i}
+\end{equation}
+The \emph{informational gain} is the information you gain when you thought the probability distribution was q, but then someone comes along and tells you it’s p.
+Thus, this can be viewed in "Bayesian lens", 
+q is your prior, the probability distribution you thought was true, and the information you get upon hearing the distribution is p should be defined relative to this prior. When people think they’re talking about information without any prior, they are really using a prior that’s so bland that they don’t notice it’s there: a so-called “uninformative prior”. This is nothing but the Kullback Leiber distance or the expectation of the logarithmic difference between the probabilities p and q, where the expectation is taken using the probabilities p. (http://www.tac.mta.ca/tac/volumes/29/16/29-16abs.html)
+In Bayesian statistics the Kullback–Leibler divergence can be used as a measure of the information gain in moving from a prior distribution to a posterior distribution.
+
+Given distribution x and the prior I, if a new piece of information arrives Y =y then the  KL distance is the informational about x after taken into account y, that is, 
+\begin{equation}
+D_{KL} = -\sum_i p(x|y,I) \log (\frac{p(x|y,I)}{p(x|y)})
+\end{equation}
+Now if an additional piece of information comes, $Y = y_2$ the amount of useful information or information gain about x can be updated further to give a new best guess for $p(x | Y, y_1,y_2)$. Importantly, If one reinvestigates the information gain for using $p(x|y1,I)$ rather than $p(x|I)$, it turns out that $p(x | Y, y_1,y_2)$ may be $\leq$ or $>$ than $p(x|y1,I)$

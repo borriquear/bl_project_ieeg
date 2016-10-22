@@ -2,7 +2,7 @@ function [Badj,thresholdv ] =  calc_threshold_wmatrix(WM, binary)
 %% calc_threshold_m calculates a vector of binary networks for each possible threshold
 %comprised between the minimum and the maximum value of the connectivity
 %netwotk
-% INPUT: WM weight matrix of functional connectivity, binary = 1
+% INPUT: WM weight matrix of functional connectivity, binary = 1 
 % OUTPUT: {Binary matrix threshold =min...., Binary matrix threshold =max}
 %        : thresholdv. Binary if binary == 1 , Weihghted if binary ==0
 % stepWM = 0.01;
@@ -14,7 +14,7 @@ thresholdv = []; nonzero_thresholdv= [];
 thresholdv = sort(reshape(WM,1,nbrows*nbcols));
 %remove the 0 elements (WM is triangular superior so half of the elements are 0)
 % only for PLI and R , for Power the connecitivty can be <0
-if min(thresholdv) >= 0
+if min(thresholdv) >= 0 
     nonzero_thresholdv = find(thresholdv > 0);
     thresholdv = thresholdv(nonzero_thresholdv:end);
 else %power Spearman correlation -1, 1
@@ -22,45 +22,39 @@ else %power Spearman correlation -1, 1
     WM = abs(WM);
 end
 Badj = cell(2,length(thresholdv));
-
+BM = zeros(nbrows, nbcols);
 for i=1:length(thresholdv)
-    BM = zeros(nbrows, nbcols);
+
     if binary == 1
         BM(WM >= thresholdv(i)) = 1;
     else
-        [row, col, index] = find( WM >= thresholdv(i));
-        for irow=1:length(row)
+        [row, col, index] = find( M > thresholdv(i));
+        for irow=1:row
             icol=irow;
-            BM(row(irow), col(icol)) = WM(row(irow), col(icol));
+            BM(irow, icol) = 
         end
-        %BM(WM >= thresholdv(i));
+        BM(WM >= thresholdv(i));
     end
-    %BM(logical(eye(size(BM)))) = 0;
+    BM(logical(eye(size(BM)))) = 0;
     %BM(reshape(BM,nbrows,nbcols));
     Badj{1,i}= BM;
     %Calculate the network metric for each matrix Badj{i}
-    Badj{2,i} = calculatemetrics(BM, binary);
+    Badj{2,i} = calculatemetrics(BM);
 end
 disp(Badj)
 end
-function netwmets = calculatemetrics(Badj, binary)
+function netwmets = calculatemetrics(Badj)
 %% calculatemetrics calculates the netwotk metrix for one binary matrix
 % INPUT: Badj binary matrix of functional connectivity
 % OUTPUT: Hash vector network metric for the binary matrix
 
 %keySet =   {'clustering', 'density', 'pathlength', 'richclub', 'transitivity','B0'};
 %keySet =   {'clustering', 'density', 'pathlength', 'transitivity','B0'};
-if binary == 0
-    keySet =   {'wiringcost'};
-else
-    keySet =   {'clustering', 'density', 'pathlength','B0'};
-end
-
+keySet =   {'clustering', 'density', 'pathlength','B0'};
 valueSet = zeros(1,length(keySet));
 for i=1:length(keySet)
     valueSet(i) = calculatemetricshash(Badj, keySet{i});
 end
-
 netwmets = containers.Map(keySet,valueSet);
 
 end
@@ -81,20 +75,18 @@ elseif strcmp(label, 'pathlength')==1
     % The average shortest path length is the  characteristic path length of the network.
     charpathlength_coeff= mean2(Dmatrix(~isinf(Dmatrix)));%avoid NaN for disconnected nodes
     netwmets_el = charpathlength_coeff;
-    % elseif strcmp(label, 'richclub')==1
-    %     richclub_v = rich_club_bu(corrmatrix);
-    %     netwmets = mean(richclub_v);
-    % elseif strcmp(label, 'transitivity')==1
-    %     netwmets_el = transitivity_bu(corrmatrix);
+% elseif strcmp(label, 'richclub')==1
+%     richclub_v = rich_club_bu(corrmatrix);
+%     netwmets = mean(richclub_v);
+% elseif strcmp(label, 'transitivity')==1
+%     netwmets_el = transitivity_bu(corrmatrix);
 elseif strcmp(label, 'B0')==1
     s=graph_spectrum(corrmatrix);
     nc=numel(find(s<10^(-5)));
     %normalize nb of components
     netwmets_el = nc/size(corrmatrix,1);
-    %     [components_v, componentsizes_v] = get_components(corrmatrix);
-    %     netwmets_el = mean(componentsizes_v);
-elseif  strcmp(label, 'wiringcost')==1
-    netwmets_el = sum(corrmatrix(:));
+%     [components_v, componentsizes_v] = get_components(corrmatrix);
+%     netwmets_el = mean(componentsizes_v);
 else
     fprintf('ERROR label %s do not found!!', label );
 end

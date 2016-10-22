@@ -1,0 +1,41 @@
+function [dataobject_cast] = castimplantwithlabal(dataobject, label)
+% castimplantwithlabal returns the data structure casted according to the
+% label which refer to elctroe location
+%example: castimplantwithlabal(dataobject, 'T') -> dataobject_casted
+%REQUIREMENT: mat file globalFsDir/channelclasses.mat has to exist
+%IN: dataobject wiring_matrices, label 'H', 'T','F','IH','FP', 'Grid'
+global globalFsDir;
+[globalFsDir] = loadglobalFsDir();
+filechannel = 'channelclasses.mat';
+filechannel = fullfile(globalFsDir,filechannel);
+fh = load(filechannel,'patientchannelClass');
+dataobject_cast = dataobject;
+nbpats = size(dataobject.patientslist,2);
+freqlist = dataobject.frequencylist;
+nbfreqs = length(freqlist);
+nbconds = size(dataobject.conditionslist, 2);
+
+for i=1:nbpats
+    channelclassindexes = getindexesfromlabel(patientid, label);
+    if length(channelclassindexes) > 0
+        %casting patient
+        for j=1:nbconds
+            matricesfqs_ispc = dataobject.ispc_matrix{i,j};
+        for k=1:nbfreqs
+            matrix_ispc = matricesfqs_ispc(:,:,k);
+            matrix_ispc_cast = matrix_ispc([channelclassindexes],[channelclassindexes]);
+            dataobject.
+        end
+        end
+    else
+        %delete patient
+        dataobject_cast.ispc_matrix(i,:) = [];
+        dataobject_cast.pli_matrix(i,:) = [];
+        dataobject_cast.icoh_matrix(i,:) = [];
+        dataobject_cast.patientsl(1,i) = [];
+        
+        
+    end
+    
+end
+end

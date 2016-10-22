@@ -1,0 +1,153 @@
+function [netmetlist] = plotnetworkmetrics_all(Badjall, wiring_matrices, ie_patcondfreq, binary, typeofconnectivity)
+%% plotnetworkmetrics plot network metrics 
+%INPUT: Badjall, wiring_matrices, ie_patcondfreq, binary
+[nbpats, nbconds, nbfreqs, two]= size(Badjall);
+initpat = ie_patcondfreq(1); 
+initfreq= ie_patcondfreq(5); 
+freqlist = wiring_matrices.frequencylist; 
+freqlist = freqlist(initfreq:ie_patcondfreq(6));
+netmetlist = cell(nbpats, nbconds, nbfreqs);
+
+nbfreqs = length(freqlist);
+listofpats = {};listoffrequencies=[];
+for pati=1:nbpats
+    cupat = wiring_matrices.patientslist(pati + initpat - 1);
+    %for plotting the patientid in the x-axis
+    listofpats(pati) = cupat;
+    hdlf = figure;
+    for condj=1:nbconds
+        cucond =  wiring_matrices.conditionslist(condj);
+        for freqk=1:nbfreqs
+            cufreq = freqlist(freqk);
+            listoffrequencies(freqk) = cufreq;
+            netmetlist_el = {};
+            %hdlf = figure;
+            Badj = Badjall{pati, condj, freqk,1};
+            thresholdv = Badjall{pati, condj, freqk,2};
+            if condj == 2
+                %plotting the contrast betwee two condition, plot - for EC and -- EO 
+                linespec = '--';
+            else
+                linespec = '-';
+            end
+            netmetlist_el = plotnetworkmetrics(hdlf, Badj, thresholdv, linespec, binary);
+            netmetlist{pati, condj, freqk} = netmetlist_el;
+            hold on
+            %plotnetworkmetrics(handler, Badj, thresholdv)
+        end
+    end
+    figure(hdlf)
+    if binary == 1
+        msgtitle = sprintf('Network metrics Binarized Wiring Cost %s-based EC (-) EO (--), pat=%s frq=%.2f',typeofconnectivity, cupat{1}, cufreq)
+    else
+        msgtitle = sprintf('Wiring Cost %s-based EC (-) EO (--), pat=%s frq=%.2f',typeofconnectivity, cupat{1}, cufreq)
+    end
+    title(msgtitle);
+end
+%plot the difference
+%mencontrast_fhdl = figure;
+netmetlist_contrast_all= {};
+for pati=1:nbpats
+    for freqk=1:nbfreqs
+        %eyes closed - eyes open
+        cond1_v = netmetlist{pati, 1, freqk}; cond2_v=netmetlist{pati, 2, freqk} 
+        netmetlist_contrast_all{pati,freqk} =cond1_v{1} - cond2_v{1} ;
+        meanvectorofwc(pati,freqk) = mean(netmetlist_contrast_all{pati,freqk});
+        stdvectorofwc(pati,freqk) = std(netmetlist_contrast_all{pati,freqk});
+    end
+end
+%plot for mean for each patient, as many figures ads frequencies
+plots_perfreq = {}; 
+figure;
+for freqk=1:nbfreqs
+
+    bar(meanvectorofwc)
+    %errorbar(meanvectorofwc,stdvectorofwc)
+     msgtitle = sprintf('Mean Wiring Cost Difference( EC-EO) for all %s-based networks, frq=%.2f',typeofconnectivity, cufreq)
+	 set(gca,'XTickLabel',listofpats(1:end));
+     xlabel('patients'), ylabel('mean wiring cost difference');
+     meanforfigure2(freqk) = mean(meanvectorofwc(:,freqk)); 
+     stdforfigure2(freqk) = mean(meanvectorofwc(:,freqk)); 
+     title(msgtitle)
+end
+%plot mean for each frequency, only 1 figure
+
+figure
+for i=1:length(listoffrequencies)
+    [freq_band] = getgreeksymbolfreq(listoffrequencies(i))
+    listoffrequencies_greek{i} = freq_band;
+end
+bar(meanforfigure2)
+msgtitle = sprintf('Mean Wiring Cost Difference(EC-EO) %s-based networks',typeofconnectivity)
+set(gca,'XTickLabel',listoffrequencies_greek(1:end));
+xlabel('Frequency band'), ylabel('mean wiring cost difference');
+title(msgtitle)
+
+end
+
+function [metricsall] = plotnetworkmetrics(hdl, BM, delta, linespec, binary)
+%% plotnetworkmetrics
+%INPUT: hdl figure handler, Badj{1,:} Binary matrices, one for each threshold
+%Badj{2,:} network metrics, one for each threshold, delta is the vector of
+%threshold values, linespec = '--' eo  linespec = '-' ec
+%OUTPUT: metricsall
+metricsall_contrast = {};
+if binary == 0
+    fprintf('plot wiringcost for weighted matrices\n')
+    metricsall = plotwiringcostforweightedmatrices(hdl, BM, delta, linespec);
+    return
+else
+    [fi, col] = size(BM);
+    netmetlist = keys(BM{2,1});
+    for i=1:col
+        mapobj = BM{2,i};
+        Betti_v(i) = mapobj(netmetlist{1});
+        clustering_v(i) = mapobj(netmetlist{2});
+        density_v(i) = mapobj(netmetlist{3});
+        pathlength_v(i) = mapobj(netmetlist{4});
+        %     transitivity_v(i) = mapobj(netmetlist{5});
+        %     transitivity_v(isnan(transitivity_v)) = 0 ;
+    end
+    
+    figure(hdl)
+    set(gca, 'XTick',[min(delta) mean(delta) max(delta)])
+    %ylim([0 1]);
+    xlabel('delta'), ylabel('network metrics')
+    msgt = sprintf('Network metrics for BN threshold');
+    %legend(conditionslist{1}, conditionslist{2}, 'Interpreter', 'None')
+    %title(msgt,'interpreter', 'none');
+    
+    plot(delta,Betti_v,'Color','m','LineStyle',linespec);hold on;
+    plot(delta,clustering_v,'Color','r','LineStyle',linespec);hold on;
+    plot(delta,density_v,'Color','b','LineStyle',linespec);hold on;
+    plot(delta,pathlength_v,'Color','g','LineStyle',linespec);hold on;
+    % plot(delta,transitivity_v);
+    legend('Betti 0','clustering', 'density','path length')
+    metricsall = {Betti_v, clustering_v,density_v,pathlength_v};
+end
+end
+
+function wiringcost_met = plotwiringcostforweightedmatrices(hdl, BM, delta, linespec)
+%%plotwiringcostforweightedmtrices plot wiringcost y-axis, delta in x-axis
+[fi, col] = size(BM);
+netmetlist = keys(BM{2,1});
+wiringcost =zeros(1,col);
+for i=1:col
+    mapobj = BM{2,i};
+    wiringcost(i) = mapobj(netmetlist{1});
+    %for other parameters put here
+end
+
+figure(hdl)
+set(gca, 'XTick',[min(delta) mean(delta) max(delta)])
+%ylim([0 1]);
+xlabel('delta'), ylabel('wiring cost')
+msgt = sprintf('Wiring cost for threshold  weighted networks');
+%legend(conditionslist{1}, conditionslist{2}, 'Interpreter', 'None')
+%title(msgt,'interpreter', 'none');
+
+plot(delta,wiringcost,'Color','m','LineStyle',linespec);hold on;
+legend('wiring cost EC','wiring cost EO' )
+wiringcost_met = {wiringcost};
+%%%
+end

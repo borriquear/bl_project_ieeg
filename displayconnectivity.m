@@ -1,6 +1,6 @@
 function [] = displayconnectivity(label)
-%dispplayconnectivity: displyas adj matrix and network
-% IN: label = power|phase
+% displayconnectivity: displays adj matrix and network
+%IN: label = power|phase
 %clear all;
 global globalFsDir;
 globalFsDir = loadglobalFsDir();

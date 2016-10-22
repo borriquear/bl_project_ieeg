@@ -1,7 +1,7 @@
 function filematname = fftperperpatient(eegpatient, eegcond)
 %IN patient, condition
 %OUT matfile handle
-%
+%define a temporal window, non linearity isse to apply FFT
 global t;
 global tot_seconds;
 global hz;
@@ -11,6 +11,7 @@ global freq_bands;
 global  globalFsDir;
 global plotsinglechannel;
 globalFsDir = loadglobalFsDir();
+
 fprintf('Calling to fftperperpatient for patient: %s and condition: %s\n', eegpatient,eegcond);
 [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
 fprintf('EEG object for patient: %s and condition: %s initialized \n', eegpatient,eegcond);
@@ -61,9 +62,35 @@ for irow =chani:chanend
     fouriertime = fouriertime(1:end-1);
     fprintf('Calculating FFT for Patient %s, Cond %s, channel = %s, channel_id=%d / channel_total=%d ...\n', eegpatient, eegcond, chan2use, irow-1, chanend-1);
     %FFT fft(X) computes the discrete Fourier transform (DFT) of X using a fast Fourier transform (FFT) algorithm.
+    % Calculate fro temporal window
+    
+    
+%     time_window_idx = 5*1000; % n seconds in miliseconds
+%     wt_size = size(time_window_idx+1:time_window_idx:EEG.pnts-time_window_idx,2);
+%     %ispc = zeros(1, ispc_ind);
+%     signalw = zeros(1, wt_size);
+%     signalXFw = zeros(1, wt_size);
+%     %tic;
+%     wt = 0;
+%     %non averlapping window of time_window_idx = 1500
+%     for ti=time_window_idx+1:time_window_idx:EEG.pnts-time_window_idx %time_window_idx
+%         % compute phase synchronization
+%         signalw= signal(ti-time_window_idx:ti+time_window_idx);
+%         signalXFw= fft(signalw)/length(signal(ti-time_window_idx:ti+time_window_idx));
+%         wt = wt + 1;
+%         V_signalXF(wt) = signalXFw;
+%         
+%         wt = wt + 1;
+%         
+%     end
+%     %toc;
+%     signalXF = V_signalXF(:);
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%
     signalXF = fft(signal)/n;
     msgtitle = sprintf('Cond=%s Channel=%s Patient=%s \n',eegcond, chan2use,eegpatient);
-    ampli_fft(irow-1,:) = 2*abs(signalXF(1:length(hz)));
+    ampli_fft(irow-1,:) = 2*abs(signalXF(1:length(hz))); %2* because we have both positive and negatibve frequencies, since we are ognoring the negative we need to 2* the positive to be fair. The negative mirror the positive frequencies because the signal is real number
     power_fft(irow-1,:) = abs(signalXF(1:length(hz))).^2;
     %extract information about specific frequencies
     power_fft_perband = abs(signalXF(frex_idx)).^2; %frex_idx = sort(dsearchn(hz',f'));

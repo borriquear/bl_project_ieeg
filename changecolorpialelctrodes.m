@@ -1,6 +1,7 @@
 %% Load condition [power|other]data and display coloured electrodes
 clear all
-patientid = 'TWH030';%ESTO ES FIJO PARA CAGAR SIEMPRE ESE CEREBRO Y QUE NO DE ERROR en los pacientes viejos
+patientid = 'TWH030';%ESTO ES FIJO PARA CARGAR SIEMPRE ESE CEREBRO Y QUE NO DE ERROR 
+%en los pacientes viejos
 condition = 'HYP'
 band = [2, 6 , 10, 23.5, 40]; %delta theta alpha beta gamma
 frqband_i = 1;

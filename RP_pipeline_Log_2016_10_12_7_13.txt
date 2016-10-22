@@ -1,0 +1,13 @@
+Parameter log
+**********************		
+[1][KccReHo]		
+NVoxels	27	
+If Smooth KCC-ReHo results?	Yes	
+FWHM for KCC-ReHo:	[6 6 6]	
+
+
+
+
+Input and Output log
+[PROCESS METHOD]	[EPI AND OTHER INPUT]	[EPI AND OTHER OUTPUT]	[T1 INPUT]	[T1 OUTPUT]	
+KccReHo		KccReHo			

@@ -3,7 +3,7 @@ function globalFsDir = loadglobalFsDir()
 if ~exist('globalFsDir','var')
     %fprintf('globalFsDir not found, loading it...\n');
     eval('global globalFsDir');
-    myp = 'D:\BIAL PROJECT\patients\';
+    myp = 'D:\BIALPROJECT\patients\';
     eval(['globalFsDir=' 'myp;']);
 end
 end
