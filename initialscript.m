@@ -160,12 +160,15 @@ end
 %frequency
 %Load the wiring_matrices 
 %clear all
-if exist('wiring_matrices') > 0
-    fprintf('wiring_matrices object already exist phaseconn and power_conn matrices\n')
-else
-    fprintf('Loading wiring matrices from phaseconn and power_conn matrices\n')
-    wiring_matrices = calculatewiringcostmatrices();
-end
+% CREATE wiring_matrices  COMPLETE, select the subset of pats, conds and
+% freqs for Badjall
+
+% if exist('wiring_matrices') > 0
+%     fprintf('wiring_matrices object already exist phaseconn and power_conn matrices\n')
+% else
+%     fprintf('Loading wiring matrices from phaseconn and power_conn matrices\n')
+wiring_matrices = calculatewiringcostmatrices();
+% end
 %Initial conditions: select the patients, conditions and frequencies from wiring_matrices we
 %want to setudy
 initpat = 1; 
@@ -175,20 +178,14 @@ listofselectedpats = wiring_matrices.patientslist(initpat:nbpats);
 % 1.0000    1.7487    3.0579    5.3472    9.3506   16.3512   28.5930   50.0000
 freqlist = wiring_matrices.frequencylist; 
 initfreq = 3;%3 = 3.079, 5 = alpha
-freq_gap = initfreq + 2;%how many different frequecnies (other than initfreq) to study (1 till theta, 2alpha)
+freq_gap = initfreq +5;%how many different frequencies (other than initfreq) to study (1 till theta, 2alpha)
 freqlist = freqlist(initfreq:freq_gap);
+
 nbfreqs = length(freqlist);
 %condition EC EO HYP
 initcond=1; 
 nbconds = size(wiring_matrices.conditionslist, 2); 
-nbconds = 2; % 3 for ec eo hyp
-%array with all the initialconditions ie_patcondfreq initpat, nbpats, initcond, nbconds, initfreq, nbfreqs
-ie_patcondfreq = [initpat,nbpats,initcond,nbconds,initfreq,freq_gap];
-% Fix patients, conditons and frequencies to plot specific p,c,f
-%nbpats=initpat;
-%connmatrixrequired = [ispc, pli, power] AND sum(connmatrixrequired)==1
-%first indiex with 1 tells what connectivity matrix to use, 1s1 ispc, 2nd
-%pli, 3rd power
+
 connmatrixrequired = [1,0,0]; 
 %get the wiring_ispc|pli|power oject from the wiring_matrices object
 if find(connmatrixrequired) ==1
@@ -205,17 +202,23 @@ end
 %all possible thresholds. If binary = 0 then Weighted
 binary = 0;
 %Set of Threshold MAtrices Binary Matrices depending on binary =1|0
-Badjall = {}; 
+
 %loop to calculate Badjall object containing the binary matrices and the
 %network metrics associated with each BM
 %% Calculates Badjall
-%nbpats = initpat+3;% set initfreq = 5before for alpha
+nbpats = 1 + 1;% initpat + additional pats 
+nbconds =3; % 2 ec-eo, 3 ec-hyp
+nbfreqs = 6; % 1 till 3.0579, 2 till 5.3472 3 till 9.3506,  4- 16.3512,   5- 28.5930,  6 50.0000
+Badjall = cell(nbpats,nbconds,nbfreqs,2 );
+%array with all the initialconditions ie_patcondfreq initpat, nbpats, initcond, nbconds, initfreq, nbfreqs
+ie_patcondfreq = [initpat,nbpats,initcond,nbconds,initfreq,freq_gap];
 for pati=initpat:nbpats
     cupat = listofselectedpats(pati);
     patindex = pati-initpat + 1;
     for condj=1:nbconds
         cucond =  wiring_matrices.conditionslist(condj);
         for freqk=1:nbfreqs
+            %Badjall{patindex,condj,freqk,:} = [];
             cufreq = freqlist(freqk);
             Badj = [];thresholdv = [];
             wcmatrix = []; wcmatrix_norm = [];
@@ -232,6 +235,7 @@ for pati=initpat:nbpats
             end
             [Badj, thresholdv] = calc_threshold_wmatrix(wcmatrix_norm, binary);
             fprintf('Saving Badj and thresholdv in Badjall \n');
+            
             Badjall{patindex,condj,freqk,1} = Badj;
             Badjall{patindex,condj,freqk,2} = thresholdv;
         end
@@ -244,12 +248,10 @@ f = warndlg('Badjall built, Click OK to Continue with the Ploting ', 'Program in
 drawnow 
 waitfor(f);
 disp('Plotting Badjall is an array Badj for eachpat, cond anf freq: Badj{1,:}Binary matrices, one for each threshold and Badj{2,:} network metrics, one for each threshold');
-plotnetworkmetrics_all(Badjall, wiring_matrices, ie_patcondfreq, binary, typeofconnectivity)
-
-% Plot the figure with the contrast for all patients
-
-
-%% 5.3 Calculates the statistical effect between the conditions
+%ie_patcondfreq = [initpat,nbpats,initcond,2,initfreq,freq_gap];
+[netmetlist] = plotnetworkmetrics_all(Badjall, wiring_matrices, ie_patcondfreq, binary, typeofconnectivity)
+%% 5.3 Calculates the statistical effect between the conditions for the binary 
+% networks
 % H0= \mu condition 1 = \mu condition 2
 %ttest for eachpatiend and frequency between two conditions
 %cond1 =1; cond2=2; %cond3=3 %hypnois
