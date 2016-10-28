@@ -178,7 +178,7 @@ listofselectedpats = wiring_matrices.patientslist(initpat:nbpats);
 % 1.0000    1.7487    3.0579    5.3472    9.3506   16.3512   28.5930   50.0000
 freqlist = wiring_matrices.frequencylist; 
 initfreq = 3;%3 = 3.079, 5 = alpha
-freq_gap = initfreq +5;%how many different frequencies (other than initfreq) to study (1 till theta, 2alpha)
+freq_gap = initfreq +3;%how many different frequencies (other than initfreq) to study (1 till theta, 2alpha)
 freqlist = freqlist(initfreq:freq_gap);
 
 nbfreqs = length(freqlist);
@@ -198,17 +198,14 @@ elseif find(connmatrixrequired) == 3
     wcconn = wiring_matrices.wiring_power;
     typeofconnectivity = 'power';
 end
+%% Calculates Badjall
 %Choose between building binary matrices or weighted matrices upon 
 %all possible thresholds. If binary = 0 then Weighted
-binary = 0;
+binary = 1;
 %Set of Threshold MAtrices Binary Matrices depending on binary =1|0
-
-%loop to calculate Badjall object containing the binary matrices and the
-%network metrics associated with each BM
-%% Calculates Badjall
-nbpats = 1 + 1;% initpat + additional pats 
-nbconds =3; % 2 ec-eo, 3 ec-hyp
-nbfreqs = 6; % 1 till 3.0579, 2 till 5.3472 3 till 9.3506,  4- 16.3512,   5- 28.5930,  6 50.0000
+nbpats = 1 + 10;% initpat + additional pats 
+nbconds = 2; % 2 ec-eo, 3 ec-hyp
+%nbfreqs = 3; % 1 till 3.0579, 2 till 5.3472 3 till 9.3506,  4- 16.3512,   5- 28.5930,  6 50.0000
 Badjall = cell(nbpats,nbconds,nbfreqs,2 );
 %array with all the initialconditions ie_patcondfreq initpat, nbpats, initcond, nbconds, initfreq, nbfreqs
 ie_patcondfreq = [initpat,nbpats,initcond,nbconds,initfreq,freq_gap];
@@ -233,60 +230,101 @@ for pati=initpat:nbpats
                 %normalize between 0 and 1 (coherence and PLI are [0,1])
                 wcmatrix_norm = (wcmatrix - min(wcmatrix(:)))/(max(wcmatrix(:)) - min(wcmatrix(:)));
             end
-            [Badj, thresholdv] = calc_threshold_wmatrix(wcmatrix_norm, binary);
+            [Badj,thresholdv] = calc_threshold_wmatrix(wcmatrix_norm, binary);
             fprintf('Saving Badj and thresholdv in Badjall \n');
-            
             Badjall{patindex,condj,freqk,1} = Badj;
             Badjall{patindex,condj,freqk,2} = thresholdv;
         end
     end
 end
-
-%% 5.2
+fprintf('Done! Badjall is being created \n');
+%% 5.2.1 Plot Badjall matrix results (overall metrics for all networks)
 fprintf('Badjall built, click OK to plot the network metric for each delta\n');
-f = warndlg('Badjall built, Click OK to Continue with the Ploting ', 'Program interruption');
+f = warndlg('Badjall built, Click OK to Continue with the Ploting', 'Program interruption');
 drawnow 
 waitfor(f);
 disp('Plotting Badjall is an array Badj for eachpat, cond anf freq: Badj{1,:}Binary matrices, one for each threshold and Badj{2,:} network metrics, one for each threshold');
 %ie_patcondfreq = [initpat,nbpats,initcond,2,initfreq,freq_gap];
 [netmetlist] = plotnetworkmetrics_all(Badjall, wiring_matrices, ie_patcondfreq, binary, typeofconnectivity)
+%% 5.2.2 Plot selected matrices (overall metrics for all networks)
+if exist('Badjall') > 0
+    fprintf('wiring_matrices object already exist phaseconn and power_conn matrices\n');
+    %[nbpats, nbconds, nbfreqs,2] =size(Badjall);
+else
+    warning('Badjall NOT FOUND\n')
+    return
+end
+mypat = 1; mypatlabel = 'TWH030';
+mycond = 1; %EC EO HYP
+myfreq = 1;  % 1 is 3.05
+myconnmat = Badjall(mypat,mycond,myfreq,1);
+mythreshold_v = Badjall(mypat,mycond,myfreq,2);
+mythreshold_v = mythreshold_v{1};
+mycurrmat = myconnmat{1};
+%choose one
+mythreshold = 1;
+mythreshold = find(mythreshold_v > mean(mythreshold_v)); mythreshold = mythreshold - 1;
+%mythreshold = length(mythreshold_v); %mythreshold_v(1)
+corrMatrix = mycurrmat{1,mythreshold(1)};
+
+[myfullname, EEG, channel_labels, eegdate, eegsession] = initialize_EEG_variables(mypatlabel,'HYP');
+strNames = channel_labels(2:end)
+myColorMap = lines(length(corrMatrix));
+circularGraph(corrMatrix,'Colormap',myColorMap,'Label',strNames);
+msgtitle = sprintf('Wiring cost etwork for minimum thresold, pat=%s', mypatlabel)
+title(msgtitle)
 %% 5.3 Calculates the statistical effect between the conditions for the binary 
 % networks
 % H0= \mu condition 1 = \mu condition 2
 %ttest for eachpatiend and frequency between two conditions
-%cond1 =1; cond2=2; %cond3=3 %hypnois
+%cond1 =1; cond2=2; %cond3=3 %hypnosis
 fprintf('Calculating the statistical significance for the two conditions\n');
 f = warndlg('Calculating the statistical significance for the two conditions. Click OK', 'Program interruption');
 drawnow 
 waitfor(f);
 %netmetlist = {Betti_v, clustering_v,density_v,pathlength_v};
-alphav = 0.001;
+alphav = 0.01;
+cond1 = 1; cond2 = 2;
+p_metrics = cell(nbpats,nbfreqs,4);
 for i=1:nbpats
     cupat = listofselectedpats(pati + initpat - 1);
-    for f=1:nfreqs
+    for f=1:nbfreqs
         vcond_a = {};vcond_a_betti = {}; vcond_a_clustering ={};vcond_a_path ={};
-        vcond_b = {};vcond_b_betti = {};vcond_a_clustering ={};vcond_a_path ={};
+        vcond_b = {};vcond_b_betti = {};vcond_b_clustering ={};vcond_b_path ={};
         vcond_a = netmetlist{i,cond1,f};
         vcond_b = netmetlist{i,cond2,f};
         vcond_a_betti = vcond_a{1}; vcond_b_betti = vcond_b{1};
         [h,p] = ttest2(vcond_a_betti,vcond_b_betti, 'Alpha',alphav);
+        p_metrics{i,f,1} = p;
         fprintf('Betti ttest for Pat= %s, freq=%.2f: h = %d p=%.5f alpha =%.4f\n',listofselectedpats{i + initpat - 1},freqlist(f),h,p, alphav);
-        vcond_a_clustering = vcond_a{1}; vcond_b_clustering = vcond_b{1};
+        vcond_a_clustering = vcond_a{2}; vcond_b_clustering = vcond_b{2};
         [h,p] = ttest2(vcond_a_clustering,vcond_b_clustering, 'Alpha',alphav);
+        p_metrics{i,f,2} = p;
         fprintf('Clustering ttest for Pat= %s, freq=%.2f: h = %d p=%.5f alpha =%.4f\n',listofselectedpats{i + initpat - 1},freqlist(f),h,p, alphav);
-        vcond_a_path = vcond_a{1}; vcond_b_path = vcond_b{1};
-        [h,p] = ttest2(vcond_a_clustering,vcond_b_clustering, 'Alpha',alphav);
+        vcond_a_wiring = vcond_a{3}; vcond_b_wiring = vcond_b{3};
+        [h,p] = ttest2(vcond_a_wiring, vcond_b_wiring, 'Alpha',alphav);
+        p_metrics{i,f,3} = p;
+        fprintf('Nb of Edges ttest for Pat= %s, freq=%.2f: h = %d p=%.5f alpha =%.4f \n',listofselectedpats{i + initpat - 1},freqlist(f),h,p, alphav);
+        vcond_a_path = vcond_a{4}; vcond_b_path = vcond_b{4};
+        [h,p] = ttest2(vcond_a_path, vcond_b_path, 'Alpha',alphav);
+        p_metrics{i,f,4} = p;
         fprintf('Path ttest for Pat= %s, freq=%.2f: h = %d p=%.5f alpha =%.4f \n',listofselectedpats{i + initpat - 1},freqlist(f),h,p, alphav);
+        fprintf('FREQ =%.2f\n', f)
     end
+    fprintf('=======PATIENT======= =%d\n\n', i)
 end
-% The result h is 1 if the test rejects the null hypothesis (data in vectors x and y comes from independent random samples from normal distributions with equal means and equal but unknown variances) at the 5% significance level, and 0 otherwise.
+% The result h is 1 if the test rejects the null hypothesis (data in vectors 
+% x and y comes from independent random samples from normal distributions with equal means and equal but unknown variances) at the 1% significance level, and 0 otherwise.
 % Save the ttest results in a mat file
-
-
-
-
-
-
+folderderst = 'D:\BIALPROJECT\patients\figure_results\';
+fileorig = sprintf('p-test-01-BCP');
+filedest =fullfile(folderderst,fileorig );
+save('filedest','p_metrics');
+%% Mutual Information
+patientlist = {'TWH030'}%,'TWH031','TWH034','TWH033','TWH038','TWH042'};%,'TWH043','TWH037'
+%Patient 37 and 43  have NOT HD,  only Deep
+conditionslist = {'EC_PRE', 'EO_PRE'}%,'HYP','EC_POST','EO_POST'};
+[mi_matrix] = mutualinformation_matrix(patientlist, conditionslist)
 
 
 
@@ -348,3 +386,9 @@ cfg_out=plotPialSurf('TWH037',cfg);
 % powerspecmatrix_freqbands(fft section 1)
 plotkineticenergy(wiring_matrices, powerspecmatrix_freqbands);
 %scatter PhysicalXfunctional, electrode to electrode
+
+
+
+
+
+

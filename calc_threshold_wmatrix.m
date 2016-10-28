@@ -5,13 +5,15 @@ function [Badj,thresholdv ] =  calc_threshold_wmatrix(WM, binary)
 % INPUT: WM weight matrix of functional connectivity, binary = 1
 % OUTPUT: {Binary matrix threshold =min...., Binary matrix threshold =max}
 %        : thresholdv. Binary if binary == 1 , Weihghted if binary ==0
-% stepWM = 0.01;
-% minWM= min(WM(:));
-% maxWM= max(WM(:));
-% thresholdv = minWM:stepWM:maxWM;
-thresholdv = []; nonzero_thresholdv= [];
 [nbrows, nbcols] = size(WM);
-thresholdv = sort(reshape(WM,1,nbrows*nbcols));
+%  minWM= min(WM(:));
+%  maxWM= max(WM(:));
+%  stepWM = (maxWM - minWM)/ (nbrows*nbcols);
+%  thresholdv = minWM:stepWM:maxWM;
+thresholdv = []; nonzero_thresholdv= [];
+
+%thresholdv = sort(reshape(WM,1,nbrows*nbcols));
+thresholdv = linspace(min(WM(:)), max(WM(:)), nbrows*nbcols);
 %remove the 0 elements (WM is triangular superior so half of the elements are 0)
 % only for PLI and R , for Power the connecitivty can be <0
 if min(thresholdv) >= 0
@@ -53,7 +55,8 @@ function netwmets = calculatemetrics(Badj, binary)
 if binary == 0
     keySet =   {'wiringcost'};
 else
-    keySet =   {'clustering', 'density', 'pathlength','B0'};
+    keySet =   {'B0','clustering', 'wiringcost', 'pathlength'}; 
+    %wiring cost for binary matrix is the same as the number of edges
 end
 
 valueSet = zeros(1,length(keySet));
@@ -94,7 +97,7 @@ elseif strcmp(label, 'B0')==1
     %     [components_v, componentsizes_v] = get_components(corrmatrix);
     %     netwmets_el = mean(componentsizes_v);
 elseif  strcmp(label, 'wiringcost')==1
-    netwmets_el = sum(corrmatrix(:));
+    netwmets_el = sum(corrmatrix(:))/ (size(corrmatrix,1)* size(corrmatrix,2));
 else
     fprintf('ERROR label %s do not found!!', label );
 end

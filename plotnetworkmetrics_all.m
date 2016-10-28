@@ -56,7 +56,7 @@ for pati=1:nbpats
     end
     figure(hdlf)
     if binary == 1
-        msgtitle = sprintf('Network metrics Binarized Wiring Cost %s-based %s (-) %s (--), pat=%s frq=%.2f',cond1, cond2, typeofconnectivity, cupat{1}, cufreq)
+        msgtitle = sprintf('Network metrics Binarized Wiring Cost %s-based %s(-)-%s(--) pat=%s',typeofconnectivity,cond1, cond2, cupat{1})
     else
         msgtitle = sprintf('Wiring Cost %s-based %s (-) %s (--), pat=%s',typeofconnectivity, cond1, cond2,cupat{1})
     end
@@ -120,10 +120,11 @@ else
     [fi, col] = size(BM);
     netmetlist = keys(BM{2,1});
     for i=1:col
+        %'B0'    'clustering'    'density'    'pathlength'
         mapobj = BM{2,i};
         Betti_v(i) = mapobj(netmetlist{1});
         clustering_v(i) = mapobj(netmetlist{2});
-        density_v(i) = mapobj(netmetlist{3});
+        wiringcost_v(i) = mapobj(netmetlist{3});
         pathlength_v(i) = mapobj(netmetlist{4});
         %     transitivity_v(i) = mapobj(netmetlist{5});
         %     transitivity_v(isnan(transitivity_v)) = 0 ;
@@ -139,11 +140,11 @@ else
     
     plot(delta,Betti_v,'Color','m','LineStyle',linespec);hold on;
     plot(delta,clustering_v,'Color','r','LineStyle',linespec);hold on;
-    plot(delta,density_v,'Color','b','LineStyle',linespec);hold on;
+    plot(delta,wiringcost_v,'Color','b','LineStyle',linespec);hold on;
     plot(delta,pathlength_v,'Color','g','LineStyle',linespec);hold on;
     % plot(delta,transitivity_v);
-    legend('Betti 0','clustering', 'density','path length')
-    metricsall = {Betti_v, clustering_v,density_v,pathlength_v};
+    legend('Betti 0','clustering','wiringcost','pathlength')
+    metricsall = {Betti_v, clustering_v, wiringcost_v, pathlength_v};
 end
 end
 

@@ -1,13 +1,12 @@
-function  [mi_matrix] = mutualinformation_matrix()
-%mutualinformation_matrix returns the MI matrix a symmetric matrix with the
+function  [meanMImatrix] = mutualinformation_matrix(patientlist, conditionslist)
+%mutualinformation_matrix returns the MI matrix: a symmetric matrix with the
 %MI for each pair of channels. The matrix is saved as a mat file in the patient/data/figures folder
-%The patients and conditions is specified in patientlist and conditionslist
+%The patients and condition are specified in patientlist and conditionslist
 % Call this once to create the mat file, compitationally EXPENSIVE!
+%INPUT: patientlist, conditionslist
+%OUTPUT: mi_matrix
 global globalFsDir;
 [globalFsDir] = loadglobalFsDir();
-patientlist = {'TWH030','TWH031','TWH034','TWH033','TWH038','TWH042'};%,'TWH043','TWH037'
-%Patient 37 and 43  have NOT HD,  only Deep
-conditionslist = {'EC_PRE', 'EO_PRE','HYP','EC_POST','EO_POST'};
 indexp = 1;
 indexc = 1;
 isinlist = 0; % isinlist = 1 To calculate MI ALL Pairs
@@ -16,11 +15,11 @@ if isinlist < 1 % isinlist = 0 To calculate among subgroups of channels
     label1 = 'HD'; label2 = 'NOHD';
 end
 meanMImatrix = zeros(length(patientlist), length(conditionslist));
-for ip=1:length(patientlist)
+for ip=indexp:length(patientlist)
     eegpatient = patientlist{ip};
     label1indexes = getindexesfromlabel(eegpatient, label1);
     label2indexes = getindexesfromlabel(eegpatient, label2);
-    for ic=1:length(conditionslist)
+    for ic=indexc:length(conditionslist)
         eegcond = conditionslist{ic};
         %patient 34 missing EO PRE
         if strcmp(eegpatient, 'TWH034') +  strcmp(eegcond, 'EO_PRE') > 1
@@ -84,7 +83,7 @@ function  [mean_mi,mean_entropy_x,mean_entropy_y,mean_entropy_xy, mean_nbins] = 
 % eegcond = 'HYP'
 % [myfullname, EEG, channel_labels,eegdate,eegsession] = initialize_EEG_variables(eegpatient,eegcond);
 %electrodes4mi = {'RFP1','LHD2'}
-timewindow = 400; % in ms
+timewindow = 500; % in ms
 stepsize = 100; %ms
 epochtime = length(EEG.data);
 times2save = 1:stepsize:epochtime;
@@ -107,7 +106,7 @@ for timei = 1:length(times2save)
         datax = EEG.data(electrodesidx(1),times2saveidx(timei)-timewindowidx:times2saveidx(timei)+timewindowidx);
         datay = EEG.data(electrodesidx(2),times2saveidx(timei)-timewindowidx:times2saveidx(timei)+timewindowidx);
         [mi(1,timei),entropy(:,timei),nbins(timei)] = mutualinformationx(datax,datay); %variable number of bins
-        %[mi(2,timei),entropy(:,timei)             ] = mutualinformationx(datax,datay,20); %fixed umber of bins
+        %[mi(2,timei),entropy(:,timei)             ] = mutualinformationx(datax,datay,20); %fixed number of bins
     catch err
         if strcmp(err.identifier, 'MATLAB:badsubscript')
             fprintf('CAUTION: (Line 108 mutualinformation2channels) exceed EEG.data size\n')
