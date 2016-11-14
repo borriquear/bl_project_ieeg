@@ -50,7 +50,7 @@ for p=initpat:nbpats
 end
 
 %plot 1 chart with change in R, PLI Power P- P*F for cond,frequency
-sti = sprintf('Wiring Cost (P*.F) F=R|PLI|Power %d in conditions (%s ...%s) ROIS=%s', nbconds, wiring_matrices.conditionslist{1}, wiring_matrices.conditionslist{end}, electrodelabel{1} );
+sti = sprintf('Wiring Cost (D*.F) F=R|PLI|Power %d in conditions (%s ...%s) ROIS=%s', nbconds, wiring_matrices.conditionslist{1}, wiring_matrices.conditionslist{end}, electrodelabel{1} );
 barf = figure;
 subplot(1,3,1)
 %bar(barmatrix_chg_ispc);
@@ -61,14 +61,14 @@ ax = set(gca,'XTick',1:length(listofselectedpats),'XTickLabel', listofselectedpa
 subplot(1,3,2)
 %bar(barmatrix_chg_pli);
 bar(barmatrix_pli);
-xlabel('Frequencies x Conds Patients'), ylabel('PLI wiring cost  P.*F')
+xlabel('Frequencies x Conds Patients'), ylabel('PLI wiring cost D.*F')
 ax = set(gca,'XTick',1:length(listofselectedpats),'XTickLabel', listofselectedpats,'Fontsize',7,'XTickLabelRotation', 45);%xticklabel_rotate([],45,[],'Fontsize',6);
 title(sti, 'Interpreter', 'none');
 subplot(1,3,3)
 %bar(barmatrix_chg_power);
 bar(barmatrix_power);
 ax = set(gca,'XTick',1:length(listofselectedpats),'XTickLabel', listofselectedpats,'Fontsize',7,'XTickLabelRotation', 45);%xticklabel_rotate([],45,[],'Fontsize',6);
-xlabel('Frequencies x Conds Patients '), ylabel('Power wiring cost P.*F')
+xlabel('Frequencies x Conds Patients '), ylabel('Power wiring cost D.*F')
 %plot the mean of all patients
 ispc_diff = zeros(1,nbfreqs ); pli_diff = zeros(1, nbfreqs ); power_diff = zeros(1,nbfreqs );
 for fqs=initfreq:nbfreqs
@@ -89,10 +89,10 @@ for fqs=initfreq:nbfreqs
     hold on
 end
 set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
-ylabel('W_c - W_o'), xlabel('Frequency bands')
-ts = sprintf('P*R_C-P*R_O ROI=%s', electrodelabel{1});
+ylabel('W_C - W_O=D*R_C-D*R_O'), xlabel('Frequency bands')
+ts = sprintf('R based WC difference, ROI=%s', electrodelabel{1});
 %legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
-title(ts);
+%title(ts);
 
 %PLI measure
 subplot(1,3,2)
@@ -106,8 +106,8 @@ for fqs=initfreq:nbfreqs
     hold on
 end
 set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
-ylabel('W_c - W_o'), xlabel('Frequency bands')
-ts = sprintf('P*PLI_C-P*PLI_O ROI=%s', electrodelabel{1});
+ylabel('W_C - W_O=D*PLI_C-D*PLI_O'), xlabel('Frequency bands')
+ts = sprintf('Wiring Cost Difference C-O, ROI=%s', electrodelabel{1});
 %legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
 title(ts);
 
@@ -123,10 +123,11 @@ for fqs=initfreq:nbfreqs
     hold on
 end
 set(gca,'XTick', [initfreq:nbfreqs], 'XTickLabel', round(freqlist(initfreq:end),1,'significant'));
-ylabel('W_c - W_o'), xlabel('Frequency bands')
-ts = sprintf('P*Pw_C-P*Pw_O ROI=%s', electrodelabel{1});
+ylabel('W_C - W_O= D*PW_C-D*PW_O'), xlabel('Frequency bands')
+ts = sprintf('Power based WC Difference, ROI=%s', electrodelabel{1});
 legend('delta', 'theta', 'alpha', 'beta1','beta2','gamma');
-title(ts);
+
+%title(ts);
 
 %calculate cond1-cond2, condn-1- condn
 if nbconds == 2

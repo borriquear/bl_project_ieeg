@@ -23,7 +23,7 @@
 %>>print -f3 -djpeg 'D:\BIAL PROJECT\patients\figure_results\ECEO-Allroisfigi1'
 %>>savefig('D:\BIAL PROJECT\patients\figure_results\ECEO-Allroisfigi1')
 
-%% 1. Power an dphase Analysis
+%% 1. Power and phase Analysis
 % 1.1 Create mat file with power/amplitud calculated via the FFT. Power analysis, identify channels with most power and the frequency bands that pick up maximum power
 %OUTPUT: % globalFsDir\eegpatient\data\figures\fft_%pat_%cond_%date_%se.mat -> 'ampli_fft','power_fft','power_fft_perband', 'power_fft_mean_perband','channel_labels'
 global globalFsDir;
@@ -132,10 +132,11 @@ calculatenetworkmetricdistances('phase');
 %% 4. Wiring distance (calls to calculateEuclideandistancematrix)
 % 4.1. Create the wiring_matrices with the wiring cost for both power and
 % phase based correlation matrices
-% IN: phaseconn_matrices_tw.mat, 'powerconn_matrices_tw.mat (tw = when conn 
+% IN: scope, phaseconn_matrices_tw.mat, 'powerconn_matrices_tw.mat (tw = when conn 
 % matrix calculated using a moving window)
 % OUTPUT: wiringcost_matrices.mat
-wiring_matrices = calculatewiringcostmatrices();
+scope = {'local','meso'}; %W = D.*F, W= D./LH
+wiring_matrices = calculatewiringcostmatrices(scope{1}); 
 %disp(wiring_matrices);
 % 4.2 Plot the wiring cost matrices (ALL electrodes | subset)
 plot_all_electrodes = 1;
@@ -144,9 +145,9 @@ if plot_all_electrodes == 1
 else
     typeobject = {'phaseconn_matrices', 'powerconn_matrices', 'wiring_matrices'};
     electrodelist = {'T','F','FP','IH','Grid','HD','NOHD', 'D', 'BiTemp'};
-    plotwiringcost(wiring_matrices, typeobject(3),electrodelist(6));
+    plotwiringcost(wiring_matrices, typeobject(3),electrodelist(5));
 end
-plot_scatter = 1;
+plot_scatter = 0;
 if plot_scatter == 1
     fprintf('Plotting the scatter of physical and functional distance\n');
     scatterPF(wiring_matrices);
@@ -167,7 +168,9 @@ end
 %     fprintf('wiring_matrices object already exist phaseconn and power_conn matrices\n')
 % else
 %     fprintf('Loading wiring matrices from phaseconn and power_conn matrices\n')
-wiring_matrices = calculatewiringcostmatrices();
+%
+%wiring_matrices = calculatewiringcostmatrices();
+%
 % end
 %Initial conditions: select the patients, conditions and frequencies from wiring_matrices we
 %want to setudy
