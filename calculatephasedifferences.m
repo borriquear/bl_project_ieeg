@@ -1,4 +1,4 @@
-function [] = calculatephasedifferences(patientslist, conditionslist, time_window_idx)
+function [phaseconn_matrix] = calculatephasedifferences(patientslist, conditionslist, time_window_idx)
 % calculatephasedifferences create file phaseconn_matrices.mat with
 % phaseconn_matrix struct
 %time_window_idx time window in secs*srate
