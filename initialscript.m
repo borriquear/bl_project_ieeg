@@ -1,7 +1,7 @@
 
 %% Script that goes step by step processing the data
 %0. The EEG objects for each patients need to be already created (EEGLab)
-% cuteoneepochNEW.m, read overleaf documenttation        
+% cuteoneepochNEW.m, read overleaf documentation        
 % Patients conditions
 % TWH024 =               HYP
 % TWH027 =               HYP
@@ -20,7 +20,7 @@
 % TWH048 = ALL
 % TWH049 = ALL
 %To save figures 
-%>>print -f3 -djpeg 'D:\BIAL PROJECT\patients\figure_results\ECEO-Allroisfigi1'
+%>>print -f3 -djpeg '/Users/jaime/BIALPROJECT/patients/MCP-local-PLI-nbedges'
 %>>savefig('D:\BIAL PROJECT\patients\figure_results\ECEO-Allroisfigi1')
 
 %% 1. Power and phase Analysis
@@ -33,7 +33,7 @@ globalFsDir = loadglobalFsDir();
 % conditionslist = {'EC_PRE', 'EO_PRE', 'HYP', 'EC_POST','EO_POST'};%,'EC_POST'};
 % conditionslist = {'EC_PRE', 'EO_PRE'}%, 'HYP'};
 patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH047', 'TWH048','TWH049'};
-conditionslist = {'EC_PRE', 'EO_PRE'}
+conditionslist = {'EC_PRE', 'HYP'}
 temporalw = 5; % [mat file, and object with power spectra contained in mat file]
 [powerx_perband, averagemeanpower] = waveletpowerspectraperperpatient(patientslist, conditionslist, temporalw);
 %fprintf('DONE: mat file with power Patient %s, Condition %s in %s\n',eegpatient,eegcond, matfilename)
@@ -84,16 +84,21 @@ conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
 centerfrequencies  = logspace(log10(1),log10(50),8);
 %create powerconn matrices, first for segments of temporalwindow secs in powerconn_matrices.mat
 %1. Create powerconn_matrices_tw.mat for temporalwindow >0 (cut the signal into segments)
-temporalwindow = 4; % 4 seconds powerconn_matrices_tw.mat
-createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies, temporalwindow);
+temporalwindow = 5; % 4 seconds powerconn_matrices_tw.mat
+powerconn_matrix = createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies, temporalwindow);
 powerconnmatf = fullfile(globalFsDir, 'powerconn_matrices_tw.mat');
+
 %temporalwindow: 0 means correlation calculated with entire epoch length
-fprintf('Created file of power connectivity in %s\n', powerconnmatf);
-%2.Create powerconn_matrices.mat now for for temporalwindow = 0 , entire epoch
-createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies);
-powerconnmatf = fullfile(globalFsDir, 'powerconn_matrices.mat');
-fprintf('Created file of power connectivity in %s\n', powerconnmatf);
+temporalwindow = 0;
+if temporalwindow > 0
+    fprintf('Created file of power connectivity in %s\n', powerconnmatf);
+    %2.Create powerconn_matrices.mat now for for temporalwindow = 0 , entire epoch
+    createpowerbcorrmatrix(patientslist, conditionslist, centerfrequencies);
+    powerconnmatf = fullfile(globalFsDir, 'powerconn_matrices.mat');
+    fprintf('Created file of power connectivity in %s\n', powerconnmatf);
+end
 %%%%%%%%%%%%%%%%%%%% PHASE ANALYSIS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
 % 2.2 Phase-based Analysis
 % Calculate the Inter Site Phase Clustering (R = ||1/n \sum_t=1,n e^i(\phi_ch1,t - \phi_ch2,t)) and PLI.  
 % Create correlation matrix with coherence and PLI based correlation in phaseconn_matrices.mat
@@ -101,10 +106,10 @@ fprintf('Created file of power connectivity in %s\n', powerconnmatf);
 patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH047', 'TWH048','TWH049'};
 conditionslist = {'EC_PRE', 'EO_PRE', 'HYP'};%,'EC_POST'};
 centerfrequencies  = logspace(log10(1),log10(50),8);
-patientslist = {'TWH030'}; conditionslist = {'HYP'}; centerfrequencies = 1;
+%patientslist = {'TWH030'}; conditionslist = {'HYP'}; centerfrequencies = 1;
 %temporalwindow in miliseconds
 temporalwindow = 5;% temporalwindow: 5 argumentin phase_conn_tw.mat
-calculatephasedifferences(patientslist, conditionslist, temporalwindow*1000);
+phaseconn_matrix = calculatephasedifferences(patientslist, conditionslist, temporalwindow*1000);
 matfilename = fullfile(globalFsDir, 'phaseconn_matrices.mat');
 fprintf('Created file of phase connectivity in %s\n', matfilename);
 %% 3. Display Networks calling displayconnectivity('po'|'pa') and calculatenetworkmetricdistances('po'|'pa')
@@ -135,23 +140,30 @@ calculatenetworkmetricdistances('phase');
 % IN: scope, phaseconn_matrices_tw.mat, 'powerconn_matrices_tw.mat (tw = when conn 
 % matrix calculated using a moving window)
 % OUTPUT: wiringcost_matrices.mat
+global globalFsDir;
+globalFsDir = loadglobalFsDir();
 scope = {'local','meso'}; %W = D.*F, W= D./LH
-wiring_matrices = calculatewiringcostmatrices(scope{1}); 
-%disp(wiring_matrices);
+wiring_matrices = calculatewiringcostmatrices(scope{2}); 
+
 % 4.2 Plot the wiring cost matrices (ALL electrodes | subset)
-plot_all_electrodes = 1;
+plot_all_electrodes = 0;
 if plot_all_electrodes == 1
     plotwiringcost(wiring_matrices); %ALL electrodes
+    savefiguresloop(0);
 else
     typeobject = {'phaseconn_matrices', 'powerconn_matrices', 'wiring_matrices'};
     electrodelist = {'T','F','FP','IH','Grid','HD','NOHD', 'D', 'BiTemp'};
-    plotwiringcost(wiring_matrices, typeobject(3),electrodelist(5));
+    for i=1:length(electrodelist)
+        plotwiringcost(wiring_matrices, typeobject(3),electrodelist(i));
+        savefiguresloop(i);
+    end
 end
-plot_scatter = 0;
-if plot_scatter == 1
-    fprintf('Plotting the scatter of physical and functional distance\n');
-    scatterPF(wiring_matrices);
-end
+
+%plot_scatter = 0;
+%if plot_scatter == 1
+%    fprintf('Plotting the scatter of physical and functional distance\n');
+%    scatterPF(wiring_matrices);
+%end
 
 %% 5. TOPOLOGY  
 
@@ -159,19 +171,6 @@ end
 %Calculates the object Badjall containing the binary matrix and the network
 %metrics associated for that metric, for each patient, condition and
 %frequency
-%Load the wiring_matrices 
-%clear all
-% CREATE wiring_matrices  COMPLETE, select the subset of pats, conds and
-% freqs for Badjall
-
-% if exist('wiring_matrices') > 0
-%     fprintf('wiring_matrices object already exist phaseconn and power_conn matrices\n')
-% else
-%     fprintf('Loading wiring matrices from phaseconn and power_conn matrices\n')
-%
-%wiring_matrices = calculatewiringcostmatrices();
-%
-% end
 %Initial conditions: select the patients, conditions and frequencies from wiring_matrices we
 %want to setudy
 initpat = 1; 
@@ -180,8 +179,8 @@ listofselectedpats = wiring_matrices.patientslist(initpat:nbpats);
 % wiring_matrices.frequencylist=
 % 1.0000    1.7487    3.0579    5.3472    9.3506   16.3512   28.5930   50.0000
 freqlist = wiring_matrices.frequencylist; 
-initfreq = 3;%3 = 3.079, 5 = alpha
-freq_gap = initfreq +3;%how many different frequencies (other than initfreq) to study (1 till theta, 2alpha)
+initfreq = 3; %3 = 3.079, 5 = alpha
+freq_gap = initfreq + 5; %how many different frequencies (other than initfreq) to study (1 till theta, 2alpha)
 freqlist = freqlist(initfreq:freq_gap);
 
 nbfreqs = length(freqlist);
@@ -189,7 +188,7 @@ nbfreqs = length(freqlist);
 initcond=1; 
 nbconds = size(wiring_matrices.conditionslist, 2); 
 
-connmatrixrequired = [1,0,0]; 
+connmatrixrequired = [0,1,0]; %100 010 001 
 %get the wiring_ispc|pli|power oject from the wiring_matrices object
 if find(connmatrixrequired) ==1
     wcconn = wiring_matrices.wiring_ispc;
@@ -209,6 +208,7 @@ binary = 1;
 nbpats = 1 + 10;% initpat + additional pats 
 nbconds = 2; % 2 ec-eo, 3 ec-hyp
 %nbfreqs = 3; % 1 till 3.0579, 2 till 5.3472 3 till 9.3506,  4- 16.3512,   5- 28.5930,  6 50.0000
+%Bdjall contains all networks but for only one measure (R, PLI or Power)
 Badjall = cell(nbpats,nbconds,nbfreqs,2 );
 %array with all the initialconditions ie_patcondfreq initpat, nbpats, initcond, nbconds, initfreq, nbfreqs
 ie_patcondfreq = [initpat,nbpats,initcond,nbconds,initfreq,freq_gap];
@@ -241,14 +241,21 @@ for pati=initpat:nbpats
     end
 end
 fprintf('Done! Badjall is being created \n');
+fna = sprintf('Bdjall_local_%s.mat',typeofconnectivity);
+fprintf('Saving Bdjall in\n');
+%save(fna, 'Badjall', '-v7.3')
+%% t-test of B0, clustering, wc and path length are differen t for the two conditions with Kruskal Wallis and MCP
+%frequency fixed inside
+[ttest_resuls] = ttest_networkmetrics(Badjall);
+%ttest_resuls = {[Bh,Bp,Bci,Bstats],[Ch,Cp,Cci,Cstats],[Wh,Wp,Wci,Wstats] ,[Ph,Pp,Pci,Pstats]  }
+
+
 %% 5.2.1 Plot Badjall matrix results (overall metrics for all networks)
-fprintf('Badjall built, click OK to plot the network metric for each delta\n');
-f = warndlg('Badjall built, Click OK to Continue with the Ploting', 'Program interruption');
-drawnow 
-waitfor(f);
-disp('Plotting Badjall is an array Badj for eachpat, cond anf freq: Badj{1,:}Binary matrices, one for each threshold and Badj{2,:} network metrics, one for each threshold');
+
+disp('Plotting Badjall is an array Badj for each pat, cond and freq: Badj{1,:}Binary matrices, one for each threshold and Badj{2,:} network metrics, one for each threshold');
 %ie_patcondfreq = [initpat,nbpats,initcond,2,initfreq,freq_gap];
 [netmetlist] = plotnetworkmetrics_all(Badjall, wiring_matrices, ie_patcondfreq, binary, typeofconnectivity)
+%[netmetlist] = plotnetworkmetrics_all(Badjall, wiring_matrices, ie_patcondfreq, binary, 'power')
 %% 5.2.2 Plot selected matrices (overall metrics for all networks)
 if exist('Badjall') > 0
     fprintf('wiring_matrices object already exist phaseconn and power_conn matrices\n');
@@ -257,25 +264,37 @@ else
     warning('Badjall NOT FOUND\n')
     return
 end
-mypat = 1; mypatlabel = 'TWH030';
+
+figure
+mypat = 6; mypatlabel = 'TWH042';
 mycond = 1; %EC EO HYP
-myfreq = 1;  % 1 is 3.05
+myfreq = 3;  % 1 is 3.05
 myconnmat = Badjall(mypat,mycond,myfreq,1);
 mythreshold_v = Badjall(mypat,mycond,myfreq,2);
 mythreshold_v = mythreshold_v{1};
 mycurrmat = myconnmat{1};
-%choose one
-mythreshold = 1;
-mythreshold = find(mythreshold_v > mean(mythreshold_v)); mythreshold = mythreshold - 1;
-%mythreshold = length(mythreshold_v); %mythreshold_v(1)
-corrMatrix = mycurrmat{1,mythreshold(1)};
-
 [myfullname, EEG, channel_labels, eegdate, eegsession] = initialize_EEG_variables(mypatlabel,'HYP');
-strNames = channel_labels(2:end)
+strNames = channel_labels(2:end);
+
+subplot(1,3,1)
+threscut = round((length(mythreshold_v) -length(mythreshold_v)+500 ));
+corrMatrix = mycurrmat{mycond,threscut};
 myColorMap = lines(length(corrMatrix));
 circularGraph(corrMatrix,'Colormap',myColorMap,'Label',strNames);
-msgtitle = sprintf('Wiring cost etwork for minimum thresold, pat=%s', mypatlabel)
+subplot(1,3,2)
+threscut = round((length(mythreshold_v) -length(mythreshold_v)+800 ));
+corrMatrix = mycurrmat{mycond,threscut};
+myColorMap = lines(length(corrMatrix));
+circularGraph(corrMatrix,'Colormap',myColorMap,'Label',strNames);
+subplot(1,3,3)
+threscut = round((length(mythreshold_v) - 1 ));
+corrMatrix = mycurrmat{mycond,threscut};
+myColorMap = lines(length(corrMatrix));
+circularGraph(corrMatrix,'Colormap',myColorMap,'Label',strNames);
+
+msgtitle = sprintf('Wiring cost network TWH042 alpha band threshold=%d , pat=%s', mypatlabel,threscut )
 title(msgtitle)
+
 %% 5.3 Calculates the statistical effect between the conditions for the binary 
 % networks
 % H0= \mu condition 1 = \mu condition 2
