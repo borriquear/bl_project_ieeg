@@ -1,7 +1,7 @@
 
 %% Script that goes step by step processing the data
 %0. The EEG objects for each patients need to be already created (EEGLab)
-% cuteoneepochNEW.m, read overleaf documentation        
+% cuteoneepochNEW.m, read overleaf documentation           
 % Patients conditions
 % TWH024 =               HYP
 % TWH027 =               HYP
@@ -24,7 +24,8 @@
 %>>savefig('D:\BIAL PROJECT\patients\figure_results\ECEO-Allroisfigi1')
 
 %% 1. Power and phase Analysis
-% 1.1 Create mat file with power/amplitud calculated via the FFT. Power analysis, identify channels with most power and the frequency bands that pick up maximum power
+% 1.1 Create mat file with power/amplitud calculated via the FFT. 
+% Power analysis, identify channels with most power and the frequency bands that pick up maximum power
 %OUTPUT: % globalFsDir\eegpatient\data\figures\fft_%pat_%cond_%date_%se.mat -> 'ampli_fft','power_fft','power_fft_perband', 'power_fft_mean_perband','channel_labels'
 global globalFsDir;
 globalFsDir = loadglobalFsDir();
@@ -33,6 +34,7 @@ globalFsDir = loadglobalFsDir();
 % conditionslist = {'EC_PRE', 'EO_PRE', 'HYP', 'EC_POST','EO_POST'};%,'EC_POST'};
 % conditionslist = {'EC_PRE', 'EO_PRE'}%, 'HYP'};
 patientslist = {'TWH030','TWH031','TWH033','TWH037','TWH038','TWH042','TWH043','TWH045','TWH047', 'TWH048','TWH049'};
+patientslist = {'TWH030','TWH031'}
 conditionslist = {'EC_PRE', 'HYP'}
 temporalw = 5; % [mat file, and object with power spectra contained in mat file]
 [powerx_perband, averagemeanpower] = waveletpowerspectraperperpatient(patientslist, conditionslist, temporalw);

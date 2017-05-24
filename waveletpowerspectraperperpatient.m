@@ -1,7 +1,15 @@
 function [powerx_perband, averagemeanpower] = waveletpowerspectraperperpatient(eegpatientl, eegconditionl, temporalw)
-
-% define wavelet parameters
-% number of wavelet cycles changes in function of the frequency
+% waveletpowerspectraperperpatient Calculates the powerspectra for a list
+% of patients and conditions. It creates a .mat object that contains the
+% poweer spectra for num_frex frequencies. It calls the initialize_EEG_variables to create the EEG object and the 
+% initialize_wavelet functions. The rer 
+%
+% Input:
+% eegpatientl list of patients
+% eegconditionl list of conditions (EO, EC, HYP)
+% Output: The return arguments are created in the plotpowerspectra function
+% powerx_perband  power spectrum for each frequency band
+% averagemeanpower
 powerspectra_matrix_list = {};
 for indpat=1:length(eegpatientl)
     eegpatient = eegpatientl{indpat};
@@ -56,12 +64,18 @@ end
 end
 
 function [powerx_perband, averagemeanpower] = plotpowerspectra(powerspectra_matrix_list, patientlist, conditionslist, frex)
+% plotpowerspectra Plots the power spectrum for different frequency bands 
+% 
+% Input:
+% powerspectra_matrix_list matrix pats x conds
+% frex is a list of frequencies
+% Output: 
+% powerx_perband, averagemeanpower
 
 initfreq=3; %delta band from 3.5
 ympb= []; condmeanrois = [];
 %conditionslist = {'EC', 'EO'}
 figm = figure;%powerx (plot)
-figp = figure;   %powerxperband (bars)
 nbp = length(patientlist);
 nbc = length(conditionslist);
 xlimtodisplay = 50;
@@ -70,27 +84,29 @@ nbcols = size(matrixtest,2);
 freq_bands = {'\delta'; '\theta'; '\alpha'; '\beta 1'; '\beta 2';'\gamma'};
 nbfreqs = length(frex) -2;
 %Charts ALL ROIs
-ylistpat = zeros(length(patientlist),length(conditionslist),nbfreqs );
+ylistpat = zeros(length(patientlist),length(conditionslist), nbfreqs);
 freqsindexl = frex(3:end);
 %powerx_perband ={};
-powerx_perband = zeros(length(patientlist),length(conditionslist),length(freqsindexl) );
+powerx_perband = zeros(length(patientlist),length(conditionslist),length(freqsindexl));
+stdx_perband = zeros(length(patientlist),length(conditionslist),length(freqsindexl));
 for ip=1:length(patientlist)
     eegpatient = patientlist{ip};
     for ic =1:length(conditionslist)
         %yel = [];
         eegcondition = conditionslist{ic};
         %ha = tight_subplot(nbp,nbc,3*(ip-1) + ic,[.01 .01])
-        powerx = powerspectra_matrix_list{ip,ic};meanvx = mean(powerx);stdx = std(powerx);
-        powerx = powerx(:,initfreq:end); meanvx = meanvx(initfreq:end);stdx = stdx(initfreq:end);
-        maxofmean =max(meanvx);minofmean = min(meanvx);
+        powerx = powerspectra_matrix_list{ip,ic}; meanvx = mean(powerx); stdx = std(powerx);
+        powerx = powerx(:,initfreq:end); meanvx = meanvx(initfreq:end); stdx = stdx(initfreq:end);
+        maxofmean =max(meanvx); minofmean = min(meanvx);
         %meanperfreq(fq) = zeros(1,length(freq_bands));
         for fq=1:length(freq_bands)
             powerx_perband(ip,ic,fq) = mean(powerx(:,fq));
+            stdx_perband(ip,ic,fq) = std(powerx(:,fq));
             %meanperfreq(fq) = mean(powerx(:,fq));
         end
         figure(figm);
         subplot(nbp,nbc,nbc*(ip-1) + ic);
-        % plot mean as such
+        % Figuer 1: plot mean as such
         plot(freqsindexl,meanvx);
         set(gca, 'YLim', [ minofmean 1.01*maxofmean], 'XLim', [0 xlimtodisplay]);
         ystr = sprintf('Power %s',eegpatient);
@@ -105,27 +121,35 @@ for ip=1:length(patientlist)
 end
 %obtain  powerx_perband with the  mean power per band the mean all patients each band
 powerspectoplot = zeros(length(conditionslist),length(freq_bands));
-
+error_bars= zeros(length(conditionslist),length(freq_bands));
 for ic = 1:length(conditionslist)
     for fq=1:length(freq_bands)
         powerspectoplot(ic,fq) = mean(powerx_perband(:,ic,fq));
+        error_bars(ic,fq) = std(stdx_perband(:,ic,fq));
     end
     %normalize   
 end
 % plot the mean over subjects
 figure
 X = [powerspectoplot(1,:)/sum(powerspectoplot(1,:));powerspectoplot(2,:)/sum(powerspectoplot(2,:))]
+Y = [error_bars(1,:)/sum(error_bars(1,:));error_bars(2,:)/sum(error_bars(2,:))]
 bar(X')
 set(gca, 'XTick', 1:length(freq_bands), 'XTickLabel',freq_bands);
 ylim([0 1]);
 xlabel('Frequency Bands'), ylabel('Normalized Power \muV^2 per Band')
 msgt = sprintf('Mean Power spectra All patients-ROIS');
 legend(conditionslist{1}, conditionslist{2}, 'interpreter', 'None')
-legend('EC','EO')
+% legend('EC','EO')
 title(msgt,'interpreter', 'none');
 %plot the imagesc per patient
+% plot error bars
+fig_eb = figure;   %powerxperband (bars)
+errorbar(X', Y');
+set(gca, 'XTick', 1:length(freq_bands), 'XTickLabel',freq_bands);
+msgt = sprintf('Error bars of Power spectra All patients-ROIS');
+title(msgt,'interpreter', 'none');
 
-condicslabels = {'EC','EO'};
+
 figure;
 % eyes closed
 cond1 = powerx_perband(:,1,:);
@@ -145,7 +169,7 @@ imagesc(c1);
 set(gca,'XTick', [1:length(freq_bands)], 'YTick',[]);
 set(gca,'XTickLabel', freq_bands);
 ylabel('Patients'), xlabel('Frequency bands'); %cd= condicslabels(cc);
-msgt= sprintf('Power normalized all ROIs in %s',condicslabels{1});
+msgt= sprintf('Power normalized all ROIs in %s',conditionslist{1});
 title(msgt,'interpreter', 'none')
 caxis([0 1]);
 colorbar;
@@ -154,7 +178,7 @@ imagesc(c2);
 set(gca,'XTick', [1:length(freq_bands)], 'YTick',[]);
 set(gca,'XTickLabel', freq_bands);
 ylabel('Patients'), xlabel('Frequency bands'); 
-msgt= sprintf('Power normalized all ROIs in %s',condicslabels{2});
+msgt= sprintf('Power normalized all ROIs in %s',conditionslist{2});
 title(msgt,'interpreter', 'none')
 caxis([0 1]);
 colorbar;
