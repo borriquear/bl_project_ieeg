@@ -15,7 +15,7 @@ thresholdv = []; nonzero_thresholdv= [];
 %thresholdv = sort(reshape(WM,1,nbrows*nbcols));
 thresholdv = linspace(min(WM(:)), max(WM(:)), nbrows*nbcols);
 %remove the 0 elements (WM is triangular superior so half of the elements are 0)
-% only for PLI and R , for Power the connecitivty can be <0
+% only for PLI and R, for Power the connecitivty can be <0
 if min(thresholdv) >= 0
     nonzero_thresholdv = find(thresholdv > 0);
     thresholdv = thresholdv(nonzero_thresholdv:end);
@@ -28,7 +28,7 @@ Badj = cell(2,length(thresholdv));
 for i=1:length(thresholdv)
     BM = zeros(nbrows, nbcols);
     if binary == 1
-        BM(WM >= thresholdv(i)) = 1;
+        BM(WM < thresholdv(i) & WM > 0) = 1;
     else
         [row, col, index] = find( WM >= thresholdv(i));
         for irow=1:length(row)
@@ -90,14 +90,21 @@ elseif strcmp(label, 'pathlength')==1
     % elseif strcmp(label, 'transitivity')==1
     %     netwmets_el = transitivity_bu(corrmatrix);
 elseif strcmp(label, 'B0')==1
-    s=graph_spectrum(corrmatrix);
-    nc=numel(find(s<10^(-5)));
+    % Count number of voxels for B0 and other Betti number use Topological
+    % analysis Toolbox
+    %s=graph_spectrum(corrmatrix);
+    %nc=numel(find(s<10^(-5)));
     %normalize nb of components
-    netwmets_el = nc/size(corrmatrix,1);
+    %netwmets_el = nc/size(corrmatrix,1);
     %     [components_v, componentsizes_v] = get_components(corrmatrix);
     %     netwmets_el = mean(componentsizes_v);
+    %[S, c] = graphconncomp(sparse(triu(corrmatrix)), 'Directed', 'False')
+    nc = numedges(corrmatrix);
+    netwmets_el = nc/(size(corrmatrix,1)*size(corrmatrix,1));
+    
 elseif  strcmp(label, 'wiringcost')==1
     netwmets_el = sum(corrmatrix(:))/ (size(corrmatrix,1)* size(corrmatrix,2));
+    %disp(netwmets_el)
 else
     fprintf('ERROR label %s do not found!!', label );
 end
